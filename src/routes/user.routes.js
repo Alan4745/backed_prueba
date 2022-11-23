@@ -1,13 +1,16 @@
 const express = require('express');
 const controllerUser = require('../controllers/user.controller');
 
+const md_autenticacion = require('../middlewares/authentication')
 
 //poder usar la rutas.
 const api = express.Router();
 
+
+api.get('/viewUsers' , controllerUser.viewUser)
 api.post('/signUp', controllerUser.userRegistration);
 api.post('/login', controllerUser.loginUser);
-api.put('/updateUser', controllerUser.updateUser);
-
+api.put('/updateUser/:idUser', controllerUser.updateUser);
+api.delete('/deleteUser/:idUser' , controllerUser.deleteUser);
 
 module.exports = api;
