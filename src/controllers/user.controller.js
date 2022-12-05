@@ -86,6 +86,11 @@ function updateUser(req, res) {
     console.log(idUser);
     var parameters = req.body;
 
+
+    if (req.user.sub !== idUser) {
+        return res.status(500).send({ mensaje: 'No tiene los permisos para editar este Usuario.' });
+    }
+
     User.findByIdAndUpdate(idUser, parameters, { new: true }, (err, userUpdate) => {
         if (err) return res.status(500).send({ message: 'Erro en la pericion' });
         if (!userUpdate) return res.status(500).send({ message: 'error Al Editar el usuario' });
