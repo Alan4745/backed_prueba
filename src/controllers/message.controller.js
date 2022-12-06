@@ -3,6 +3,9 @@ const Message = require('../models/message.model');
 function SaveMessage(req, res) {
     const messageModel = new Message();
     var parameters = req.body;
+    var senderId = req.params.receiverId;
+
+
 
     messageModel.message = parameters.message;
     messageModel.from = parameters.from;

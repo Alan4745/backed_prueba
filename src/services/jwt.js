@@ -5,7 +5,7 @@ const claveSecreta = "clave_secreta_DIMENSIO"
 exports.crearToken = function (user) {
     let payload = {
         sub: user._id,
-        name: user.name,
+        username: user.username,
         email: user.email,
         rol: user.rol,
         iat: moment().unix(),

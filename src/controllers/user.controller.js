@@ -9,7 +9,7 @@ function userRegistration(req, res) {
     const userModel = new User();
     var parameters = req.body;
 
-    if (!parameters.name || !parameters.email || !parameters.password) {
+    if (!parameters.username || !parameters.email || !parameters.password) {
         return res
             .status(400)
             .send({ error: { mensaje: 'Required data' } });
@@ -22,11 +22,8 @@ function userRegistration(req, res) {
                 .send({ error: { message: 'This email is already used' } });
         } else {
 
-            userModel.name = parameters.name;
-            userModel.lastName = parameters.lastName;
+            userModel.username = parameters.username;
             userModel.email = parameters.email;
-            userModel.password = parameters.password;
-            userModel.rol = 'user';
 
 
             bcrypt.hash(parameters.password, saltRounds, (err, hash) => {
@@ -86,7 +83,12 @@ function updateUser(req, res) {
     console.log(idUser);
     var parameters = req.body;
 
+    //Eliminadadon la entrada de de los siguientes parametros
+    delete parameters.password;
+    delete parameters.rol;
+    delete parameters.email;
 
+    //verificamos que si el usuario le pertenece el perfil
     if (req.user.sub !== idUser) {
         return res.status(500).send({ mensaje: 'No tiene los permisos para editar este Usuario.' });
     }
@@ -102,6 +104,11 @@ function updateUser(req, res) {
 
 function deleteUser(req, res) {
     var idUser = req.params.idUser;
+
+    if (req.user.sub !== idUser) {
+        return res.status(500).send({ mensaje: 'No tiene los permisos para eliminar este Usuario.' });
+    }
+
 
     User.findByIdAndDelete(idUser, (err, userDelete) => {
         if (err) return res.status(500).send({ message: 'error en la peticion' });
