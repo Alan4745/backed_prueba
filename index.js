@@ -15,14 +15,7 @@ const io = new Server(server, {
 
 
 io.on('connection', (socket) => {
-    // console.log('usuario Conectado')
-    socket.on('message', (message, nickname) => {
-        //Envio al Resto Clients
-        socket.broadcast.emit('message', {
-            body: message,
-            from: nickname
-        });
-    });
+    console.log("connected to socket.io");
 });
 
 

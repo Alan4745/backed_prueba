@@ -1,17 +1,22 @@
 const Conversation = require('../models/Conversation.model')
+const User = require('../models/user.model');
 
 function NewConversation(req, res) {
     const modelConversation = new Conversation();
     var senderId = req.params.receiverId;
 
-    Conversation.find({ members: { $elemMatch: { senderId: req.user.sub, receiverId: senderId } } }, (err, conversationFind) => {
+    Conversation.find({ members: { $all: [senderId, req.user.sub] } }, (err, conversationFind) => {
         //Verificamos si los usuarios obtubieron una conversacion anterior
+
+        console.log("senderId" + " " + senderId)
+        console.log("req.user.sub" + " " + req.user.sub)
+
         if (conversationFind.length > 0) {
             return res
                 .status(500)
                 .send({ error: { message: 'ya Tienes una conversiancion el con este usuario' } });
         } else {
-            modelConversation.members = [{ senderId: req.user.sub, receiverId: senderId }];
+            modelConversation.members = [req.user.sub, senderId];
             modelConversation.save((err, saveConversation) => {
                 if (err) return res.status(500)
                     .send({ message: 'err en la peticion' });
@@ -37,12 +42,41 @@ function ConversationIdUser(req, res) {
 
         return res.status(200).send({ status: 'Success', conversationFindIdUser });
     });
+}
+
+function ConversationView(req, res) {
+
+    Conversation.find({ members: { $all: [req.user.sub] } }, (err, friedsViews) => {
+
+        if (err) return res.status(500).send({ err: "Error en la peticion de friedsViews" });
+        if (!friedsViews) res.status(500).send({ err: "No se encontro friends" });
+
+        var friends = [];
+
+        for (let i = 0; i < friedsViews.length; i++) {
+            const element = friedsViews[i].members;
+            for (let i = 0; i < element.length; i++) {
+                const element1 = element[i];
+                console.log(element1)
+                friends.push(element1)
+            }
+        }
+
+        let friendsCa = friends.filter(a => a != req.user.sub)
+        console.log(friendsCa);
 
 
+
+        User.find({ _id: friendsCa }, ,(err, friedsFind) => {
+            return res.status(200).send({ friedsFind })
+        })
+
+    });
 }
 
 
 module.exports = {
     NewConversation,
-    ConversationIdUser
+    ConversationIdUser,
+    ConversationView
 }
