@@ -8,7 +8,7 @@ function SaveMessage(req, res) {
 
     Conversation.find({ members: { $all: [senderId, req.user.sub] } }, (err, ConversationFindOne) => {
         messageModel.conversationId = ConversationFindOne[0].id;
-        messageModel.sender = senderId;
+        messageModel.sender = req.user.sub;
         messageModel.text = parameters.text;
 
         messageModel.save((err, saveMessage) => {
@@ -27,6 +27,7 @@ function ViewMessage(req, res) {
     var senderId = req.params.receiverId;
 
     Conversation.find({ members: { $all: [senderId, req.user.sub] } }, (err, ConversationFindOne) => {
+
         Message.find({ conversationId: ConversationFindOne[0].id }, (err, messageView) => {
             return res.status(200).send({ status: 'Success', messageView })
         });

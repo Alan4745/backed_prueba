@@ -13,9 +13,24 @@ const io = new Server(server, {
     }
 })
 
+let users = [];
+
+const addUser = ( userId, socketId) =>{
+    !users.some(user=> user.userId === userId) &&
+    users.push({ userId, socketId })
+}
 
 io.on('connection', (socket) => {
     console.log("connected to socket.io");
+
+    socket.on("addUser", userId => {
+        addUser(userId, socket.id)
+        io.emit("getUsers", users)
+    });
+
+    socket.on("disconnect", () => {
+        console.log("a user Discinnected!")
+    })
 });
 
 

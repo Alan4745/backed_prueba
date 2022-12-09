@@ -7,10 +7,6 @@ function NewConversation(req, res) {
 
     Conversation.find({ members: { $all: [senderId, req.user.sub] } }, (err, conversationFind) => {
         //Verificamos si los usuarios obtubieron una conversacion anterior
-
-        console.log("senderId" + " " + senderId)
-        console.log("req.user.sub" + " " + req.user.sub)
-
         if (conversationFind.length > 0) {
             return res
                 .status(500)
@@ -38,8 +34,6 @@ function ConversationIdUser(req, res) {
         if (!conversationFindIdUser) return res.status(500)
             .send({ Error: 'Este Usuario No tiene conversacion con tu usuario' });
 
-        console.log(conversationFindIdUser.id)
-
         return res.status(200).send({ status: 'Success', conversationFindIdUser });
     });
 }
@@ -57,17 +51,13 @@ function ConversationView(req, res) {
             const element = friedsViews[i].members;
             for (let i = 0; i < element.length; i++) {
                 const element1 = element[i];
-                console.log(element1)
                 friends.push(element1)
             }
         }
 
         let friendsCa = friends.filter(a => a != req.user.sub)
-        console.log(friendsCa);
 
-
-
-        User.find({ _id: friendsCa }, ,(err, friedsFind) => {
+        User.find({ _id: friendsCa }, (err, friedsFind) => {
             return res.status(200).send({ friedsFind })
         })
 
