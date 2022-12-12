@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
 
+const { Schema } = mongoose;
 
 const ConversationSchema = new Schema({
 
-    members: []
+  members: [],
 });
 
-module.exports = mongoose.model("Conversation", ConversationSchema);
+module.exports = mongoose.model('Conversation', ConversationSchema);

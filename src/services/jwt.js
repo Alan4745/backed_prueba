@@ -1,16 +1,19 @@
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable camelcase */
 const jwt_simple = require('jwt-simple');
 const moment = require('moment');
-const claveSecreta = "clave_secreta_DIMENSIO"
+
+const claveSecreta = 'clave_secreta_DIMENSIO';
 
 exports.crearToken = function (user) {
-    let payload = {
-        sub: user._id,
-        username: user.username,
-        email: user.email,
-        rol: user.rol,
-        iat: moment().unix(),
-        exp: moment().day(7, 'days').unix()
-    }
+  const payload = {
+    sub: user._id,
+    username: user.username,
+    email: user.email,
+    rol: user.rol,
+    iat: moment().unix(),
+    exp: moment().day(7, 'days').unix(),
+  };
 
-    return jwt_simple.encode(payload, claveSecreta);
-}
+  return jwt_simple.encode(payload, claveSecreta);
+};
