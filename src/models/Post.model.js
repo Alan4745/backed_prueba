@@ -2,9 +2,12 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const PostSchema = new Schema({
+const postSchema = new Schema({
 
   userId: {
+    type: String,
+  },
+  title: {
     type: String,
     required: true,
   },
@@ -14,11 +17,16 @@ const PostSchema = new Schema({
   },
   img: {
     type: String,
+    default: '',
   },
   likes: {
-    type: String,
+    type: Array,
+    default: [],
+  },
+  comentarios: {
+    type: Array,
     default: [],
   },
 });
 
-module.exports = mongoose.model('Posts', PostSchema);
+module.exports = mongoose.model('Post', postSchema);

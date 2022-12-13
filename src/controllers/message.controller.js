@@ -15,7 +15,7 @@ function SaveMessage(req, res) {
     messageModel.save((err, saveMessage) => {
       if (err) {
         return res.status(500)
-          .send({ message: 'err en la peticion' });
+          .send({ message: 'err en la peticion', err });
       }
 
       if (!saveMessage) {
