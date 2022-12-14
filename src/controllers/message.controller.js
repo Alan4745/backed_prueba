@@ -32,7 +32,10 @@ function ViewMessage(req, res) {
   const senderId = req.params.receiverId;
 
   Conversation.find({ members: { $all: [senderId, req.user.sub] } }, (err, ConversationFindOne) => {
-    Message.find({ conversationId: ConversationFindOne[0].id }, (err, messageView) => res.status(200).send({ status: 'Success', messageView }));
+    Message.find(
+      { conversationId: ConversationFindOne[0].id },
+      (err, messageView) => res.status(200).send({ status: 'Success', messageView }),
+    );
   });
 }
 

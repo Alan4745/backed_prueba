@@ -27,6 +27,7 @@ function userRegistration(req, res) {
 
     userModel.username = parameters.username;
     userModel.email = parameters.email;
+    userModel.desc = parameters.desc;
 
     bcrypt.hash(parameters.password, saltRounds, (_err, hash) => {
       userModel.password = hash;
@@ -115,11 +116,93 @@ function viewUser(req, res) {
   User.find((err, usersView) => res.status(200).send({ UserInfo: usersView }));
 }
 
+function followers(req, res) {
+  const { idUser } = req.params;
+
+  User.findById(idUser, (err, userFind) => {
+    if (err) {
+      return res.status(500).send({ err: 'error en la peticion' });
+    }
+    if (!userFind) {
+      return res.status(500).send({ err: 'error en al encotrar usuario' });
+    }
+
+    const userFollower = userFind.followers.filter((user) => user === req.user.sub);
+
+    if (userFollower.length > 0) {
+      User.findByIdAndUpdate(
+        idUser,
+        { $pull: { followers: req.user.sub } },
+        { new: true },
+        (err, userUnfollower) => {
+          if (err) {
+            return res.status(500).send({ err: 'error en la peticion' });
+          }
+          if (!userUnfollower) {
+            return res.status(500).send({ err: 'error al actualizar "followers" en usuario' });
+          }
+
+          User.findByIdAndUpdate(
+            req.user.sub,
+            { $pull: { followings: idUser } },
+            { new: true },
+            (err, userFollowings) => {
+              if (err) {
+                return res.status(500).send({ err: 'error en la peticion' });
+              }
+              if (!userFollowings) {
+                return res.status(500).send({ err: 'error al actualiar "followings" de usuario ' });
+              }
+              return res.status(200).send({ mesage: userUnfollower, userFollowings });
+            },
+          );
+
+          // return res.status(200).send({ mesage: userUnfollower });
+        },
+      );
+
+      console.log(userFollower.length > 0);
+    } else {
+      console.log(userFollower.length > 0);
+      User.findByIdAndUpdate(
+        idUser,
+        { $push: { followers: req.user.sub } },
+        { new: true },
+        (err, userFollower) => {
+          if (err) {
+            return res.status(500).send({ err: 'error en la peticion' });
+          }
+          if (!userFollower) {
+            return res.status(500).send({ err: 'error al actualizar "followers" en usuario' });
+          }
+
+          User.findByIdAndUpdate(
+            req.user.sub,
+            { $push: { followings: idUser } },
+            { new: true },
+            (err, userFollowings) => {
+              if (err) {
+                return res.status(500).send({ err: 'error en la peticion' });
+              }
+              if (!userFollowings) {
+                return res.status(500).send({ err: 'error al actualiar "followings" de usuario ' });
+              }
+              return res.status(200).send({ mesage: userFollower, userFollowings });
+            },
+          );
+        },
+      );
+    }
+
+    // return res.status(200).send({ mensaje: userFind });
+  });
+}
+
 module.exports = {
   userRegistration,
   loginUser,
   updateUser,
   deleteUser,
   viewUser,
-
+  followers,
 };

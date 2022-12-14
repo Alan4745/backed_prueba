@@ -1,7 +1,7 @@
-/* eslint-disable no-shadow */
 /* eslint-disable linebreak-style */
-/* eslint-disable import/no-self-import */
 /* eslint-disable consistent-return */
+/* eslint-disable linebreak-style */
+/* eslint-disable no-shadow */
 /* eslint-disable linebreak-style */
 const Post = require('../models/Post.model');
 
