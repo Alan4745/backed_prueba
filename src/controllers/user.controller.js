@@ -2,6 +2,7 @@
 /* eslint-disable consistent-return */
 const bcrypt = require('bcrypt');
 const User = require('../models/user.model');
+const Post = require('../models/Post.model');
 // const bcrypt = require('bcrypt');
 const jwt = require('../services/jwt');
 
@@ -28,6 +29,7 @@ function userRegistration(req, res) {
     userModel.username = parameters.username;
     userModel.email = parameters.email;
     userModel.desc = parameters.desc;
+    userModel.category = [parameters.category];
 
     bcrypt.hash(parameters.password, saltRounds, (_err, hash) => {
       userModel.password = hash;
@@ -75,8 +77,7 @@ function loginUser(req, res) {
 }
 
 function updateUser(req, res) {
-  const { idUser } = req.params;
-  console.log(idUser);
+  const { idUser } = req.params.idUser;
   const parameters = req.body;
 
   // Eliminadadon la entrada de de los siguientes parametros
@@ -98,7 +99,7 @@ function updateUser(req, res) {
 }
 
 function deleteUser(req, res) {
-  const { idUser } = req.params;
+  const { idUser } = req.params.idUser;
 
   if (req.user.sub !== idUser) {
     return res.status(500).send({ mensaje: 'No tiene los permisos para eliminar este Usuario.' });
@@ -119,6 +120,8 @@ function viewUser(req, res) {
 function followers(req, res) {
   const { idUser } = req.params;
 
+  console.log(idUser);
+
   User.findById(idUser, (err, userFind) => {
     if (err) {
       return res.status(500).send({ err: 'error en la peticion' });
@@ -128,7 +131,7 @@ function followers(req, res) {
     }
 
     const userFollower = userFind.followers.filter((user) => user === req.user.sub);
-
+    // si el usuario esta en siguiendo
     if (userFollower.length > 0) {
       User.findByIdAndUpdate(
         idUser,
@@ -162,6 +165,7 @@ function followers(req, res) {
       );
 
       console.log(userFollower.length > 0);
+      // no siguie
     } else {
       console.log(userFollower.length > 0);
       User.findByIdAndUpdate(
@@ -198,6 +202,48 @@ function followers(req, res) {
   });
 }
 
+function viewCommunitys(req, res) {
+  User.findOne({ _id: req.user.sub }, { password: 0 }, (err, userComunity) => {
+    if (err) {
+      return res.status(500).send({ err: 'error en la peticion' });
+    }
+    if (!userComunity) {
+      return res.status(500).send({ err: 'error al buscar al usuario' });
+    }
+
+    const Communitys = userComunity.followings;
+
+    User.find({ _id: Communitys }, { password: 0 }, (err, Community) => {
+      if (err) {
+        return res.status(500).send({ err: 'error en la peticion' });
+      }
+      if (!Community) {
+        return res.status(500).send({ err: 'error al encontrar la comunidad' });
+      }
+
+      return res.status(200).send({ mensaje: Community });
+    });
+  });
+}
+
+function postViewCommunity(req, res) {
+  const { idCommunity } = req.params;
+
+  console.log(idCommunity);
+
+  Post.find({ userId: idCommunity }, (error, postCommunity) => {
+    if (error) {
+      return res.status(500).send({ error: 'error en la peticion' });
+    }
+    console.log(!postCommunity);
+    if (!postCommunity) {
+      return res.status(500).send({ error: 'error al encotrar el posts de la comunidad' });
+    }
+
+    return res.status(200).send({ mensaje: postCommunity });
+  });
+}
+
 module.exports = {
   userRegistration,
   loginUser,
@@ -205,4 +251,6 @@ module.exports = {
   deleteUser,
   viewUser,
   followers,
+  viewCommunitys,
+  postViewCommunity,
 };
