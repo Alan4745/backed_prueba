@@ -9,8 +9,8 @@ const app = require('./app');
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: 'https://re-social.firebaseapp.com/',
-    methods: ['GET', 'POST'],
+    origin: '*',
+
   },
 });
 
