@@ -6,7 +6,10 @@ const User = require('../models/user.model');
 
 function NewConversation(req, res) {
   const modelConversation = new Conversation();
-  const senderId = req.params.receiverId;
+  const senderId = req.params.idUser;
+
+  console.log(req.user.sub);
+  console.log(senderId);
 
   Conversation.find({ members: { $all: [senderId, req.user.sub] } }, (err, conversationFind) => {
     // Verificamos si los usuarios obtubieron una conversacion anterior
@@ -25,7 +28,7 @@ function NewConversation(req, res) {
         return res.status(500)
           .send({ message: 'error al guardar la conversacion' });
       }
-      return res.status(200).send({ status: 'Success', saveConversation });
+      // return res.status(200).send({ status: 'Success', saveConversation });
     });
   });
 }

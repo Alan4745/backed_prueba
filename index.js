@@ -9,7 +9,7 @@ const app = require('./app');
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: '*',
+    origin: 'https://re-social.firebaseapp.com',
   },
 });
 
@@ -55,6 +55,8 @@ io.on('connection', (socket) => {
     io.emit('getUsers', users);
   });
 });
+
+mongoose.set('strictQuery', false);
 
 mongoose.Promise = global.Promise;
 mongoose.connect(

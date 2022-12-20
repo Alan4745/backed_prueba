@@ -3,6 +3,7 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/user.model');
 const Post = require('../models/Post.model');
+const conversacion = require('./conversations.controller');
 // const bcrypt = require('bcrypt');
 const jwt = require('../services/jwt');
 
@@ -120,8 +121,7 @@ function viewUser(req, res) {
 function followers(req, res) {
   const { idUser } = req.params;
 
-  console.log(idUser);
-
+  conversacion.NewConversation(req, res);
   User.findById(idUser, (err, userFind) => {
     if (err) {
       return res.status(500).send({ err: 'error en la peticion' });
