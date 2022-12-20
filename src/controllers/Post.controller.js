@@ -13,6 +13,7 @@ function SavePost(req, res) {
   PostModule.title = parameters.title;
   PostModule.desc = parameters.desc;
   PostModule.img = parameters.img;
+  PostModule.type = parameters.type;
 
   console.log(parameters.img);
 
