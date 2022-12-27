@@ -9,7 +9,7 @@ const app = require('./app');
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: 'https://re-social.web.app',
+    origin: 'http://localhost:3000',
     credentials: true,
   },
 });
@@ -34,6 +34,7 @@ io.on('connection', (socket) => {
   socket.on('addUser', (userId) => {
     addUser(userId, socket.id);
     io.emit('getUsers', users);
+    console.log(users);
   });
 
   // send and get message
@@ -51,7 +52,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    console.log('a user Discinnected!');
+    console.log(`a user Discinnected!${socket.id}`);
     removeUser(socket.id);
     io.emit('getUsers', users);
   });

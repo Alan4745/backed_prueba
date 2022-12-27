@@ -4,7 +4,11 @@ const { Schema } = mongoose;
 
 const userSchema = new Schema(
   {
-    username: {
+    name: {
+      type: String,
+      require: true,
+    },
+    nickName: {
       type: String,
       require: true,
     },
@@ -16,29 +20,13 @@ const userSchema = new Schema(
       type: String,
       require: true,
     },
-    desc: {
-      type: String,
-      default: '',
-    },
     profilePicture: {
       type: String,
       default: '',
     },
-    followers: {
-      type: Array,
-      default: [],
-    },
-    followings: {
-      type: Array,
-      default: [],
-    },
     rol: {
       type: String,
-      default: 'mobileUser',
-    },
-    category: {
-      type: Array,
-      default: ['Sin categoria'],
+      default: 'dimensionUser',
     },
   },
   { timestamps: true },
