@@ -14,12 +14,13 @@ api.post('/saveCommunity', [md_autenticacion.Auth], controllerCommunity.register
 
 // metodos put
 api.put('/editCommunity/:idCommuunity', [md_autenticacion.Auth], controllerCommunity.editarCommunida);
+api.put('/editarCategory/:idCommuunity', [md_autenticacion.Auth], controllerCommunity.editarCategoryCommunidad);
+api.put('/deleteCategory/:idCommuunity', [md_autenticacion.Auth], controllerCommunity.deleteCategory);
 api.put('/communityFollowers/:idCommuunity', [md_autenticacion.Auth], controllerCommunity.followersCommunity);
 api.put('/addUserAdmin/:idCommuunity', [md_autenticacion.Auth, md_roles.ownerCommunity], controllerCommunity.addAdmin);
-
+api.put('/deleteUserAdmin/:idCommuunity', [md_autenticacion.Auth, md_roles.ownerCommunity], controllerCommunity.deleteAdmin);
 // metodos delete
 api.delete('/deleteCommunity/:idCommuunity', [md_autenticacion.Auth, md_roles.ownerCommunity], controllerCommunity.deleteCommunity);
-
 // metodos get
 api.get('/getCommunityId/:idCommuunity', [md_autenticacion.Auth, md_roles.AdminComunity], controllerCommunity.viewCommunityId);
 api.get('/followersView/:idCommuunity', [md_autenticacion.Auth], controllerCommunity.followersView);
