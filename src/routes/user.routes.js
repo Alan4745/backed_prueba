@@ -2,7 +2,7 @@
 /* eslint-disable camelcase */
 const express = require('express');
 const controllerUser = require('../controllers/user.controller');
-const controllerAuth = require('../controllers/auth.controller');
+const controllerAuth = require('../controllers/Auth.controller');
 
 const md_autenticacion = require('../middlewares/authentication');
 
