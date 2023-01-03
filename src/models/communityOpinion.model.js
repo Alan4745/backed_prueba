@@ -15,7 +15,17 @@ const communityOpinionSChema = new Schema({
     type: Array,
     required: true,
   },
-  answer: {
+  answerUser: {
+    type: Array,
+  },
+  datatime: {
+    type: Date,
+    required: true
+  },
+  comments: {
+    type: Array,
+  },
+  reactions: {
     type: Array,
   }
 });
