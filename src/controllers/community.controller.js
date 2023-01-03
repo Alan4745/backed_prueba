@@ -76,6 +76,44 @@ function editarCommunida(req, res) {
   });
 }
 
+function editarCategoryCommunidad(req, res) {
+  const { idCommuunity } = req.params;
+  const parameters = req.body;
+  community.findByIdAndUpdate(
+    { _id: idCommuunity },
+    { $push: { category: parameters.category } },
+    { new: true },
+    (err, communityCategory) => {
+      if (err) {
+        return res.status(500).send({ err: 'error en la peticion' });
+      }
+      if (!communityCategory) {
+        return res.status(500).send({ err: 'error al actualizar la category' });
+      }
+      return res.status(200).send({ mensaje: communityCategory });
+    }
+  );
+}
+
+function deleteCategory(req, res) {
+  const { idCommuunity } = req.params;
+  const parameters = req.body;
+  community.findByIdAndUpdate(
+    { _id: idCommuunity },
+    { $pull: { category: parameters.category } },
+    { new: true },
+    (err, communityCategory) => {
+      if (err) {
+        return res.status(500).send({ err: 'error en la peticion' });
+      }
+      if (!communityCategory) {
+        return res.status(500).send({ err: 'error al actualizar la category' });
+      }
+      return res.status(200).send({ mensaje: communityCategory });
+    }
+  );
+}
+
 function deleteCommunity(req, res) {
   const { idCommuunity } = req.params;
 
@@ -181,7 +219,6 @@ function addAdmin(req, res) {
           if (!communityUpdateAdmin) {
             return res.status(500).send({ err: 'no se pudo en la peticion comunidad administrador' });
           }
-
           return res.status(200).send({ mensaje: communityUpdateAdmin });
         },
       );
@@ -192,6 +229,27 @@ function addAdmin(req, res) {
 function deleteAdmin(req, res) {
   const { idCommuunity } = req.params;
   const parameters = req.body;
+  community.findOne({ _id: idCommuunity }, (err, communityOne) => {
+    const userInclud = communityOne.administrators.includes(parameters.idUser);
+    if (userInclud) {
+      community.findByIdAndUpdate(
+        { _id: idCommuunity },
+        { $pull: { administrators: parameters.idUser } },
+        { new: true },
+        (err, communityUpdateAdmin1) => {
+          if (err) {
+            return res.status(500).send({ err: 'error en la peticion de comunidad administrador' });
+          }
+          if (!communityUpdateAdmin1) {
+            return res.status(500).send({ err: 'no se pudo en la peticion comunidad administrador' });
+          }
+          return res.status(200).send({ mensaje: communityUpdateAdmin1 });
+        }
+      );
+    } else {
+      return res.status(200).send({ mesaje: 'Este usuario no tiene rol de admin' });
+    }
+  });
 }
 
 function followersView(req, res) {
@@ -211,9 +269,12 @@ function followersView(req, res) {
 module.exports = {
   registerCommunity,
   editarCommunida,
+  editarCategoryCommunidad,
   deleteCommunity,
   viewCommunityId,
   followersCommunity,
   addAdmin,
   followersView,
+  deleteAdmin,
+  deleteCategory
 };
