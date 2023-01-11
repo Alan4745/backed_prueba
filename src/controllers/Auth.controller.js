@@ -65,6 +65,10 @@ function loginUser(req, res) {
   const parameters = req.body;
   const patron = /^@/;
 
+  if (!parameters.crede || !parameters.password) {
+    return res.status(500).send({ message: 'Falta datos' });
+  }
+
   if (patron.test(parameters.crede)) {
     User.findOne({ nickName: parameters.crede }, (err, userFind) => {
       if (err) return res.status(500).send({ message: 'Error en la peticion' });

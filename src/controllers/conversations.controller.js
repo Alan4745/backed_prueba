@@ -6,7 +6,7 @@ const User = require('../models/user.model');
 
 function NewConversation(req, res) {
   const modelConversation = new Conversation();
-  const senderId = req.params.idUser;
+  const senderId = req.params.receiverId;
 
   console.log(req.user.sub);
   console.log(senderId);
