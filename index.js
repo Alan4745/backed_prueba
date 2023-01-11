@@ -37,6 +37,10 @@ io.on('connection', (socket) => {
     console.log(users);
   });
 
+  socket.on('ping', () => {
+    socket.emit('pong');
+  });
+
   // send and get message
   socket.on('sendMessage', ({ senderId, recieverId, text }) => {
     const user = getUser(recieverId);
@@ -55,6 +59,7 @@ io.on('connection', (socket) => {
     console.log(`a user Discinnected!${socket.id}`);
     removeUser(socket.id);
     io.emit('getUsers', users);
+    console.log(users);
   });
 });
 
