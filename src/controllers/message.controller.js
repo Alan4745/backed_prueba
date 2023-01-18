@@ -37,10 +37,7 @@ function ViewMessage(req, res) {
     }
     Message.find(
       { conversationId: ConversationFindOne[0].id },
-      (err, messageView) => {
-        console.log(messageView.length);
-        return res.status(200).send({ status: 'Success', messageView });
-      }
+      (err, messageView) => res.status(200).send({ status: 'Success', messageView })
     );
   });
 }

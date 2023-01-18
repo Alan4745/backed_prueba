@@ -70,7 +70,11 @@ function ConversationView(req, res) {
 
     const friendsCa = friends.filter((a) => a !== req.user.sub);
 
-    User.find({ _id: friendsCa }, (err, friedsFind) => res.status(200).send({ friedsFind }));
+    User.find(
+      { _id: friendsCa },
+      { password: 0 },
+      (err, friedsFind) => res.status(200).send({ friedsFind })
+    );
   });
 }
 

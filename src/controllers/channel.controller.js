@@ -28,7 +28,10 @@ function saveChannel(req, res) {
 function viewChannel(req, res) {
   Channel.find(
     { members: { $all: [req.user.sub] } },
-    (err, channelFind) => res.status(200).send({ channel: channelFind })
+    (err, channelFind) => {
+      console.log(channelFind);
+      res.status(200).send({ channel: channelFind });
+    }
   );
 }
 
