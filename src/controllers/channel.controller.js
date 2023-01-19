@@ -15,12 +15,10 @@ function saveChannel(req, res) {
       return res.status(500)
         .send({ message: 'err en la peticion', err });
     }
-
     if (!saveChannel) {
       return res.status(500)
         .send({ message: 'err al guardar el Canal' });
     }
-
     return res.status(200).send({ status: 'Success', saveMessage: saveChannel });
   });
 }
@@ -29,7 +27,6 @@ function viewChannel(req, res) {
   Channel.find(
     { members: { $all: [req.user.sub] } },
     (err, channelFind) => {
-      console.log(channelFind);
       res.status(200).send({ channel: channelFind });
     }
   );

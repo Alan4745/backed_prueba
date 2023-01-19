@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 const mongoose = require('mongoose');
 require('dotenv').config();
 
@@ -15,6 +16,7 @@ const io = new Server(server, {
 });
 
 let users = [];
+let rooms = [];
 
 const addUser = (userId, socketId) => {
   // eslint-disable-next-line no-unused-expressions
@@ -26,7 +28,19 @@ const removeUser = (socketId) => {
   users = users.filter((user) => user.socketId !== socketId);
 };
 
+const addUserRoom = (socketId, userName, roomName) => {
+  !rooms.some((room) => room.userName === userName)
+    && rooms.push({ socketId, userName, roomName });
+};
+
+const removeUserRoom = (socketId) => {
+  // eslint-disable-next-line no-const-assign
+  rooms = rooms.filter((room) => room.socketId !== socketId);
+};
+
 const getUser = (userId) => users.find((user) => user.userId === userId);
+const getRoom = (socketId) => rooms.find((room) => room.socketId === socketId);
+const botName = 'ChatCord Bot';
 
 io.on('connection', (socket) => {
   console.log('connected to socket.io');
@@ -37,8 +51,32 @@ io.on('connection', (socket) => {
     console.log(users);
   });
 
+  socket.on('joinRoom', ({ userName, roomName }) => {
+    addUserRoom(socket.id, userName, roomName);
+    const room = getRoom(socket.id);
+    console.log(rooms);
+
+    socket.join(room.roomName);
+
+    socket.emit('message', `${botName} Welcome al chat`);
+
+    socket.broadcast
+      .to(room.roomName).emit('message', `${room.userName} has joined the chat`);
+  });
+
   socket.on('ping', () => {
     socket.emit('pong');
+  });
+
+  socket.on('sendMessageChannel', ({ senderId, text }) => {
+    const room = getRoom(socket.id);
+
+    io.to(room.roomName).emit('messageChannel', {
+      senderId,
+      text,
+      roomName: room.roomName,
+      name: room.userName,
+    });
   });
 
   // send and get message
@@ -56,10 +94,17 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    console.log(`a user Discinnected!${socket.id}`);
+    const room = getRoom(socket.id);
     removeUser(socket.id);
+    if (room) {
+      io.to(room.roomName).emit('message', `${room.userName} has left the chat`);
+    }
+
+    console.log(`a user Discinnected!${socket.id}`);
+    removeUserRoom(socket.id);
     io.emit('getUsers', users);
     console.log(users);
+    console.log(rooms);
   });
 });
 
