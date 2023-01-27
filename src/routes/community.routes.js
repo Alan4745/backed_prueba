@@ -22,7 +22,8 @@ api.put('/deleteUserAdmin/:idCommuunity', [md_autenticacion.Auth, md_roles.owner
 // metodos delete
 api.delete('/deleteCommunity/:idCommuunity', [md_autenticacion.Auth, md_roles.ownerCommunity], controllerCommunity.deleteCommunity);
 // metodos get
-api.get('/getCommunityId/:idCommuunity', [md_autenticacion.Auth, md_roles.AdminComunity], controllerCommunity.viewCommunityId);
+api.get('/getCommunityId/:idCommunity', [md_autenticacion.Auth, md_roles.AdminComunity], controllerCommunity.viewCommunityId);
 api.get('/followersView/:idCommuunity', [md_autenticacion.Auth], controllerCommunity.followersView);
+api.get('/youCommuunity', [md_autenticacion.Auth], controllerCommunity.youCommunity);
 
 module.exports = api;

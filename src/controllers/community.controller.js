@@ -14,14 +14,16 @@ function registerCommunity(req, res) {
       return res.status(500).send({ error: { message: 'This email is already used' } });
     }
 
-    communityModels.nickName = parameters.nickName;
     communityModels.nameCommunity = parameters.nameCommunity;
     communityModels.desc = parameters.desc;
     communityModels.followers = [];
     communityModels.followings = [];
     communityModels.category = ['sin categoria'];
-    communityModels.idUsuario = req.user.sub;
+    communityModels.idOwner = req.user.sub;
+    communityModels.nameOwner = req.user.nickName;
     communityModels.administrators = [];
+    communityModels.config.bannerUrl = parameters.bannerUrl;
+    communityModels.config.imagePer = parameters.imagePer;
 
     communityModels.save((err, community) => {
       if (err) {
@@ -143,16 +145,16 @@ function deleteCommunity(req, res) {
 }
 
 function viewCommunityId(req, res) {
-  const { idCommuunity } = req.params;
+  const { idCommunity } = req.params;
 
-  community.findOne({ _id: idCommuunity }, (err, communityFindId) => {
+  community.findOne({ _id: idCommunity }, (err, communityFindId) => {
     if (err) {
       return res.status(500).send({ err: 'erro en la petecion' });
     }
     if (!communityFindId) {
       return res.status(500).send({ err: 'error al encontrar ala comunidad' });
     }
-    return res.status(200).send({ mensaje: communityFindId });
+    return res.status(200).send({ message: communityFindId });
   });
 }
 
@@ -266,6 +268,16 @@ function followersView(req, res) {
   );
 }
 
+function youCommunity(req, res) {
+  community.find({ idOwner: req.user.sub }, (err, youCommunityFind) => {
+    if (err) {
+      return res.status(500).send({ error: err });
+    }
+
+    return res.status(200).send({ message: youCommunityFind });
+  });
+}
+
 module.exports = {
   registerCommunity,
   editarCommunida,
@@ -276,5 +288,6 @@ module.exports = {
   addAdmin,
   followersView,
   deleteAdmin,
-  deleteCategory
+  deleteCategory,
+  youCommunity
 };

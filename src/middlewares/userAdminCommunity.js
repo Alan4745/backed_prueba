@@ -5,7 +5,11 @@ const community = require('../models/community.model');
 
 exports.AdminComunity = function (req, res, next) {
   community.findOne({ _id: req.params.idCommunity }, (err, community1) => {
-    const userOwner = community1.idUsuario === req.user.sub;
+    console.log(req.params.idCommunity);
+    if (!community1) {
+      return res.status(500).send({ message: 'no se encontro la comunidad' });
+    }
+    const userOwner = community1.idOwner === req.user.sub;
     // console.log(userOwner);
     const userInclud = community1.administrators.includes(req.user.sub);
     // console.log(!userOwner && !userInclud);

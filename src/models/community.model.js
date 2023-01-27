@@ -5,16 +5,18 @@ const { Schema } = mongoose;
 
 const communitySchema = new Schema(
   {
-    nickName: {
-      type: String,
-      required: true,
-    },
     nameCommunity: {
       type: String,
+      required: true,
     },
     desc: {
       type: String,
       max: 500,
+      default: 'Escribe Tu descripcion de Tu comunidad'
+    },
+    like: {
+      type: Array,
+      default: [],
     },
     followers: {
       type: Array,
@@ -28,14 +30,28 @@ const communitySchema = new Schema(
       type: Array,
       default: [],
     },
-    idUsuario: {
+    idOwner: {
+      type: String,
+    },
+    nameOwner: {
       type: String,
     },
     administrators: {
       type: Array,
       default: [],
     },
+    config: {
+      bannerUrl: {
+        type: String,
+        default: ''
+      },
+      imagePer: {
+        type: String,
+        default: ''
+      }
+    }
   },
+  { timestamps: true },
 );
 
 module.exports = mongoose.model('communitys', communitySchema);
