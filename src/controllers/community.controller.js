@@ -9,10 +9,16 @@ function registerCommunity(req, res) {
   const communityModels = new community();
   const parameters = req.body;
 
-  community.find({ nameCommunity: parameters.nameCommunity }, (err, community) => {
-    if (community.length > 0) {
-      return res.status(500).send({ error: { message: 'This email is already used' } });
+  community.find({ idOwner: req.user.sub }, (err, communityOwner) => {
+    if (communityOwner.length > 0) {
+      return res.status(500).send({ message: 'es solo una comunidad por usuario' });
     }
+
+    community.find({ nameCommunity: parameters.nameCommunity }, (err, communityName) => {
+      if (communityName.length > 0) {
+        return res.status(500).send({ message: 'este nombre de la comunidad ya esta en uso' });
+      }
+    });
 
     communityModels.nameCommunity = parameters.nameCommunity;
     communityModels.desc = parameters.desc;

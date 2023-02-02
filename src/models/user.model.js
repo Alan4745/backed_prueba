@@ -20,9 +20,15 @@ const userSchema = new Schema(
       type: String,
       require: true,
     },
-    profilePicture: {
-      type: String,
-      default: '',
+    imageAvatar: {
+      public_id: {
+        type: String,
+        default: ''
+      },
+      secure_url: {
+        type: String,
+        default: ''
+      }
     },
     rol: {
       type: String,

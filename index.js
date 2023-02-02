@@ -5,6 +5,8 @@ require('dotenv').config();
 const port = process.env.PORT || 4000;
 const http = require('http');
 const { Server } = require('socket.io');
+const { MONGODB_URI } = require('./config');
+
 const app = require('./app');
 
 const server = http.createServer(app);
@@ -112,7 +114,7 @@ mongoose.set('strictQuery', false);
 
 mongoose.Promise = global.Promise;
 mongoose.connect(
-  process.env.MONGODB_DESARROLLO,
+  MONGODB_URI,
   { useNewUrlParser: true, useUnifiedTopology: true },
 ).then(() => {
   console.log('Se ha conectado correctamente a la base de datos.');
