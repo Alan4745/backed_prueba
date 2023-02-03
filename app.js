@@ -10,11 +10,12 @@ const app = express();
 const userRouter = require('./src/routes/user.routes');
 const messageRouter = require('./src/routes/message.routes');
 const conversationRouter = require('./src/routes/Conversation.routes');
-const postRouter = require('./src/routes/Post.routes');
+// const postRouter = require('./src/routes/postRoute/Post.routes');
 const communityRouter = require('./src/routes/community.routes');
 const channelRouter = require('./src/routes/channel.routes');
 const messageChannelRouter = require('./src/routes/messageChannel.routes');
 const tokenRouter = require('./src/routes/token.routes');
+const postTypeARouter = require('./src/routes/postRoute/postTypeA.routes');
 
 // MIDDLEWARES
 app.use(express.urlencoded({ extended: false }));
@@ -34,7 +35,8 @@ app.use(
   userRouter,
   messageRouter,
   conversationRouter,
-  postRouter,
+  // postRouter,
+  postTypeARouter,
   communityRouter,
   channelRouter,
   messageChannelRouter,

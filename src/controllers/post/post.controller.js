@@ -3,7 +3,7 @@
 /* eslint-disable linebreak-style */
 /* eslint-disable no-shadow */
 /* eslint-disable linebreak-style */
-const Post = require('../models/Post.model');
+const Post = require('../../models/post/Post.model');
 
 function SavePost(req, res) {
   const PostModule = new Post();
