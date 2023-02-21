@@ -1,7 +1,9 @@
 /* eslint-disable no-underscore-dangle */
 const PostA = require('../../models/post/postTypeAs.model');
 const Community = require('../../models/community.model');
+const { UploadImg } = require('../../utils/cloudinary');
 
+//publicacion de tipo encuesta
 async function createPostTypeA(req, res) {
   const modelPostTypeA = new PostA();
   const parameters = req.body;
@@ -16,6 +18,13 @@ async function createPostTypeA(req, res) {
 
   if (!community) {
     return res.status(500).send({ message: 'esta comunidad no te pertenece' });
+  }
+
+  if (req.files?.image) {
+    const result = await UploadImg(req.files.imagen.tempFilePath);
+    console.log(result);
+    modelPostTypeA.imagenPostTypeA.public_id = result.public_id;
+    modelPostTypeA.imagenPostTypeA.secure_url = result.secure_url;
   }
 
   modelPostTypeA.communityId = community._id;
@@ -64,10 +73,23 @@ async function responderEncuesta(req, res) {
     }
     return res.status(200).send({ message: postAUpdate });
   });
-
-  // return res.status(200).send({ message: encuesta });
 }
+
+// delete Post A === deleteP_A
+function deletoPostA(req, res) {
+  const { idEncuesta } = req.params;
+  PostA.findByIdAndDelete(idEncuesta, (err, deleteP_A) => {
+    if (err) {
+      return res.status(500).send({err: 'error en la peticion eliminar encuesta'})
+    }
+    return res.status(200).send({ message: deleteP_A })
+  })
+}
+
+
+
 module.exports = {
   createPostTypeA,
-  responderEncuesta
+  responderEncuesta,
+  deletoPostA
 };

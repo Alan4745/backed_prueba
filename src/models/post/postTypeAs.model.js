@@ -11,6 +11,17 @@ const postTypeASchema = new Schema({
   },
   question: {
     type: String,
+    require: true,
+  },
+  imagenPostTypeA: {
+    public_id: {
+      type: String,
+      default: '',
+    },
+    secure_url: {
+      type: String,
+      default: ''
+    }
   },
   options: {
     type: Array,
@@ -19,8 +30,27 @@ const postTypeASchema = new Schema({
   answers: {
     type: Array,
     default: []
+  },
+  likes: {
+    type: Array,
+    default: [],
+  },
+  comentarios: {
+    type: Array,
+    default: [],
+  },
+  commentPost: {
+    type: Boolean,
+  },
+  typePost: {
+    type: String,
+    default: 'PostTypeA'
   }
-});
+},
+  {
+  timestamps: true
+  },
+);
 
 module.exports = mongoose.model('postTypeAs', postTypeASchema);
 

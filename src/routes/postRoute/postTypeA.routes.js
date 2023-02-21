@@ -7,8 +7,12 @@ const md_autenticacion = require('../../middlewares/authentication');
 const api = express.Router();
 
 // Tipo Get
-api.get('/responsePost/:idEncuesta', [md_autenticacion.Auth], controllerPosttypeA.responderEncuesta);
+api.put('/responsePost/:idEncuesta', [md_autenticacion.Auth], controllerPosttypeA.responderEncuesta);
 // Tipo Post
 api.post('/agregarPostTypeA/:idCommunity', [md_autenticacion.Auth], controllerPosttypeA.createPostTypeA);
+// Tipo Put
+
+// tipo Delete
+api.delete('/deletePostTypeA/:idEncuesta', [md_autenticacion.Auth], controllerPosttypeA.deletoPostA);
 
 module.exports = api;

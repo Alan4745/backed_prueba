@@ -19,6 +19,9 @@ const channelSchema = new Schema({
   nameChanel: {
     type: String,
     require: true
+  },
+  passwordChannel: {
+    type: String,
   }
 }, { timestamps: true });
 

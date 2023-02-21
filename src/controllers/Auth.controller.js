@@ -40,6 +40,7 @@ function userRegistration(req, res) {
       if (req.files?.image) {
         // funcion para subir las imagen a cloudinary
         const result = await UploadImg(req.files.image.tempFilePath);
+        console.log(result)
         // Guardamos los datos que nos devuelve cloudinary
         userModel.imageAvatar.public_id = result.public_id;
         userModel.imageAvatar.secure_url = result.secure_url;

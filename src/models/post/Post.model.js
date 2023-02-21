@@ -4,7 +4,6 @@ const { Schema } = mongoose;
 
 const postSchema = new Schema(
   {
-
     userId: {
       type: String,
     },
