@@ -30,6 +30,14 @@ const userSchema = new Schema(
         default: ''
       }
     },
+    fichas: {
+      type: Array,
+      default: [],
+    },
+    tokensAbotenidos: {
+      type: Array, 
+      default: [],
+    },
     rol: {
       type: String,
       default: 'dimensionUser',

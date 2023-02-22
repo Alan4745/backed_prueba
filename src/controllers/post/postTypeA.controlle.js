@@ -86,8 +86,6 @@ function deletoPostA(req, res) {
   })
 }
 
-
-
 module.exports = {
   createPostTypeA,
   responderEncuesta,

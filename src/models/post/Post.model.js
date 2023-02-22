@@ -1,40 +1,37 @@
 const mongoose = require('mongoose');
-
 const { Schema } = mongoose;
 
-const postSchema = new Schema(
-  {
-    userId: {
-      type: String,
-    },
-    title: {
-      type: String,
-      required: true,
-    },
-    desc: {
-      type: String,
-      max: 500,
-    },
-    img: {
-      type: String,
-      default: '',
-    },
-    likes: {
-      type: Array,
-      default: [],
-    },
-    comentarios: {
-      type: Array,
-      default: [],
-    },
-    type: {
-      type: String,
-    },
-    commentPost: {
-      type: Boolean,
-    },
+// Creamos el esquema base para todas las publicaciones
+//Publicacion normal
+const PublicationSchema = new Schema({
+  communityId: { type: String, require: true },
+  communityName: { type: String, require: true },
+  titulo: { type: String, required: true },
+  desc: { type: String, default: '' },
+  imagen: {
+    public_id: { type: String, default: '', },
+    secure_url: { type: String, default: '' }
   },
-  { timestamps: true },
-);
+  video: { type: String, default: '' },
+  tipoPublicacion: { type: String, required: true },
+  likes: { type: Array, default: [] },
+  comments: { type: Array, default: [] },
 
-module.exports = mongoose.model('Post', postSchema);
+  // campos adicionales comunes a todas las publicaciones
+}, { timestamps: true });
+
+const opinionPostSchema = new Schema({
+  options: { type: Array, default: [] },
+  answers: { type: Array, default: [] },
+})
+
+const eventPostSchema = new Schema({
+
+})
+
+const Publicaciones = mongoose.model('Publications', PublicationSchema);
+const Opiniones = Publicaciones.discriminator('opinion_posts', opinionPostSchema);
+const Eventos = Publicaciones.discriminator('event_posts', eventPostSchema);
+
+
+module.exports = { Publicaciones, Opiniones, Eventos };

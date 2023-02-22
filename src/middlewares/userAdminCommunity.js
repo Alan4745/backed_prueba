@@ -20,7 +20,10 @@ exports.AdminComunity = function (req, res, next) {
 
 exports.ownerCommunity = function (req, res, next) {
   community.findOne({ _id: req.params.idCommunity }, (err, community1) => {
-    const userOwner = community1.idUsuario === req.user.sub;
+    if (!community1) {
+      return res.status(500).send({err: 'no se a encontrado la comunidad'});
+    }
+    const userOwner = community1.idOwner === req.user.sub;
     if (!userOwner) { return res.status(403).send({ mensaje: 'Solo puede acceder el Dueño' }); }
     next();
   });
