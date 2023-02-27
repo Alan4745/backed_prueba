@@ -67,7 +67,7 @@ mongoose.set('strictQuery', false);
 
 mongoose.Promise = global.Promise;
 mongoose.connect(
-  process.env.MONGODB_DESARROLLO,
+  process.env.MONGODB_URI,
   { useNewUrlParser: true, useUnifiedTopology: true },
 ).then(() => {
   console.log('Se ha conectado correctamente a la base de datos.');
