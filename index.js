@@ -1,25 +1,31 @@
+//CONEXION PUNTO A PUNTO 
+//LO IMPORTANTE PARA CREAR EL SERVIDOR CON CONEXION A LA BASE DE DATOS
+
 const mongoose = require('mongoose');
 require('dotenv').config();
 
 const port = process.env.PORT || 4000;
 const http = require('http');
-const { Server } = require('socket.io');
-const app = require('./app');
+const { Server } = require('socket.io'); // chat socket conexion para chat 
+const app = require('./app');  // importar el servidor
 
-const server = http.createServer(app);
+const server = http.createServer(app); // mandar a llamar el servidor de expreess
 const io = new Server(server, {
   cors: {
     origin: 'http://localhost:3000',
     credentials: true,
   },
 });
+//////////////////////
 
-let users = [];
+/////////// Crear funciones para LA BASE DATOS ////////////////////////////////////////////
 
-const addUser = (userId, socketId) => {
+let users = []; //cuando se conecta un usuario al server se guarda aqui 
+
+const addUser = (userId, socketId) =>  {    // funcion en flecha creando un usuario   
   // eslint-disable-next-line no-unused-expressions
-  !users.some((user) => user.userId === userId)
-    && users.push({ userId, socketId });
+  !users.some((user) => user.userId === userId)//CONDICIONALES PARA AÑADIR A LA BASE DE DATOS USUARIOS
+&& users.push({ userId, socketId });  //CONDICIONALES PARA AÑADIR A LA BASE DE DATOS USUARIOS
 };
 
 const removeUser = (socketId) => {
