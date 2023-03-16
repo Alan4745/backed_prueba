@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const { Schema } = mongoose;
 
@@ -23,27 +23,27 @@ const userSchema = new Schema(
     imageAvatar: {
       public_id: {
         type: String,
-        default: ''
+        default: "",
       },
       secure_url: {
         type: String,
-        default: ''
-      }
+        default: "",
+      },
     },
     fichas: {
       type: Array,
       default: [],
     },
     tokensAbotenidos: {
-      type: Array, 
+      type: Array,
       default: [],
     },
     rol: {
       type: String,
-      default: 'dimensionUser',
+      default: "dimensionUser",
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
-module.exports = mongoose.model('Users', userSchema);
+module.exports = mongoose.model("Users", userSchema);
