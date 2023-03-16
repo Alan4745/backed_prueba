@@ -1,7 +1,3 @@
-/* eslint-disable linebreak-style */
-/* eslint-disable camelcase */
-/* eslint-disable linebreak-style */
-/* eslint-disable no-unused-vars */
 const express = require('express');
 
 const api = express.Router();

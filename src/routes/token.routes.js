@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 const express = require('express');
 const controllerToken = require('../controllers/token.controller');
 

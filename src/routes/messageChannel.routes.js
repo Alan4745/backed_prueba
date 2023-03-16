@@ -1,6 +1,3 @@
-/* eslint-disable linebreak-style */
-/* eslint-disable camelcase */
-
 const express = require('express');
 const controllerMessageChannel = require('../controllers/messagesChannel.controller');
 const md_autenticacion = require('../middlewares/authentication');

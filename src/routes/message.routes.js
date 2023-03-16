@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 const express = require('express');
 const controllerMessage = require('../controllers/message.controller');
 const md_autenticacion = require('../middlewares/authentication');

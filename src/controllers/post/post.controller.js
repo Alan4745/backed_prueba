@@ -1,35 +1,37 @@
 const Community = require('../../models/community.model');
-const { Publicaciones, Opiniones } = require('../../models/post/Post.model');
+const { Publicaciones } = require('../../models/post/Post.model');
 const { UploadImg } = require('../../utils/cloudinary');
 
 async function savePost(req, res) {
-  const modelPost = new Publicaciones();
-  const parameters = req.body;
-  const { idCommunity } = req.params;
+	const modelPost = new Publicaciones();
+	const parameters = req.body;
+	const { idCommunity } = req.params;
 
-  const community = await Community.findById(idCommunity);
+	const community = await Community.findById(idCommunity);
 
-  if (req.files?.image) {
-    const result = await UploadImg(req.files.image.tempFilePath);
-    modelPost.imagen.public_id = result.public_id;
-    modelPost.imagen.secure_url = result.secure_url;
-  }
+	if (req.files?.image) {
+		const result = await UploadImg(req.files.image.tempFilePath);
+		modelPost.imagen.public_id = result.public_id;
+		modelPost.imagen.secure_url = result.secure_url;
+	}
 
-  modelPost.communityId = community._id;
-  modelPost.communityName = community.nameCommunity;
-  modelPost.titulo = parameters.titulo;
-  modelPost.desc = parameters.desc;
-  modelPost.tipoPublicacion = 'Publication'
+	modelPost.communityId = community._id;
+	modelPost.communityName = community.nameCommunity;
+	modelPost.titulo = parameters.titulo;
+	modelPost.desc = parameters.desc;
+	modelPost.tipoPublicacion = 'Publication';
 
-  modelPost.save((err, savePost) => {
-    if (err) {
-      return res.status(500).send({ err: 'error en la peticion de guardar "publicacion' })
-    }
-    if (!savePost) {
-      return res.status(500).send({ err: 'error al guardar la peticion' })
-    }
-    return res.status(200).send({ message: savePost })
-  })
+	modelPost.save((err, savePost) => {
+		if (err) {
+			return res
+				.status(500)
+				.send({ err: 'error en la peticion de guardar "publicacion' });
+		}
+		if (!savePost) {
+			return res.status(500).send({ err: 'error al guardar la peticion' });
+		}
+		return res.status(200).send({ message: savePost });
+	});
 }
 
 // function SavePost(req, res) {
@@ -145,5 +147,5 @@ async function savePost(req, res) {
 // }
 
 module.exports = {
-  savePost,
+	savePost
 };

@@ -1,5 +1,3 @@
-/* eslint-disable import/no-unresolved */
-/* eslint-disable camelcase */
 const express = require('express');
 const controllerUser = require('../controllers/user.controller');
 const controllerAuth = require('../controllers/Auth.controller');
