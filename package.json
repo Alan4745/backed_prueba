@@ -2,10 +2,10 @@
   "name": "backed_prueba",
   "version": "1.0.0",
   "description": "prueba para el backend",
-  "main": "index.js",
+  "main": "Server.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
+    "start": "node Server.js",
+    "dev": "nodemon Server.js",
     "lint": "eslint ."
   },
   "author": "Alan",
