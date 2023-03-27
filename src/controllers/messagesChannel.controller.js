@@ -1,5 +1,3 @@
-/* eslint-disable linebreak-style */
-
 const MessagesChannels = require('../models/messagesChannel.model');
 const ChannelCommun = require('../models/channelCommunity.model');
 const User = require('../models/user.model');

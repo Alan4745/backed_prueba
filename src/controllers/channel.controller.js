@@ -1,5 +1,3 @@
-/* eslint-disable linebreak-style */
-/* eslint-disable no-shadow */
 const Channel = require('../models/channelCommunity.model');
 
 function saveChannel(req, res) {

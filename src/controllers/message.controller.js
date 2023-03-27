@@ -1,4 +1,3 @@
-/* eslint-disable no-shadow */
 const Message = require('../models/message.model');
 const Conversation = require('../models/Conversation.model');
 

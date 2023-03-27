@@ -1,5 +1,3 @@
-/* eslint-disable no-shadow */
-/* eslint-disable consistent-return */
 const User = require('../models/user.model');
 
 function updateUser(req, res) {

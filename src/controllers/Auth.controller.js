@@ -2,20 +2,25 @@ const bcrypt = require('bcrypt');
 const { UploadImg } = require('../utils/cloudinary');
 const User = require('../models/user.model');
 const jwt = require('../services/jwt');
-
+const fs = require('fs-extra');
 const saltRounds = 10;
 
 // funcion para poder registra nuevos usuario en la base de datos
-function userRegistration(req, res) {
+async function userRegistration(req, res) {
 	// creamos un nuevo objeto de "User"
 	const userModel = new User();
 	// rastreamos los datos que viene en la petecion
 	const parameters = req.body;
 
-	console.log(parameters.name, parameters.nickName, parameters.email, parameters.password);
+	// console.log(parameters.name, parameters.nickName, parameters.email, parameters.password);
 
 	// Verificamos que los parametros no venga vacios
-	if (!parameters.name || !parameters.nickName || !parameters.email || !parameters.password) {
+	if (
+		!parameters.name ||
+		!parameters.nickName ||
+		!parameters.email ||
+		!parameters.password
+	) {
 		return res.status(400).send({ message: 'Required data' });
 	}
 
@@ -27,53 +32,70 @@ function userRegistration(req, res) {
 			return res.status(500).send({ message: 'This email is already used' });
 		}
 		// verificamos si traer el parametro "nickName" de la peticion
-		User.find({ nickName: `@${parameters.nickName}` }, async (_err, nickNameFind) => {
-			if (nickNameFind.length > 0) {
-				return res.status(500).send({ message: 'This NickName is already used' });
-			}
+		User.find(
+			{ nickName: `@${parameters.nickName}` },
+			async (_err, nickNameFind) => {
+				if (nickNameFind.length > 0) {
+					return res
+						.status(500)
+						.send({ message: 'This NickName is already used' });
+				}
 
-			// aqui verificamos si nuestra peticion traer un archivo o imagen
-			if (req.files?.image) {
-				// funcion para subir las imagen a cloudinary
-				const result = await UploadImg(req.files.image.tempFilePath);
-				console.log(result);
-				// Guardamos los datos que nos devuelve cloudinary
-				userModel.imageAvatar.public_id = result.public_id;
-				userModel.imageAvatar.secure_url = result.secure_url;
-			}
+				// aqui verificamos si nuestra peticion traer un archivo o imagen
+				if (req.files?.image) {
+					try {
+						// función para subir las imagen a cloudinary
+						console.log(req.files.image.tempFilePath);
+						const result = await UploadImg(req.files.image.tempFilePath);
+						console.log(result);
 
-			// ---guardamos los parametro en el objeto "userModel"---
-			userModel.name = parameters.name;
-			userModel.nickName = `@${parameters.nickName}`;
-			userModel.email = parameters.email;
-			// ---
+						// Guardamos los datos que nos devuelve cloudinary
+						userModel.imageAvatar.public_id = result.public_id;
+						userModel.imageAvatar.secure_url = result.secure_url;
 
-			// "bcrypt" donde se encarga de incritar la contraseña,
-			// antes de que mande a la base de datos
-			bcrypt.hash(parameters.password, saltRounds, (_err, hash) => {
-				userModel.password = hash;
+						await fs.unlink(req.files.image.tempFilePath);
+					} catch (error) {
+						await fs.unlink(req.files.image.tempFilePath);
 
-				// guardamos el objeto "usermodel" para ahora subirlo a la base de datos
-				userModel.save((err, userSave) => {
-					// aqui capturamos que la base de datos nos devuelva
-					if (err) {
+						// captura y manejo de la excepción
+						console.error('Se produjo un error:', error);
 						return res
 							.status(500)
-							.send({ message: 'err en la peticion' });
+							.send({ message: error});
 					}
+				}
 
-					// si la repuesta de la base de datos nos regresa "null"
-					if (!userSave) {
-						return res
-							.status(500)
-							.send({ message: 'err al guardar el usuario' });
-					}
+				// ---guardamos los parametro en el objeto "userModel"---
+				userModel.name = parameters.name;
+				userModel.nickName = `@${parameters.nickName}`;
+				userModel.email = parameters.email;
+				// ---
 
-					// si todo salio bien, aqui mostraremos en la respuesta
-					return res.status(200).send({ UserInfo: userSave });
+				// "bcrypt" donde se encarga de incritar la contraseña,
+				// antes de que mande a la base de datos
+				bcrypt.hash(parameters.password, saltRounds, (_err, hash) => {
+					userModel.password = hash;
+
+					// guardamos el objeto "usermodel" para ahora subirlo a la base de datos
+					userModel.save((err, userSave) => {
+						// aqui capturamos que la base de datos nos devuelva
+						if (err) {
+							return res.status(500).send({ message: 'err en la peticion' });
+						}
+
+						// si la repuesta de la base de datos nos regresa "null"
+						if (!userSave) {
+							return res
+								.status(500)
+								.send({ message: 'err al guardar el usuario' });
+						}
+
+						// si todo salio bien, aqui mostraremos en la respuesta
+						return res.status(200).send({ UserInfo: userSave });
+					});
 				});
-			});
-		});
+			}
+		);
 	});
 }
 
@@ -101,25 +123,33 @@ function loginUser(req, res) {
 			if (userFind) {
 				// verificamos las contraseñas la que viene de la peticion
 				// y la que esta en la base de datos
-				bcrypt.compare(parameters.password, userFind.password, (_err, verifiedPassword) => {
-					// volvemos a solicitar los datos a la base de datos para comprobar
-					// que nuestra valicion de las contraseñas sea "true"
-					User.findOne(
-						{ nickName: parameters.crede },
-						{ password: 0 },
-						(_err, userFindIdentidad) => {
-							// verificamos los que nos devolvido "bcrypt" aya sido "true"
-							if (verifiedPassword) {
+				bcrypt.compare(
+					parameters.password,
+					userFind.password,
+					(_err, verifiedPassword) => {
+						// volvemos a solicitar los datos a la base de datos para comprobar
+						// que nuestra valicion de las contraseñas sea "true"
+						User.findOne(
+							{ nickName: parameters.crede },
+							{ password: 0 },
+							(_err, userFindIdentidad) => {
+								// verificamos los que nos devolvido "bcrypt" aya sido "true"
+								if (verifiedPassword) {
+									return res
+										.status(200)
+										.send({
+											token: jwt.crearToken(userFind),
+											user: userFindIdentidad,
+										});
+								}
+								// el caso que "brcrypt" nos aya devolvido "false"
 								return res
-									.status(200)
-									.send({ token: jwt.crearToken(userFind), user: userFindIdentidad });
+									.status(500)
+									.send({ mensaje: 'email or password does not match' });
 							}
-							// el caso que "brcrypt" nos aya devolvido "false"
-							return res.status(500)
-								.send({ mensaje: 'email or password does not match' });
-						}
-					);
-				});
+						);
+					}
+				);
 			}
 		});
 	} else {
@@ -133,21 +163,33 @@ function loginUser(req, res) {
 			if (userFind) {
 				// verificamos las contraseñas la que viene de la peticion
 				// y la que esta en la base de datos
-				bcrypt.compare(parameters.password, userFind.password, (_err, verifiedPassword) => {
-					// volvemos a solicitar los datos a la base de datos para comprobar
-					// que nuestra valicion de las contraseñas sea "true"
-					User.findOne({ email: parameters.crede }, { password: 0 }, (_err, userFindIdentidad) => {
-						// verificamos los que nos devolvido "bcrypt" aya sido "true"
-						if (verifiedPassword) {
-							return res
-								.status(200)
-								.send({ token: jwt.crearToken(userFind), user: userFindIdentidad });
-						}
-						// el caso que "brcrypt" nos aya devolvido "false"
-						return res.status(500)
-							.send({ mensaje: 'email or password does not match' });
-					});
-				});
+				bcrypt.compare(
+					parameters.password,
+					userFind.password,
+					(_err, verifiedPassword) => {
+						// volvemos a solicitar los datos a la base de datos para comprobar
+						// que nuestra valicion de las contraseñas sea "true"
+						User.findOne(
+							{ email: parameters.crede },
+							{ password: 0 },
+							(_err, userFindIdentidad) => {
+								// verificamos los que nos devolvido "bcrypt" aya sido "true"
+								if (verifiedPassword) {
+									return res
+										.status(200)
+										.send({
+											token: jwt.crearToken(userFind),
+											user: userFindIdentidad,
+										});
+								}
+								// el caso que "brcrypt" nos aya devolvido "false"
+								return res
+									.status(500)
+									.send({ mensaje: 'email or password does not match' });
+							}
+						);
+					}
+				);
 			}
 		});
 	}
@@ -155,5 +197,5 @@ function loginUser(req, res) {
 
 module.exports = {
 	userRegistration,
-	loginUser
+	loginUser,
 };

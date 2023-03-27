@@ -1,7 +1,3 @@
-/* eslint-disable linebreak-style */
-/* eslint-disable consistent-return */
-/* eslint-disable no-shadow */
-/* eslint-disable new-cap */
 const community = require('../models/community.model');
 const user = require('../models/user.model');
 

@@ -1,9 +1,3 @@
-/* eslint-disable block-scoped-var */
-/* eslint-disable consistent-return */
-/* eslint-disable func-names */
-/* eslint-disable camelcase */
-/* eslint-disable no-var */
-/* eslint-disable vars-on-top */
 const jwt_simple = require('jwt-simple');
 const moment = require('moment');
 

@@ -1,6 +1,3 @@
-/* eslint-disable consistent-return */
-/* eslint-disable no-shadow */
-/* eslint no-shadow: ["error", { "builtinGlobals": true }] */
 const Conversation = require('../models/Conversation.model');
 const User = require('../models/user.model');
 

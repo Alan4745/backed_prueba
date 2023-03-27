@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-vars */
-/* eslint-disable no-unused-expressions */
 const PostB = require('../../models/post/postTypeB.model');
 const Community = require('../../models/community.model');
 const { UploadImg } = require('../../utils/cloudinary');

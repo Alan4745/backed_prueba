@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-vars */
-/* eslint-disable no-underscore-dangle */
 const crypto = require('crypto');
 const TokenCollection = require('../models/tokens/tokenCollection.model');
 const Collections = require('../models/tokens/collections.model');

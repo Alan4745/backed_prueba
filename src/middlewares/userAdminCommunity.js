@@ -1,5 +1,3 @@
-/* eslint-disable linebreak-style */
-/* eslint-disable consistent-return */
 const community = require('../models/community.model');
 // const ConversationModel = require('../models/Conversation.model');
 
