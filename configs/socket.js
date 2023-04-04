@@ -28,6 +28,7 @@ const socketFunctions = (io) => {
 // iniciamos la conexion del servidor al cliente en tiempo real
 	io.on('connection', (socket) => {
 		console.log('connected to socket.io');
+		console.log(socket.id);
 
 		// -----Inicio----- Al momento de que usuario se conecta al servidor se activa el evento "addUser()" 
 		//socket.on es cuando esta esperando un evnto 
@@ -38,6 +39,8 @@ const socketFunctions = (io) => {
 			//creamos el evento "getUsers"
 			io.emit('getUsers', users);
 			console.log(users);
+			console.log(socket.id);
+
 		});
 
 		//----FIN----
@@ -86,7 +89,8 @@ const socketFunctions = (io) => {
 		//----INICIO---- evento de enviar mensajes Privados
 		socket.on('sendMessage', ({ senderId, recieverId, text }) => {
 		//buscamos en el array "USERS" el socket a quie le vamos a mandar el mensaje
-			const user = getUser(recieverId);
+			const user = getUser(recieverId );
+			console.log(recieverId, senderId);
 			//verificamos que si el usuario esta conectado o no
 			if (!user) {
 			// el usuario esta desconetado 
@@ -96,7 +100,7 @@ const socketFunctions = (io) => {
 				io.to(user.socketId).emit('getMessage', {
 					senderId,
 					text,
-					recieverId
+					recieverId ,
 				});
 			}
 		});

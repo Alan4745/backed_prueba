@@ -70,7 +70,7 @@ function ConversationView(req, res) {
 		User.find(
 			{ _id: friendsCa },
 			{ password: 0 },
-			(err, friedsFind) => res.status(200).send({ friedsFind })
+			(err, friedsFind) => res.status(200).send({ friedsFind , friedsViews})
 		);
 	});
 }
