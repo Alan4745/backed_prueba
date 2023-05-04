@@ -18,6 +18,7 @@ const connectDB = require('./configs/DataBase');
 
 // Importar las funciones de socket.io
 const socketFunctions = require('./configs/socket');
+const { DeletefilesBackend } = require('./configs/DeleteFiles');
 
 // Crear el servidor http con express
 const server = http.createServer(app);
@@ -40,6 +41,20 @@ connectDB()
 		// Levantar el servidor
 		server.listen(port, () => {
 			console.log(`El Servidor es coriendo en el: ${port}`);
+
+			DeletefilesBackend();
+
+			// fs.readdir(path, (err, files) => {
+			// 	if (err) {
+			// 		console.error(err);
+			// 		return;
+			// 	}
+			// 	if (files.length === 0) {
+			// 		console.log('la carpeta esta vacia');
+			// 	} else {
+			// 		console.log(`La carpeta tiene ${files.length} archivos(s)`);
+			// 	}
+			// });
 		});
 	})
 	.catch((error) => {

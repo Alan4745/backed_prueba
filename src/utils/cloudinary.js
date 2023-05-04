@@ -10,10 +10,19 @@ cloudinary.config({
 
 async function UploadImg(filePath) {
 	return await cloudinary.uploader.upload(filePath, {
-		folder: 'replit'
+		folder: 'replit',
 	});
 }
 
+async function UploadVideo(filePath) {
+	return await cloudinary.uploader.upload(filePath, {
+		folder: 'video',
+		resource_type: 'video'
+	});
+}
+
+
 module.exports = {
-	UploadImg
+	UploadImg,
+	UploadVideo
 };
