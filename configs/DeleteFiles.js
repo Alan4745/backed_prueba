@@ -1,5 +1,5 @@
 const fs = require('fs');
-const path = '../uploads';
+const path = './uploads';
 
 function DeletefilesBackend() {
 	console.log(path);
