@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const postTypeASchema = new Schema({
+const postActivitySchema = new Schema({
 	communityId: {
 		type: String
 	},
@@ -44,7 +44,7 @@ const postTypeASchema = new Schema({
 	},
 	typePost: {
 		type: String,
-		default: 'PostTypeA'
+		default: 'activity'
 	}
 },
 {
@@ -52,27 +52,4 @@ const postTypeASchema = new Schema({
 },
 );
 
-module.exports = mongoose.model('postTypeAs', postTypeASchema);
-
-// const mongoose = require('mongoose');
-
-// const optionSchema = new mongoose.Schema({
-//   id: Number,
-//   text: String
-// });
-
-// const answerSchema = new mongoose.Schema({
-//   userId: Number,
-//   optionId: Number
-// });
-
-// const surveySchema = new mongoose.Schema({
-//   id: Number,
-//   question: String,
-//   options: [optionSchema],
-//   answers: [answerSchema]
-// });
-
-// const Survey = mongoose.model('Survey', surveySchema);
-
-// module.exports = Survey;
+module.exports = mongoose.model('postActivities', postActivitySchema);

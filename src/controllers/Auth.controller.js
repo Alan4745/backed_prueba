@@ -61,7 +61,7 @@ async function userRegistration(req, res) {
 						console.error('Se produjo un error:', error);
 						return res
 							.status(500)
-							.send({ message: error});
+							.send({ message: error });
 					}
 				}
 
