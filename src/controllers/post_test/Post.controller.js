@@ -1,5 +1,5 @@
 const {Publicaciones} = require('./../../models/post/Post.model');
-const { UploadImg } = require('../../utils/cloudinary');
+const { UploadImg, UploadVideo } = require('../../utils/cloudinary');
 const communityModel = require('./../../models/community.model');
 
 //function post_test(req,res) {
@@ -59,7 +59,11 @@ async function crear_publicacion(req, res) {
 	}
 
 
-
+    if (req.files?.video) {
+		const result = await UploadVideo(req.files.image.tempFilePath);
+		Publicacion_model.imagen.public_id = result.public_id;
+		Publicacion_model.imagen.secure_url = result.secure_url;
+	}
 
     
     //GUARDAR EN LA BASE DE DATOS 
