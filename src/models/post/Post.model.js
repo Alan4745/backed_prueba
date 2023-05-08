@@ -4,8 +4,8 @@ const { Schema } = mongoose;
 // Creamos el esquema base para todas las publicaciones
 //Publicacion normal
 const PublicationSchema = new Schema({
-	communityId: { type: String, require: true },
-	communityName: { type: String, require: true },
+	communityId: { type: String, require: false },
+	communityName: { type: String, require: false },
 	titulo: { type: String, required: true },
 	desc: { type: String, default: '' },
 	imagen: {
@@ -13,7 +13,7 @@ const PublicationSchema = new Schema({
 		secure_url: { type: String, default: '' }
 	},
 	video: { type: String, default: '' },
-	tipoPublicacion: { type: String, required: true },
+	tipoPublicacion: { type: String, required: false },
 	likes: { type: Array, default: [] },
 	comments: { type: Array, default: [] },
 

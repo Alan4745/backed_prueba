@@ -2,7 +2,7 @@
 require('dotenv').config();
 
 // Asignación del puerto de comunicación que se encuentra en el archivo .env
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 3000;
 
 // Importación del módulo http
 const http = require('http');

@@ -1,0 +1,90 @@
+const {Publicaciones} = require('./../../models/post/Post.model');
+const { UploadImg } = require('../../utils/cloudinary');
+const communityModel = require('./../../models/community.model');
+
+//function post_test(req,res) {
+//     console.log("ya estamos aqui")
+// console.log(req.body)
+//     return res.status(200).send({message:"jolasdasd"})
+    
+// }
+// function post_test12(req,res) {
+    
+//     // const postModel = new Publicaciones();
+//     // console.log(postModel);
+//     // console.log(req.params.idcomunidad)
+
+// console.log(req.body.TITULO)
+//     return res.status(200).send({message:"jolasdasd"})
+    
+// }
+
+//encontrar post por medio de comunidad
+async function eliminar_post(req,res){
+Publicaciones.findByIdAndDelete({_id:req.params.idpost},(err,delete_post)=>{
+    return res.status(200).send({message:delete_post})
+})
+}
+
+async function buscar_post(req,res){
+    Publicaciones.find({communityId:req.params.id},(err,find_post)=>{
+        return res.status(200).send({message:find_post})
+    })
+}
+
+async function crear_publicacion(req, res) {
+    
+    const Publicacion_model = new Publicaciones();
+    const parameters=req.body;
+//guardarmos en el objeto lo que viene del front end
+    Publicacion_model.titulo= parameters.titulo;
+    Publicacion_model.desc= parameters.descripcion;
+    console.log(req.body.titulo)
+    
+//encontrar un objeto en la tabla de la base de datos por medio de la comunidad y enlazarlo al post
+ communityModel.findById( parameters.idcom,(_err, comunityfind)=>{
+    console.log(comunityfind);
+    //LADO IZQUIERDO ES DE LOS CAMPOS DE PUBLICACION Y LADO DERECHO COMUNIDAD
+    Publicacion_model.communityId=comunityfind._id
+    Publicacion_model.communityName=comunityfind.nameCommunity
+ })
+
+
+
+
+	if (req.files?.image) {
+		const result = await UploadImg(req.files.image.tempFilePath);
+		Publicacion_model.imagen.public_id = result.public_id;
+		Publicacion_model.imagen.secure_url = result.secure_url;
+	}
+
+
+
+
+    
+    //GUARDAR EN LA BASE DE DATOS 
+    Publicacion_model.save((err, post_save)=>{
+        if (err) {
+            return res.status(500).send({ message: 'err en la peticion' });
+        }
+
+        // si la repuesta de la base de datos nos regresa "null"
+        if (!post_save) {
+            return res
+                .status(500)
+                .send({ message: 'err al guardar el usuario' });
+        }
+
+        return res.status(200).send({message:post_save})
+    })
+    
+
+}
+
+
+module.exports = {
+	
+    crear_publicacion,
+    buscar_post,
+    eliminar_post
+};
