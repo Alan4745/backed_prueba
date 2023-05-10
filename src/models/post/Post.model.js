@@ -12,7 +12,10 @@ const PublicationSchema = new Schema({
 		public_id: { type: String, default: '', },
 		secure_url: { type: String, default: '' }
 	},
-	video: { type: String, default: '' },
+	video: {
+		public_id: { type: String, default: '', },
+		secure_url: { type: String, default: '' }
+	},
 	tipoPublicacion: { type: String, required: false },
 	likes: { type: Array, default: [] },
 	comments: { type: Array, default: [] },
