@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const PostTypeASchema = new Schema({
+const post_event_tickets = new Schema({
 	communityId: {
 		type: String,
 	},
@@ -45,4 +45,4 @@ const PostTypeASchema = new Schema({
 	}
 });
 
-module.exports = mongoose.model('postTypeCs', PostTypeASchema);
+module.exports = mongoose.model('event_tickets', post_event_tickets);

@@ -21,6 +21,10 @@ const channelSchema = new Schema({
 	},
 	passwordChannel: {
 		type: String,
+	},
+	precio:{
+		type: Number,
+		default: 0
 	}
 }, { timestamps: true });
 
