@@ -1,5 +1,6 @@
 const {	evento_tickets}= require('./../../models/post/PostEvent_Tickets');
 const communityModel = require('./../../models/community.model');
+const collectionsModel=require('./../../models/tokens/collections.model');
 const { UploadImg, UploadVideo } = require('../../utils/cloudinary');
 
 async function buscar_evento_ticket(req, res) {
@@ -53,7 +54,12 @@ communityModel.findById(parameters.idcom, (_err, comunityfind) => {
     evento_ticket_model.communityId = comunityfind._id
     evento_ticket_model.communityName = comunityfind.nameCommunity
 })
-
+collectionsModel.findById(parameters.idticket, (_err, ticketfind) => {
+    console.log(ticketfind);
+    //LADO IZQUIERDO ES DE LOS CAMPOS DE PUBLICACION Y LADO DERECHO COMUNIDAD
+    evento_ticket_model.collectionId = ticketfind._id
+    evento_ticket_model.collectionName = ticketfind.nameCollection
+})
 if (req.files?.image) {
     const result = await UploadImg(req.files.image.tempFilePath);
     evento_ticket_model.imagen.public_id = result.public_id;

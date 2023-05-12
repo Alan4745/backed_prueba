@@ -6,6 +6,12 @@ const post_event_tickets = new Schema({
 	communityId: {
 		type: String,
 	},
+	collectionId: {
+		type: String,
+	},
+	collectionName: {
+		type: String,
+	},
 	communityName: {
 		type: String,
 	}, 
