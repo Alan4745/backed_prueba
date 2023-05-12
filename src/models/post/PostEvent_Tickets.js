@@ -9,7 +9,7 @@ const post_event_tickets = new Schema({
 	communityName: {
 		type: String,
 	}, 
-	title: {
+	titulo: {
 		type: String,
 		require: true
 	}, 
@@ -17,7 +17,7 @@ const post_event_tickets = new Schema({
 		type: String,
 		max: true,
 	},
-	imagenPostTypeC: {
+	imagen: {
 		public_id: {
 			type: String,
 			default: '',
@@ -35,9 +35,9 @@ const post_event_tickets = new Schema({
 		type: Array, 
 		default: [],
 	},
-	typePost: {
+	tipoPublicacion: {
 		type: String,
-		default: 'PostTypeC'
+		default: ''
 	},
 	ubicacion:{
 		type: Array,
@@ -45,4 +45,9 @@ const post_event_tickets = new Schema({
 	}
 });
 
-module.exports = mongoose.model('event_tickets', post_event_tickets);
+
+const evento_tickets= mongoose.model('evento_tickets', post_event_tickets);
+
+module.exports ={
+	evento_tickets
+}

@@ -39,6 +39,11 @@ async function buscar_post(req,res){
         return res.status(200).send({message:find_post})
     })
 }
+async function buscar_post_id(req,res){
+    Publicaciones.findOne({_id:req.params.id},(err,find_post)=>{
+        return res.status(200).send({message:find_post})
+    })
+}
 
 async function crear_publicacion(req, res) {
     
@@ -101,5 +106,6 @@ module.exports = {
     crear_publicacion,
     buscar_post,
     eliminar_post,
-    editar_post
+    editar_post,
+    buscar_post_id
 };

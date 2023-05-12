@@ -9,7 +9,7 @@ const PostTypeASchema = new Schema({
 	communityName: {
 		type: String,
 	}, 
-	title: {
+	titulo: {
 		type: String,
 		require: true
 	}, 
@@ -17,7 +17,7 @@ const PostTypeASchema = new Schema({
 		type: String,
 		max: true,
 	},
-	imagenPostTypeC: {
+	imagen: {
 		public_id: {
 			type: String,
 			default: '',
@@ -27,6 +27,11 @@ const PostTypeASchema = new Schema({
 			default: ''
 		}
 	},
+	video:{
+		public_id: { type: String, default: '', },
+		secure_url: { type: String, default: '' }
+	},
+	
 	likes: {
 		type: Array, 
 		default: [],
@@ -35,14 +40,17 @@ const PostTypeASchema = new Schema({
 		type: Array, 
 		default: [],
 	},
-	typePost: {
+	tipoPublicacion: {
 		type: String,
-		default: 'PostTypeC'
+		default: ''
 	},
 	ubicacion:{
 		type: Array,
 		default:[]
 	}
 });
+const Post_evento= mongoose.model('evento_post', PostTypeASchema);
 
-module.exports = mongoose.model('postTypeCs', PostTypeASchema);
+module.exports ={
+	Post_evento
+}
