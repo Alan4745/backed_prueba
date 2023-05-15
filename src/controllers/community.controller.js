@@ -6,9 +6,9 @@ function registerCommunity(req, res) {
 	const parameters = req.body;
 
 	community.find({ idOwner: req.user.sub }, (err, communityOwner) => {
-		if (communityOwner.length > 0) {
-			return res.status(500).send({ message: 'es solo una comunidad por usuario' });
-		}
+		// if (communityOwner.length > 0) {
+		// 	return res.status(500).send({ message: 'es solo una comunidad por usuario' });
+		// }
 
 		community.find({ nameCommunity: parameters.nameCommunity }, (err, communityName) => {
 			if (communityName.length > 0) {

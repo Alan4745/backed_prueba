@@ -39,6 +39,10 @@ const communitySchema = new Schema(
 			type: Array,
 			default: [],
 		},
+		verificado: {
+			type: Boolean,
+			default: false,
+		},
 		config: {
 			bannerUrl: {
 				type: String,

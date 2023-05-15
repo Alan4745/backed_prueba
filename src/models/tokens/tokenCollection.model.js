@@ -48,6 +48,14 @@ const tokenCollectionSchema = new Schema({
 	buyers: {
 		type: Array,
 		default: []
+	},
+	estado:{
+		type: String,
+		default: 'NoAdquirido'
+	},
+	canjeado:{
+		type: Boolean,
+		default: false
 	}
 
 }, { timestamps: true },);
