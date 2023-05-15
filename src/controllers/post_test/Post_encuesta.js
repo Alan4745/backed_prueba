@@ -1,5 +1,3 @@
-/* eslint-disable camelcase */
-/* eslint-disable no-underscore-dangle */
 const PostA = require('../../models/post/postTypeAs.model');
 const Community = require('../../models/community.model');
 const { UploadImg } = require('../../utils/cloudinary');
