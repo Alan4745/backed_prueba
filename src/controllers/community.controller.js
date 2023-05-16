@@ -280,6 +280,16 @@ function youCommunity(req, res) {
 	});
 }
 
+async function obtenercomunidades(req, res){
+	community.find( (err, Comunidades) => {
+		if (err) {
+			return res.status(500).send({ error: err });
+		}
+
+		return res.status(200).send({ message: Comunidades });
+	});
+}
+
 module.exports = {
 	registerCommunity,
 	editarCommunida,
@@ -291,5 +301,6 @@ module.exports = {
 	followersView,
 	deleteAdmin,
 	deleteCategory,
-	youCommunity
+	youCommunity,
+	obtenercomunidades
 };
