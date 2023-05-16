@@ -16,6 +16,7 @@ const communityRouter = require('./src/routes/community.routes');
 const channelRouter = require('./src/routes/channel.routes');
 const messageChannelRouter = require('./src/routes/messageChannel.routes');
 const tokenRouter = require('./src/routes/token.routes');
+const checkout= require('./src/routes/checkout.routes');
 // const postTypeARouter = require('./src/routes/postRoute/postTypeA.routes');
 //---FIN----
 
@@ -42,7 +43,8 @@ app.use(
 	communityRouter,// Rutas para comunidad
 	channelRouter, // Rutas para Canales
 	messageChannelRouter, // Rutas para mensajes de canal
-	tokenRouter // Rutas para tokens
+	tokenRouter, // Rutas para tokens
+	checkout //ruta de cobro
 );
 
 // Exportamos la instancia de la aplicacion

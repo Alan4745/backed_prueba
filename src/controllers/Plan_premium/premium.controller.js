@@ -1,11 +1,28 @@
 //canal verificado 
-const community=('../models/community.model');
+const community=require("./../../models/community.model")
 
-async function verificacion (req, res){
+async function verificacion(req, res) {
+    console.log("LLEGAR ACA");
+    community.findOne({ _id: req.params.verificado}, (_err, find_verificado) => {
+        console.log("llegamos a la parte premium");
+        if (find_verificado.verificado) {
+            return res.status(200).send({ message: "tu ya tienes una cuenta premium" })
+
+
+        }
+        community.findByIdAndUpdate(req.params.verificado, { verificado: true }, { new: true }, (err, cambiando_verificado) => {
+            return res.status(200).send({ message: cambiando_verificado })
+        })
     
 
+
+
+    })
 }
 
+module.exports = {
+    verificacion
+}
 
 
 
@@ -15,11 +32,13 @@ async function verificacion (req, res){
 
 //que la comunidad sea visible en el buscador o no 
 
-//personalizar el canal 
+//personalizar el canal //limitaciones en el mapa 
+
+
 
 //tamaño de los archivos al chat 
 
-//limitaciones en el mapa 
+
 
 //cantidad acitivdades que podes subir en el mundo AR
 

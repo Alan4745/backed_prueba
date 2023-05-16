@@ -1,5 +1,5 @@
 const tokenCollectionModel = require('../../models/tokens/tokenCollection.model');
-
+//CODIGO PARA CANJEAR TICKETS 
 async function cobrar(req, res) {
     console.log("estamosaqueieiie");
     tokenCollectionModel.findOne({ _id: req.params.ticket_id }, (_err, find_ticket) => {

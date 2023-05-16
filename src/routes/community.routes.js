@@ -5,6 +5,10 @@ const api = express.Router();
 const controllerCommunity = require('../controllers/community.controller');
 const md_autenticacion = require('../middlewares/authentication');
 const md_roles = require('../middlewares/userAdminCommunity');
+
+const verificadoController= require('../controllers/Plan_premium/premium.controller');
+//VERIFICACION DE PAGO PREMIUM 
+api.put('/premiumstatus/:verificado',[md_autenticacion.Auth],verificadoController.verificacion);
 // metodos post
 api.post('/saveCommunity', [md_autenticacion.Auth], controllerCommunity.registerCommunity);
 
@@ -21,5 +25,6 @@ api.delete('/deleteCommunity/:idCommunity', [md_autenticacion.Auth, md_roles.own
 api.get('/getCommunityId/:idCommunity', [md_autenticacion.Auth, md_roles.AdminComunity], controllerCommunity.viewCommunityId);
 api.get('/followersView/:idCommunity', [md_autenticacion.Auth], controllerCommunity.followersView);
 api.get('/youCommuunity', [md_autenticacion.Auth], controllerCommunity.youCommunity);
+
 
 module.exports = api;
