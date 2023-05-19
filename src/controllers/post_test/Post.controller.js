@@ -99,6 +99,85 @@ async function crear_publicacion(req, res) {
     
 
 }
+function likesUpdate(req, res) {
+	const { idPost } = req.params;
+  
+	Publicaciones.findById(idPost, (err, userlike) => {
+	  if (err) {
+		return res.status(500).send({ err: 'error en la peticion' });
+	  }
+  
+	  if (!userlike) {
+		return res.status(500).send({ err });
+	  }
+  
+	  const likeUser = userlike.likes.filter((like) => like === req.user.sub);
+  
+	  console.log(likeUser);
+	  if (likeUser.length > 0) {
+		Publicaciones.findByIdAndUpdate(idPost,{ $pull: { likes: req.user.sub } },{ new: true },(err, disLike) => {
+			if (err) {
+			  return res.status(500).send({ err: 'error en la peticion' });
+			}
+			if (!disLike) {
+			  return res.status(500).send({ err: 'Error en la deslike' });
+			}
+			return res.status(200).send({ mesage: disLike });
+		  },
+		);
+	  } else {
+		Publicaciones.findByIdAndUpdate(
+		  idPost,
+		  { $push: { likes: req.user.sub } },
+		  { new: true },
+		  (err, postLike) => {
+			if (err) {
+			  return res.status(500).send({ err: 'error en la peticion' });
+			}
+  
+			if (!postLike) {
+			  return res.status(500).send({ err: 'error al actualizar el like de post' });
+			}
+  
+			return res.status(200).send({ mesage: postLike });
+		  },
+		);
+	  }
+	});
+  }
+  
+  function commentsUser(req, res) {
+	const { idPost } = req.params;
+	const parameters = req.body;
+	Publicaciones.findByIdAndUpdate(idPost, {$push: {comments:  { idUser: req.user.sub, comments: parameters.comments },
+	 },
+	}, { new: true }, (err, commentUser) => {
+	  if (err) {
+		return res.status(500).send({ err: 'error en la peticion' });
+	  }
+	  if (!commentUser) {
+		return res.status(500).send({ err: 'error al enviar el comentario' });
+	  }
+  
+	  return res.status(200).send({ mesage: commentUser });
+	});
+  }
+
+  //BUSCAR POST POR NOMBRE
+  function BuscarPostPorNombre(req, res) {
+    var nombreProduco = req.params.nombre;
+
+	console.log(req.params);
+    Publicaciones.find({  titulo: { $regex: nombreProduco, $options: "i" }  }, (err, Post_encontrados) => {
+        if (err) return res.status(500).send({ mensaje: 'Error en  la peticion' });
+        if (!Post_encontrados){ 
+			return res.status(500)
+            .send({ mensaje: 'Error al obtener los Productos' })
+		}
+        return res.status(200).send({ post: Post_encontrados })
+    })
+}
+
 
 
 module.exports = {
@@ -107,5 +186,8 @@ module.exports = {
 	buscar_post,
 	eliminar_post,
 	editar_post,
-	buscar_post_id
+	buscar_post_id,
+	likesUpdate,
+	BuscarPostPorNombre,
+	commentsUser
 };

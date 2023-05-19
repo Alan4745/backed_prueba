@@ -55,4 +55,13 @@ api.get('/buscar_evento_ticket_comunidad/:id',Post_evento_tickets.buscar_evento_
 api.get('/buscar_evento_ticket_id/:evento_id',Post_evento_tickets.buscar_evento_ticket_id);
 
 api.put('/editar_evento_tickets/:evento_ticket_id',Post_evento_tickets.editar_evento_ticket);
+
+
+//RUTAS PARA LIKES Y COMENTARIOS 
+api.put('/likes/:idPost',[md_autenticacion.Auth],Publicacionescontroller.likesUpdate);
+api.put('/coments/:idPost',[md_autenticacion.Auth],Publicacionescontroller.commentsUser);
+
+//RUTA PARA nombre
+
+api.get('/nombre_post/:nombre/:apellido',[md_autenticacion.Auth],Publicacionescontroller.BuscarPostPorNombre);
 module.exports = api;
