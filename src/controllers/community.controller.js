@@ -10,11 +10,16 @@ function registerCommunity(req, res) {
 		// 	return res.status(500).send({ message: 'es solo una comunidad por usuario' });
 		// }
 
-		community.find({ nameCommunity: parameters.nameCommunity }, (err, communityName) => {
-			if (communityName.length > 0) {
-				return res.status(500).send({ message: 'este nombre de la comunidad ya esta en uso' });
+		community.find(
+			{ nameCommunity: parameters.nameCommunity },
+			(err, communityName) => {
+				if (communityName.length > 0) {
+					return res
+						.status(500)
+						.send({ message: 'este nombre de la comunidad ya esta en uso' });
+				}
 			}
-		});
+		);
 
 		communityModels.nameCommunity = parameters.nameCommunity;
 		communityModels.desc = parameters.desc;
@@ -32,7 +37,9 @@ function registerCommunity(req, res) {
 				return res.status(500).send({ message: 'err en la peticion' });
 			}
 			if (!community) {
-				return res.status(500).send({ message: 'err al guardar en la comunidad' });
+				return res
+					.status(500)
+					.send({ message: 'err al guardar en la comunidad' });
 			}
 
 			return res.status(200).send({ message: community });
@@ -58,7 +65,9 @@ function editarCommunida(req, res) {
 		}
 		// verificamos que si el usuario le pertenece el perfil
 		if (req.user.sub !== communityById.idUsuario) {
-			return res.status(500).send({ mensaje: 'No tiene los permisos para editar este Tu comunidad.' });
+			return res.status(500).send({
+				mensaje: 'No tiene los permisos para editar este Tu comunidad.',
+			});
 		}
 
 		community.findByIdAndUpdate(
@@ -70,11 +79,13 @@ function editarCommunida(req, res) {
 					return res.status(500).send({ err: 'error en la peticion' });
 				}
 				if (!communityUpdate) {
-					return res.status(500).send({ err: 'erro al actualizar la comunidad' });
+					return res
+						.status(500)
+						.send({ err: 'erro al actualizar la comunidad' });
 				}
 
 				return res.status(200).send({ mensaje: communityUpdate });
-			},
+			}
 		);
 		// return res.status(200).send({ mensaje: communityById });
 	});
@@ -130,19 +141,26 @@ function deleteCommunity(req, res) {
 		}
 		// verificamos que si el usuario le pertenece el perfil
 		if (req.user.sub !== communityById.idUsuario) {
-			return res.status(500).send({ mensaje: 'Solo el Dueño puede eliminar la comunidad' });
+			return res
+				.status(500)
+				.send({ mensaje: 'Solo el Dueño puede eliminar la comunidad' });
 		}
 
-		community.findByIdAndDelete({ _id: idCommuunity }, (err, communityDelete) => {
-			if (err) {
-				return res.status(500).send({ err: 'error en la peticion' });
-			}
-			if (!communityDelete) {
-				return res.status(500).send({ err: 'error al eliminar la comunidad' });
-			}
+		community.findByIdAndDelete(
+			{ _id: idCommuunity },
+			(err, communityDelete) => {
+				if (err) {
+					return res.status(500).send({ err: 'error en la peticion' });
+				}
+				if (!communityDelete) {
+					return res
+						.status(500)
+						.send({ err: 'error al eliminar la comunidad' });
+				}
 
-			return res.status(200).send({ mensaje: communityDelete });
-		});
+				return res.status(200).send({ mensaje: communityDelete });
+			}
+		);
 	});
 }
 
@@ -162,72 +180,70 @@ function viewCommunityId(req, res) {
 
 function followersCommunity(req, res) {
 	const { idCommuunity } = req.params;
-	community.findOne(
-		{ _id: idCommuunity },
-		(err, communityOne) => {
-			const userInclud = communityOne.followers.includes(req.user.sub);
-			if (userInclud) {
-				community.findByIdAndUpdate(
-					{ _id: idCommuunity },
-					{ $pull: { followers: req.user.sub } },
-					{ new: true },
-					(err, communityFollowers) => {
-						if (err) {
-							return res.status(500).send({ err: 'error en la peticion' });
-						}
-						if (!communityFollowers) {
-							return res.status(500).send({ err: 'error en communityFollowers' });
-						}
-						return res.status(200).send({ mensaje: communityFollowers });
-					},
-				);
-			} else {
-				community.findByIdAndUpdate(
-					{ _id: idCommuunity },
-					{ $push: { followers: req.user.sub } },
-					{ new: true },
-					(err, communityUnFollowers) => {
-						if (err) {
-							return res.status(500).send({ err: 'error en la peticion' });
-						}
-						if (!communityUnFollowers) {
-							return res.status(500).send({ err: 'error en communityFollowers' });
-						}
-						return res.status(200).send({ mensaje: communityUnFollowers });
-					},
-				);
-			}
-		},
-	);
+	community.findOne({ _id: idCommuunity }, (err, communityOne) => {
+		const userInclud = communityOne.followers.includes(req.user.sub);
+		if (userInclud) {
+			community.findByIdAndUpdate(
+				{ _id: idCommuunity },
+				{ $pull: { followers: req.user.sub } },
+				{ new: true },
+				(err, communityFollowers) => {
+					if (err) {
+						return res.status(500).send({ err: 'error en la peticion' });
+					}
+					if (!communityFollowers) {
+						return res.status(500).send({ err: 'error en communityFollowers' });
+					}
+					return res.status(200).send({ mensaje: communityFollowers });
+				}
+			);
+		} else {
+			community.findByIdAndUpdate(
+				{ _id: idCommuunity },
+				{ $push: { followers: req.user.sub } },
+				{ new: true },
+				(err, communityUnFollowers) => {
+					if (err) {
+						return res.status(500).send({ err: 'error en la peticion' });
+					}
+					if (!communityUnFollowers) {
+						return res.status(500).send({ err: 'error en communityFollowers' });
+					}
+					return res.status(200).send({ mensaje: communityUnFollowers });
+				}
+			);
+		}
+	});
 }
 
 function addAdmin(req, res) {
 	const { idCommuunity } = req.params;
 	const parameters = req.body;
 
-	community.findOne(
-		{ _id: idCommuunity },
-		(err, communityOne) => {
-			const userInclud = communityOne.administrators.includes(parameters.idUser);
-			if (userInclud) {
-				return res.status(500).send({ err: 'el usuario ya esta como admin' });
+	community.findOne({ _id: idCommuunity }, (err, communityOne) => {
+		const userInclud = communityOne.administrators.includes(parameters.idUser);
+		if (userInclud) {
+			return res.status(500).send({ err: 'el usuario ya esta como admin' });
+		}
+		community.findByIdAndUpdate(
+			{ _id: idCommuunity },
+			{ $push: { administrators: parameters.idUser } },
+			{ new: true },
+			(err, communityUpdateAdmin) => {
+				if (err) {
+					return res
+						.status(500)
+						.send({ err: 'error en la peticion de comunidad administrador' });
+				}
+				if (!communityUpdateAdmin) {
+					return res
+						.status(500)
+						.send({ err: 'no se pudo en la peticion comunidad administrador' });
+				}
+				return res.status(200).send({ mensaje: communityUpdateAdmin });
 			}
-			community.findByIdAndUpdate(
-				{ _id: idCommuunity },
-				{ $push: { administrators: parameters.idUser } },
-				{ new: true },
-				(err, communityUpdateAdmin) => {
-					if (err) {
-						return res.status(500).send({ err: 'error en la peticion de comunidad administrador' });
-					}
-					if (!communityUpdateAdmin) {
-						return res.status(500).send({ err: 'no se pudo en la peticion comunidad administrador' });
-					}
-					return res.status(200).send({ mensaje: communityUpdateAdmin });
-				},
-			);
-		},
-	);
+		);
+	});
 }
 
 function deleteAdmin(req, res) {
@@ -242,16 +258,22 @@ function deleteAdmin(req, res) {
 				{ new: true },
 				(err, communityUpdateAdmin1) => {
 					if (err) {
-						return res.status(500).send({ err: 'error en la peticion de comunidad administrador' });
+						return res
+							.status(500)
+							.send({ err: 'error en la peticion de comunidad administrador' });
 					}
 					if (!communityUpdateAdmin1) {
-						return res.status(500).send({ err: 'no se pudo en la peticion comunidad administrador' });
+						return res.status(500).send({
+							err: 'no se pudo en la peticion comunidad administrador',
+						});
 					}
 					return res.status(200).send({ mensaje: communityUpdateAdmin1 });
 				}
 			);
 		} else {
-			return res.status(200).send({ mesaje: 'Este usuario no tiene rol de admin' });
+			return res
+				.status(200)
+				.send({ mesaje: 'Este usuario no tiene rol de admin' });
 		}
 	});
 }
@@ -259,15 +281,15 @@ function deleteAdmin(req, res) {
 function followersView(req, res) {
 	const { idCommuunity } = req.params;
 
-	community.findOne(
-		{ _id: idCommuunity },
-		(err, communityUser) => {
-			user.find({ _id: { $in: communityUser.followers } }, (err, userFollowers) => {
+	community.findOne({ _id: idCommuunity }, (err, communityUser) => {
+		user.find(
+			{ _id: { $in: communityUser.followers } },
+			(err, userFollowers) => {
 				console.log(communityUser.followers);
 				res.status(200).send({ mensjae: userFollowers });
-			});
-		},
-	);
+			}
+		);
+	});
 }
 
 function youCommunity(req, res) {
@@ -280,8 +302,8 @@ function youCommunity(req, res) {
 	});
 }
 
-async function obtenercomunidades(req, res){
-	community.find( (err, Comunidades) => {
+async function obtenercomunidades(req, res) {
+	community.find((err, Comunidades) => {
 		if (err) {
 			return res.status(500).send({ error: err });
 		}
@@ -302,5 +324,5 @@ module.exports = {
 	deleteAdmin,
 	deleteCategory,
 	youCommunity,
-	obtenercomunidades
+	obtenercomunidades,
 };

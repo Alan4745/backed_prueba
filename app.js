@@ -16,12 +16,11 @@ const communityRouter = require('./src/routes/community.routes');
 const channelRouter = require('./src/routes/channel.routes');
 const messageChannelRouter = require('./src/routes/messageChannel.routes');
 const tokenRouter = require('./src/routes/token.routes');
-const checkout= require('./src/routes/checkout.routes');
+const checkout = require('./src/routes/checkout.routes');
 // const postTypeARouter = require('./src/routes/postRoute/postTypeA.routes');
 //---FIN----
 
-
-// Configura los middlewares de la aplicacion 
+// Configura los middlewares de la aplicacion
 app.use(express.urlencoded({ extended: false })); // Middleware que analiza los datos de la solicitud HTTP y los pone en un objeto req.body
 app.use(express.json()); // Middleware que analiza los datos de la solicitud HTTP en formato JSON y los pone en un objeto req.body
 app.use(cors()); //Middleware que permiten el acceso a la API desde cualquier origen
@@ -40,7 +39,7 @@ app.use(
 	messageRouter, // Rutas para mensajes
 	conversationRouter, // Rutas para conversaciones
 	postRouter, //Rutas para publicaciones
-	communityRouter,// Rutas para comunidad
+	communityRouter, // Rutas para comunidad
 	channelRouter, // Rutas para Canales
 	messageChannelRouter, // Rutas para mensajes de canal
 	tokenRouter, // Rutas para tokens

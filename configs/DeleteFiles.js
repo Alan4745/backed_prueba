@@ -13,16 +13,15 @@ function DeletefilesBackend() {
 		} else {
 			console.log(`La carpeta tiene ${files.length} archivos(s)`);
 		}
-		// files.forEach(file => {
-		// 	fs.unlink(`${path}/${file}`, err => {
-		// 		if (err) {
-		// 			console.error(err);
-		// 			return;
-		// 		}
-		// 		console.log(`Se Elimino El Archivo ${file}`);
-		// 	});
-		// });
-		
+		files.forEach(file => {
+			fs.unlink(`${path}/${file}`, err => {
+				if (err) {
+					console.error(err);
+					return;
+				}
+				console.log(`Se Elimino El Archivo ${file}`);
+			});
+		});
 	});
 }
 
