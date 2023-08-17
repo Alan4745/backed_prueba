@@ -9,9 +9,9 @@ const controllerPostActivity = require('../controllers/post/PostActivity.control
 // const controllerPostTypeb = require('../controllers/post/postTypeB.controller');
 // const controllerPostTypeC = require('../controllers/post/postTypeC.controller');
 // const controllerPost = require('../controllers/post/post.controller');
-const Publicacionescontroller=require('../controllers/post_test/Post.controller')
-const Post_evento_controller=require('../controllers/post_test/post_evento')
-const Post_evento_tickets=require('../controllers/post_test/Post_evento_ticket')
+const Publicacionescontroller=require('../controllers/post_test/Post.controller');
+const Post_evento_controller=require('../controllers/post_test/post_evento');
+const Post_evento_tickets=require('../controllers/post_test/Post_evento_ticket');
 
 const api = express.Router();
 

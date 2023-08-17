@@ -53,4 +53,4 @@ const Post_evento= mongoose.model('evento_post', PostTypeASchema);
 
 module.exports ={
 	Post_evento
-}
+};

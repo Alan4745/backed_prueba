@@ -5,47 +5,42 @@ function registerCommunity(req, res) {
 	const communityModels = new community();
 	const parameters = req.body;
 
-	community.find({ idOwner: req.user.sub }, (err, communityOwner) => {
-		// if (communityOwner.length > 0) {
-		// 	return res.status(500).send({ message: 'es solo una comunidad por usuario' });
-		// }
-
-		community.find(
-			{ nameCommunity: parameters.nameCommunity },
-			(err, communityName) => {
-				if (communityName.length > 0) {
-					return res
-						.status(500)
-						.send({ message: 'este nombre de la comunidad ya esta en uso' });
-				}
-			}
-		);
-
-		communityModels.nameCommunity = parameters.nameCommunity;
-		communityModels.desc = parameters.desc;
-		communityModels.followers = [];
-		communityModels.followings = [];
-		communityModels.category = ['sin categoria'];
-		communityModels.idOwner = req.user.sub;
-		communityModels.nameOwner = req.user.nickName;
-		communityModels.administrators = [];
-		communityModels.config.bannerUrl = parameters.bannerUrl;
-		communityModels.config.imagePer = parameters.imagePer;
-
-		communityModels.save((err, community) => {
-			if (err) {
-				return res.status(500).send({ message: 'err en la peticion' });
-			}
-			if (!community) {
+	community.find(
+		{ nameCommunity: parameters.nameCommunity },
+		(err, communityName) => {
+			if (communityName.length > 0) {
 				return res
 					.status(500)
-					.send({ message: 'err al guardar en la comunidad' });
+					.send({ message: 'este nombre de la comunidad ya esta en uso' });
 			}
+		}
+	);
 
-			return res.status(200).send({ message: community });
-		});
+	communityModels.nameCommunity = parameters.nameCommunity;
+	communityModels.desc = parameters.desc;
+	communityModels.followers = [];
+	communityModels.followings = [];
+	communityModels.category = ['sin categoria'];
+	communityModels.idOwner = req.user.sub;
+	communityModels.nameOwner = req.user.nickName;
+	communityModels.administrators = [];
+	communityModels.config.bannerUrl = parameters.bannerUrl;
+	communityModels.config.imagePer = parameters.imagePer;
+
+	communityModels.save((err, community) => {
+		if (err) {
+			return res.status(500).send({ message: 'err en la peticion' });
+		}
+		if (!community) {
+			return res
+				.status(500)
+				.send({ message: 'err al guardar en la comunidad' });
+		}
+
+		return res.status(200).send({ message: community });
 	});
 }
+
 
 function editarCommunida(req, res) {
 	const { idCommuunity } = req.params;
@@ -302,6 +297,8 @@ function youCommunity(req, res) {
 	});
 }
 
+
+
 async function obtenercomunidades(req, res) {
 	community.find((err, Comunidades) => {
 		if (err) {
@@ -311,6 +308,8 @@ async function obtenercomunidades(req, res) {
 		return res.status(200).send({ message: Comunidades });
 	});
 }
+
+
 
 module.exports = {
 	registerCommunity,

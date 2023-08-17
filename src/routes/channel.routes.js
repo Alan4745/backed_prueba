@@ -11,5 +11,7 @@ api.post('/saveChannel/:idCommunity', [md_autenticacion.Auth, md_roles.ownerComm
 // metodos delete
 // metodos get
 api.get('/getChannel', [md_autenticacion.Auth], controllerChannel.viewChannel);
+api.get('/obtenerTodasComunidades/:idcommunity', [md_autenticacion.Auth], controllerChannel.verSubCanales);
+
 
 module.exports = api;

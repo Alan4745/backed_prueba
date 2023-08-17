@@ -56,4 +56,4 @@ const evento_tickets= mongoose.model('evento_tickets', post_event_tickets);
 
 module.exports ={
 	evento_tickets
-}
+};
