@@ -7,7 +7,11 @@ const md_roles = require('../middlewares/userAdminCommunity');
 
 // metodos post
 api.post('/saveChannel/:idCommunity', [md_autenticacion.Auth, md_roles.ownerCommunity], controllerChannel.saveChannel);
+
+
 // metodos put
+
+api.put('/suscripcionSubCanal/idSubCommunity', [md_autenticacion.Auth], controllerChannel.suscripcionSubCanal);
 // metodos delete
 // metodos get
 api.get('/getChannel', [md_autenticacion.Auth], controllerChannel.viewChannel);

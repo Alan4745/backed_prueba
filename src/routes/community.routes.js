@@ -60,7 +60,7 @@ api.delete(
 // metodos get
 api.get(
 	'/getCommunityId/:idCommunity',
-	[md_autenticacion.Auth, md_roles.AdminComunity],
+	[md_autenticacion.Auth],
 	controllerCommunity.viewCommunityId
 );
 api.get(

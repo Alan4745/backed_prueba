@@ -15,6 +15,7 @@ function saveChannel(req, res) {
 	channelModel.idOwner = req.user.sub;
 	channelModel.nameChanel = parameters.nameChanel;
 	channelModel.members = [req.user.sub];
+	channelModel.passwordChannel = parameters.passwordChannel;
 
 	// Guardar la nueva instancia de Channel en la base de datos
 	channelModel.save((err, saveChannel) => {
@@ -30,6 +31,31 @@ function saveChannel(req, res) {
 		return res
 			.status(200)
 			.send({ status: 'Success', saveMessage: saveChannel });
+	});
+}
+
+function suscripcionSubCanal(req, res) {
+	const { idSubCommunity } = req.params;
+	const parameters = req.body;
+
+	const subComunidadEncontra = Channel.findOne({_id:idSubCommunity });
+
+	if (subComunidadEncontra.passwordChannel !== parameters.passwordChannel) {
+		return res.status(500).send({ err: 'la contraseña no es correcta' });
+	}
+
+	Channel.findByIdAndUpdate({_id: idSubCommunity}, {$push: { members: req.user.sub } }, {new: true}, (err, subCommunityUpdate)=>{
+		if (err) {
+			return res.status(500).send({ err: 'error en la peticion' });
+		}
+
+		if (!subCommunityUpdate) {
+			return res
+				.status(500) 
+				.send({ err: 'error al actualizar el like de post' });
+		}
+
+		return res.status(200).send({ mesage: subCommunityUpdate });
 	});
 }
 
@@ -60,5 +86,6 @@ function verSubCanales(req, res) {
 module.exports = {
 	saveChannel,
 	viewChannel,
-	verSubCanales
+	verSubCanales,
+	suscripcionSubCanal
 };
