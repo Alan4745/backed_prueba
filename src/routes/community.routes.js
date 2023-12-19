@@ -7,6 +7,28 @@ const md_autenticacion = require('../middlewares/authentication');
 const md_roles = require('../middlewares/userAdminCommunity');
 const verificadoController = require('../controllers/Plan_premium/premium.controller');
 
+// metodos get
+api.get(
+	'/getCommunityId/:idCommunity',
+	[md_autenticacion.Auth],
+	controllerCommunity.viewCommunityId
+); // metodo actualizado 🆗
+api.get(
+	'/followersView/:idCommunity',
+	[md_autenticacion.Auth],
+	controllerCommunity.followersView
+); // metodos actualizados 🆗
+api.get(
+	'/youCommuunity',
+	[md_autenticacion.Auth],
+	controllerCommunity.youCommunity
+); // metodos actualizados 🆗
+api.get(
+	'/comunidades',
+	[md_autenticacion.Auth],
+	controllerCommunity.obtenercomunidades
+); // metodos actualizados
+
 //VERIFICACION DE PAGO PREMIUM
 api.put(
 	'/premiumstatus/:verificado',
@@ -56,27 +78,6 @@ api.delete(
 	'/deleteCommunity/:idCommunity',
 	[md_autenticacion.Auth, md_roles.ownerCommunity],
 	controllerCommunity.deleteCommunity
-);
-// metodos get
-api.get(
-	'/getCommunityId/:idCommunity',
-	[md_autenticacion.Auth],
-	controllerCommunity.viewCommunityId
-);
-api.get(
-	'/followersView/:idCommunity',
-	[md_autenticacion.Auth],
-	controllerCommunity.followersView
-);
-api.get(
-	'/youCommuunity',
-	[md_autenticacion.Auth],
-	controllerCommunity.youCommunity
-);
-api.get(
-	'/comunidades',
-	[md_autenticacion.Auth],
-	controllerCommunity.obtenercomunidades
 );
 
 module.exports = api;

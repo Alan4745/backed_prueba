@@ -7,15 +7,10 @@ async function verificacion(req, res) {
 		console.log('llegamos a la parte premium');
 		if (find_verificado.verificado) {
 			return res.status(200).send({ message: 'tu ya tienes una cuenta premium' });
-
-
 		}
 		community.findByIdAndUpdate(req.params.verificado, { verificado: true }, { new: true }, (err, cambiando_verificado) => {
 			return res.status(200).send({ message: cambiando_verificado });
 		});
-    
-
-
 
 	});
 }

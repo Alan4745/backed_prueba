@@ -41,7 +41,6 @@ function registerCommunity(req, res) {
 	});
 }
 
-
 function editarCommunida(req, res) {
 	const { idCommuunity } = req.params;
 	const parameters = req.body;
@@ -159,18 +158,24 @@ function deleteCommunity(req, res) {
 	});
 }
 
-function viewCommunityId(req, res) {
-	const { idCommunity } = req.params;
+async function viewCommunityId(req, res) {
+	try {
+		const { idCommunity } = req.params;
 
-	community.findOne({ _id: idCommunity }, (err, communityFindId) => {
-		if (err) {
-			return res.status(500).send({ err: 'erro en la petecion' });
-		}
+		// Buscar la comunidad por su identificador
+		const communityFindId = await community.findOne({ _id: idCommunity });
+
+		// Verificar si la búsqueda fue exitosa
 		if (!communityFindId) {
-			return res.status(500).send({ err: 'error al encontrar ala comunidad' });
+			return res.status(404).send({ message: 'Comunidad no encontrada.' });
 		}
+
+		// Enviar la información de la comunidad encontrada
 		return res.status(200).send({ message: communityFindId });
-	});
+	} catch (error) {
+		console.error('An error occurred:', error);
+		return res.status(500).send({ message: 'Internal server error.' });
+	}
 }
 
 function followersCommunity(req, res) {
@@ -273,43 +278,56 @@ function deleteAdmin(req, res) {
 	});
 }
 
-function followersView(req, res) {
-	const { idCommuunity } = req.params;
+// Metodo actualizado🆗
+async function followersView(req, res) {
+	try {
+		const { idCommunity } = req.params;
 
-	community.findOne({ _id: idCommuunity }, (err, communityUser) => {
-		user.find(
-			{ _id: { $in: communityUser.followers } },
-			(err, userFollowers) => {
-				console.log(communityUser.followers);
-				res.status(200).send({ mensjae: userFollowers });
-			}
-		);
-	});
-}
-
-function youCommunity(req, res) {
-	community.find({ idOwner: req.user.sub }, (err, youCommunityFind) => {
-		if (err) {
-			return res.status(500).send({ error: err });
+		// Buscar la comunidad por su identificador
+		const communityUser = await community.findOne({ _id: idCommunity });
+		// Verificar si la búsqueda de la comunidad fue exitosa
+		if (!communityUser) {
+			return res.status(404).send({ message: 'Comunidad no encontrada.' });
 		}
+		// Encontrar los usuarios que son seguidores de la comunidad
+		const userFollowers = await user.find({
+			_id: { $in: communityUser.followers },
+		});
+		console.log(communityUser.followers);
+		// Enviar la lista de seguidores de la comunidad
+		return res.status(200).send({ mensaje: userFollowers });
+	} catch (error) {
+		console.error('An error occurred:', error);
+		return res.status(500).send({ message: 'Internal server error.' });
+	}
+}
+// Metodo actualizado 🆗
+async function youCommunity(req, res) {
+	try {
+		// Buscar las comunidades propiedad del usuario actual
+		const youCommunityFind = await community.find({ idOwner: req.user.sub });
 
+		// Enviar la lista de comunidades encontradas
 		return res.status(200).send({ message: youCommunityFind });
-	});
+	} catch (error) {
+		console.error('An error occurred:', error);
+		return res.status(500).send({ message: 'Internal server error.' });
+	}
 }
 
-
-
+// Metodo actualizado 🆗
 async function obtenercomunidades(req, res) {
-	community.find((err, Comunidades) => {
-		if (err) {
-			return res.status(500).send({ error: err });
-		}
+	try {
+		// Buscar todas las comunidades
+		const Comunidades = await community.find();
 
+		// Enviar la lista de comunidades encontradas
 		return res.status(200).send({ message: Comunidades });
-	});
+	} catch (error) {
+		console.error('An error occurred:', error);
+		return res.status(500).send({ message: 'Internal server error.' });
+	}
 }
-
-
 
 module.exports = {
 	registerCommunity,
