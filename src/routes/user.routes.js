@@ -8,16 +8,16 @@ const md_autenticacion = require('../middlewares/authentication');
 const api = express.Router();
 
 // metodos Get
-api.get('/viewUsers', controllerUser.viewUser);
+api.get('/viewUsers', controllerUser.viewUser);// ruta actualizada 🆗
 
 // metodos Post
-api.post('/signUp', controllerAuth.userRegistration);
-api.post('/login', controllerAuth.loginUser);
+api.post('/signUp', controllerAuth.userRegistration); // ruta actualizada 🆗
+api.post('/login', controllerAuth.loginUser); // ruta actualizada 🆗
 
 // metodos Put
-api.put('/updateUser/:idUser', [md_autenticacion.Auth], controllerUser.updateUser);
+api.put('/updateUser/:idUser', [md_autenticacion.Auth], controllerUser.updateUser); // ruta actualizada 🆗
 
 // metodos Delete
-api.delete('/deleteUser/:idUser', [md_autenticacion.Auth], controllerUser.deleteUser);
+api.delete('/deleteUser/:idUser', [md_autenticacion.Auth], controllerUser.deleteUser); // ruta actualizada 🆗
 
 module.exports = api;

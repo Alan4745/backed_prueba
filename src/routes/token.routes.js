@@ -9,12 +9,12 @@ const api = express.Router();
 const cobro_ticket_controller = require('../controllers/tickets/cobrar_ticket');
 
 // metodos Get
-api.get('/obtenerTokens', [md_autenticacion.Auth], controllerToken.viewToken);
+api.get('/obtenerTokens', [md_autenticacion.Auth], controllerToken.viewToken); // metodo actualizado 🆗
 
 // metodos Post
-api.post('/agregarTokenAColecion', [md_autenticacion.Auth], controllerToken.agregarTokenAColecion);
-api.post('/createCollection', [md_autenticacion.Auth], controllerToken.createCollection);
-api.post('/tokensSolo', [md_autenticacion.Auth], controllerToken.tokensSolos);
+api.post('/addTokenToCollection', [md_autenticacion.Auth], controllerToken.addTokenToCollection); // metodo actualizado 🆗
+api.post('/createCollection', [md_autenticacion.Auth], controllerToken.createCollection); // metodo actualizado 🆗
+api.post('/tokensSolo', [md_autenticacion.Auth], controllerToken.tokensSolos); // metodo no actualizado ❌  
 // metodos Put
 
 // metodos Delete
@@ -22,6 +22,6 @@ api.post('/tokensSolo', [md_autenticacion.Auth], controllerToken.tokensSolos);
 
 
 //COBRAR TICKET A LAS PERSONAS 
-api.put('/cobrar/:ticket_id', cobro_ticket_controller.cobrar);
+api.put('/cobrar/:ticket_id', cobro_ticket_controller.cobrar); // metodo actualizado 🆗
 
 module.exports = api;

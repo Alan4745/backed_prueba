@@ -26,25 +26,29 @@ async function updateUser(req, res) {
 	try {
 		const { idUser } = req.params;
 		const parameters = req.body;
-  
+
 		// Eliminando la entrada de los siguientes parámetros
 		delete parameters.password;
 		delete parameters.rol;
 		delete parameters.email;
-  
+
 		// Verificamos si el usuario le pertenece al perfil
 		if (req.user.sub !== idUser) {
-			return res.status(403).send({ mensaje: 'No tiene los permisos para editar este usuario.' });
+			return res
+				.status(403)
+				.send({ mensaje: 'No tiene los permisos para editar este usuario.' });
 		}
-  
+
 		// Actualizar el usuario y obtener el resultado actualizado
-		const userUpdate = await User.findByIdAndUpdate(idUser, parameters, { new: true });
-  
+		const userUpdate = await User.findByIdAndUpdate(idUser, parameters, {
+			new: true,
+		});
+
 		// Verificar si la actualización fue exitosa
 		if (!userUpdate) {
 			return res.status(500).send({ message: 'Error al editar el usuario.' });
 		}
-  
+
 		// Enviar la información actualizada del usuario
 		return res.status(200).send({ message: userUpdate });
 	} catch (error) {
@@ -52,7 +56,6 @@ async function updateUser(req, res) {
 		return res.status(500).send({ message: 'Internal server error.' });
 	}
 }
-  
 
 // function deleteUser(req, res) {
 // 	const { idUser } = req.params.idUser;
@@ -72,20 +75,22 @@ async function updateUser(req, res) {
 async function deleteUser(req, res) {
 	try {
 		const { idUser } = req.params;
-  
+
 		// Verificar si el usuario tiene los permisos para eliminar este usuario
 		if (req.user.sub !== idUser) {
-			return res.status(403).send({ mensaje: 'No tiene los permisos para eliminar este usuario.' });
+			return res
+				.status(403)
+				.send({ mensaje: 'No tiene los permisos para eliminar este usuario.' });
 		}
-  
+
 		// Eliminar el usuario y obtener el resultado eliminado
 		const userDelete = await User.findByIdAndDelete(idUser);
-  
+
 		// Verificar si la eliminación fue exitosa
 		if (!userDelete) {
 			return res.status(500).send({ message: 'Error al eliminar el usuario.' });
 		}
-  
+
 		// Enviar la información del usuario eliminado
 		return res.status(200).send({ message: userDelete });
 	} catch (error) {
@@ -93,10 +98,15 @@ async function deleteUser(req, res) {
 		return res.status(500).send({ message: 'Internal server error.' });
 	}
 }
-  
 
-function viewUser(req, res) {
-	User.find((err, usersView) => res.status(200).send({ UserInfo: usersView }));
+async function viewUser(req, res) {
+	try {
+		const usersView = await User.find().exec();
+		res.status(200).send({ UserInfo: usersView });
+	} catch (error) {
+		console.error('Error al buscar usuarios:', error);
+		res.status(500).send({ error: 'Hubo un error al buscar usuarios' });
+	}
 }
 
 module.exports = {

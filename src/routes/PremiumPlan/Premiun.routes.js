@@ -9,4 +9,5 @@ api.put('/getPremium/idCommunity',
 	[mdAutenticacion.Auth],
 	controllerPremiun.verificacion
 );
+
 module.exports = api;

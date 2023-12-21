@@ -60,103 +60,147 @@ const Token = require('../models/tokens/tokenUnitary.model');
 //     });
 // }
 
-async function agregarTokenAColecion(req, res) {
-	const parameters = req.body;
-	const { tokenAmount } = parameters;
-	const tokens = [];
+async function addTokenToCollection(req, res) {
+	try {
+		const parameters = req.body;
+		const { tokenAmount } = parameters;
+		const tokens = [];
 
-	const community = await Community.findOne({
-		nameCommunity: parameters.nameCommunity,
-		idOwner: req.user.sub
-	});
+		const community = await Community.findOne({
+			nameCommunity: parameters.nameCommunity,
+			idOwner: req.user.sub,
+		});
 
-	if (!community) {
-		return res.status(500).send({ message: 'esta comunidad no te pertenece' });
+		if (!community) {
+			return res
+				.status(500)
+				.send({ message: 'Esta comunidad no te pertenece' });
+		}
+
+		if (tokenAmount > 1000) {
+			return res.status(500).send({ message: 'Se supera el límite permitido' });
+		}
+
+		const collectionFind = await Collections.findOne({
+			author: parameters.nameCommunity,
+			nameCollection: parameters.nameCollection,
+		});
+
+		if (!collectionFind) {
+			return res
+				.status(500)
+				.send({ message: 'Error, no se encontraron similitudes' });
+		}
+
+		const tokenFind = await TokenCollection.find({
+			author: parameters.nameCommunity,
+			idCollection: collectionFind._id,
+		});
+
+		for (let i = 0; i < tokenAmount; i++) {
+			const { min } = parameters;
+			const { max } = parameters;
+			const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+			const modelToken = new TokenCollection();
+			const randomBytes = crypto.randomBytes(32).toString('hex');
+			const hash = crypto
+				.createHash('sha256')
+				.update(parameters.name + randomBytes)
+				.digest('hex');
+
+			modelToken.hash = hash;
+			modelToken.title = parameters.title;
+			modelToken.desc = parameters.desc;
+			modelToken.numertoken = tokenFind.length + i + 1;
+			modelToken.idCollection = collectionFind._id;
+			modelToken.author = parameters.nameCommunity;
+			modelToken.price = randomNumber;
+
+			tokens.push(modelToken);
+		}
+
+		await TokenCollection.insertMany(tokens);
+		return res.status(200).send({
+			message: `${tokenAmount} tokens creados y guardados exitosamente.`,
+		});
+	} catch (error) {
+		console.error('Error al agregar tokens a la colección:', error);
+		return res
+			.status(500)
+			.send({ error: 'Hubo un error al agregar tokens a la colección' });
 	}
-	if (tokenAmount > 1000) {
-		return res.status(500).send({ message: 'Se pasa de el limite' });
-	}
-
-	const collectionFind = await Collections.findOne({
-		author: parameters.nameCommunity,
-		nameCollection: parameters.nameCollection
-	});
-
-	if (!collectionFind) {
-		return res.status(500).send({ message: 'error no se encontraron similitudes' });
-	}
-
-	const tokenFind = await TokenCollection.find({
-		author: parameters.nameCommunity,
-		idCollection: collectionFind._id
-	});
-
-	for (let i = 0; i < tokenAmount; i++) {
-		const { min } = parameters;
-		const { max } = parameters;
-		const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
-		const modelToken = new TokenCollection();
-		const randomBytes = crypto.randomBytes(32).toString('hex');
-		const hash = crypto
-			.createHash('sha256')
-			.update(parameters.name + randomBytes)
-			.digest('hex');
-
-		modelToken.hash = hash;
-		modelToken.title = parameters.title;
-		modelToken.desc = parameters.desc;
-		modelToken.numertoken = tokenFind.length + i + 1;
-		modelToken.idCollection = collectionFind._id;
-		modelToken.author = parameters.nameCommunity;
-		modelToken.price = randomNumber;
-
-		tokens.push(modelToken);
-	}
-
-	await TokenCollection.insertMany(tokens);
-	return res.status(200).send({ message: `${tokenAmount} tokens created and saved successfully.` });
 }
 
 function createCollection(req, res) {
-	const modelCollections = new Collections();
-	const parameters = req.body;
-	const randomBytes = crypto.randomBytes(32).toString('hex');
-	const hash = crypto.createHash('sha256').update(parameters.nameCollection + randomBytes).digest('hex');
+	try {
+		const modelCollections = new Collections();
+		const parameters = req.body;
+		const randomBytes = crypto.randomBytes(32).toString('hex');
+		const hash = crypto
+			.createHash('sha256')
+			.update(parameters.nameCollection + randomBytes)
+			.digest('hex');
 
-	if (!parameters.nameCollection || !parameters.desc) {
-		return res.status(500).send({ message: 'datos Oobligatios' });
-	}
-
-	Community.find({ idOwner: req.user.sub }, (err, communityOwner) => {
-		if (communityOwner.length === 0) {
-			return res.status(500).send({ message: 'debes de tener una comunidad para poder crea coleciones' });
+		if (!parameters.nameCollection || !parameters.desc) {
+			return res.status(500).send({ message: 'Datos obligatorios faltantes' });
 		}
 
-		Collections.find({ nameCollection: parameters.nameCollection }, (err, collectionsName) => {
-			if (collectionsName.length > 0) {
-				return res.status(500).send({ message: 'este Nombre ya se esta utilizando' });
+		Community.find({ idOwner: req.user.sub }, (err, communityOwner) => {
+			if (communityOwner.length === 0) {
+				return res.status(500).send({
+					message: 'Debes tener una comunidad para poder crear colecciones',
+				});
 			}
 
-			modelCollections.hash = hash;
-			modelCollections.nameCollection = parameters.nameCollection;
-			modelCollections.desc = parameters.desc;
-			modelCollections.author = parameters.author;
+			Collections.find(
+				{ nameCollection: parameters.nameCollection },
+				(err, collectionsName) => {
+					if (collectionsName.length > 0) {
+						return res
+							.status(500)
+							.send({ message: 'Este nombre ya se está utilizando' });
+					}
 
-			modelCollections.save((err, collectionSave) => {
-				if (err) {
-					return res.status(500).send({ message: 'error en ejecutar la peticion colecion save' });
+					modelCollections.hash = hash;
+					modelCollections.nameCollection = parameters.nameCollection;
+					modelCollections.desc = parameters.desc;
+					modelCollections.author = parameters.author;
+
+					modelCollections.save((err, collectionSave) => {
+						if (err || !collectionSave) {
+							console.error(
+								'Error al ejecutar la petición de guardar la colección:',
+								err
+							);
+							return res
+								.status(500)
+								.send({ message: 'Error al guardar la colección' });
+						}
+
+						return res.status(200).send({ message: collectionSave });
+					});
 				}
-				if (!collectionSave) {
-					return res.status(500).send({ message: 'error en ejecutar la peticion colecion save' });
-				}
-				return res.status(200).send({ message: collectionSave });
-			});
+			);
 		});
-	});
+	} catch (error) {
+		console.error('Error al crear la colección:', error);
+		return res
+			.status(500)
+			.send({ error: 'Hubo un error al crear la colección' });
+	}
 }
 
-function viewToken(req, res) {
-	TokenCollection.find({ title: 'test', author: 'comuniad de ls papas' }, (err, tokensFid) => res.status(200).send({ message: tokensFid }));
+async function viewToken(req, res) {
+	try {
+		const tokensFid = await TokenCollection.find({
+			title: 'test',
+			author: 'comunidad de las papas',
+		}).exec();
+		res.status(200).send({ message: tokensFid });
+	} catch (error) {
+		console.error('Error al buscar tokens:', error);
+		res.status(500).send({ error: 'Hubo un error al buscar tokens' });
+	}
 }
 
 function tokensSolos(req, res) {
@@ -165,8 +209,122 @@ function tokensSolos(req, res) {
 	});
 }
 module.exports = {
-	agregarTokenAColecion,
+	addTokenToCollection,
 	createCollection,
 	viewToken,
-	tokensSolos
+	tokensSolos,
 };
+
+// estas funciones estaran comentadas por son las versiones anteriores
+
+// funcion de agregar token
+// async function agregarTokenAColecion(req, res) {
+// 	const parameters = req.body;
+// 	const { tokenAmount } = parameters;
+// 	const tokens = [];
+
+// 	const community = await Community.findOne({
+// 		nameCommunity: parameters.nameCommunity,
+// 		idOwner: req.user.sub,
+// 	});
+
+// 	if (!community) {
+// 		return res.status(500).send({ message: 'esta comunidad no te pertenece' });
+// 	}
+// 	if (tokenAmount > 1000) {
+// 		return res.status(500).send({ message: 'Se pasa de el limite' });
+// 	}
+
+// 	const collectionFind = await Collections.findOne({
+// 		author: parameters.nameCommunity,
+// 		nameCollection: parameters.nameCollection,
+// 	});
+
+// 	if (!collectionFind) {
+// 		return res
+// 			.status(500)
+// 			.send({ message: 'error no se encontraron similitudes' });
+// 	}
+
+// 	const tokenFind = await TokenCollection.find({
+// 		author: parameters.nameCommunity,
+// 		idCollection: collectionFind._id,
+// 	});
+
+// 	for (let i = 0; i < tokenAmount; i++) {
+// 		const { min } = parameters;
+// 		const { max } = parameters;
+// 		const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+// 		const modelToken = new TokenCollection();
+// 		const randomBytes = crypto.randomBytes(32).toString('hex');
+// 		const hash = crypto
+// 			.createHash('sha256')
+// 			.update(parameters.name + randomBytes)
+// 			.digest('hex');
+// 		modelToken.hash = hash;
+// 		modelToken.title = parameters.title;
+// 		modelToken.desc = parameters.desc;
+// 		modelToken.numertoken = tokenFind.length + i + 1;
+// 		modelToken.idCollection = collectionFind._id;
+// 		modelToken.author = parameters.nameCommunity;
+// 		modelToken.price = randomNumber;
+// 		tokens.push(modelToken);
+// 	}
+// 	await TokenCollection.insertMany(tokens);
+// 	return res
+// 		.status(200)
+// 		.send({ message: `${tokenAmount} tokens created and saved successfully.` });
+// }
+
+// funcion de crear collecion de tickets/tokens
+// function createCollection(req, res) {
+// 	const modelCollections = new Collections();
+// 	const parameters = req.body;
+// 	const randomBytes = crypto.randomBytes(32).toString('hex');
+// 	const hash = crypto
+// 		.createHash('sha256')
+// 		.update(parameters.nameCollection + randomBytes)
+// 		.digest('hex');
+
+// 	if (!parameters.nameCollection || !parameters.desc) {
+// 		return res.status(500).send({ message: 'datos Oobligatios' });
+// 	}
+
+// 	Community.find({ idOwner: req.user.sub }, (err, communityOwner) => {
+// 		if (communityOwner.length === 0) {
+// 			return res.status(500).send({
+// 				message: 'debes de tener una comunidad para poder crea coleciones',
+// 			});
+// 		}
+
+// 		Collections.find(
+// 			{ nameCollection: parameters.nameCollection },
+// 			(err, collectionsName) => {
+// 				if (collectionsName.length > 0) {
+// 					return res
+// 						.status(500)
+// 						.send({ message: 'este Nombre ya se esta utilizando' });
+// 				}
+
+// 				modelCollections.hash = hash;
+// 				modelCollections.nameCollection = parameters.nameCollection;
+// 				modelCollections.desc = parameters.desc;
+// 				modelCollections.author = parameters.author;
+
+// 				modelCollections.save((err, collectionSave) => {
+// 					if (err) {
+// 						return res
+// 							.status(500)
+// 							.send({ message: 'error en ejecutar la peticion colecion save' });
+// 					}
+// 					if (!collectionSave) {
+// 						return res
+// 							.status(500)
+// 							.send({ message: 'error en ejecutar la peticion colecion save' });
+// 					}
+// 					return res.status(200).send({ message: collectionSave });
+// 				});
+// 			}
+// 		);
+// 	});
+// }

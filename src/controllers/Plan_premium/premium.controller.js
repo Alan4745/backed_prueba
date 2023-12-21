@@ -11,7 +11,6 @@ async function verificacion(req, res) {
 		community.findByIdAndUpdate(req.params.verificado, { verificado: true }, { new: true }, (err, cambiando_verificado) => {
 			return res.status(200).send({ message: cambiando_verificado });
 		});
-
 	});
 }
 
