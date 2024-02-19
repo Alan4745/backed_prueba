@@ -15,14 +15,14 @@ api.get('/viewUsers', controllerUser.viewUser);// ruta actualizada 🆗
 api.post('/signUp', controllerAuth.userRegistration); // ruta actualizada 🆗
 api.post('/login', controllerAuth.loginUser); // ruta actualizada 🆗
 
-api.get('/google', passport.authenticate('auth-google', {scope: ['profile'],
+api.get('/google', passport.authenticate('auth-google', {scope: ['profile','email'],
 }));
 
 api.get('/google/callback', passport.authenticate('auth-google', {failureRedirect:'/'}), (req, res) => {
 	console.log('estamos en call backs');
 	console.log(req.user);
 	res.redirect(
-		`memcaps://app/login?firstName=${req.user.firstName}/lastName=${req.user.lastName}/email=${req.user.email}`);
+		`memcaps://app/login?firstName=${req.user.name.givenName}/lastName=${req.user.lastName.name.familyName}/email=${req.user.email}`);
 });
 
 api.get('/hola12', (req, res) => {
