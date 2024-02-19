@@ -20,12 +20,12 @@ api.post('/login', controllerAuth.loginUser); // ruta actualizada 🆗
 api.get('/google', passport.authenticate('auth-google', {scope: ['profile','email'],
 }));
 
-api.get('/google/callback', passport.authenticate('auth-google', {failureRedirect:'/'}), (req, res) => {
+api.get('/google/callback', passport.authenticate('auth-google', {failureRedirect:'/'}), async (req, res) => {
 	console.log('estamos en call backs');
-	const result = controllerAuth.getUserByEmail(req.user.emails[0].value);
+	const  result  = await controllerAuth.getUserByEmail(req.user.emails[0].value);
 	console.log(result);
 
-	const token = jwt.crearToken(result);
+	const token = await jwt.crearToken(result);
 
 	console.log(result);
 	res.redirect(
