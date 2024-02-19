@@ -196,7 +196,7 @@ async function registerUserByOauth(user) {
 
 async function getUserByEmail(email) {
 	try {
-		const UserFind = await  User.findOne({ email: email});
+		const UserFind = await User.findOne({ email: email});
 
 		return UserFind;
 	} catch (error) {

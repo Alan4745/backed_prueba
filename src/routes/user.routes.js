@@ -11,6 +11,7 @@ const api = express.Router();
 
 // metodos Get
 api.get('/viewUsers', controllerUser.viewUser);// ruta actualizada 🆗
+api.get('/userFindId', [md_autenticacion.Auth], controllerUser.userFindId);
 
 // metodos Post
 api.post('/signUp', controllerAuth.userRegistration); // ruta actualizada 🆗
@@ -22,6 +23,8 @@ api.get('/google', passport.authenticate('auth-google', {scope: ['profile','emai
 api.get('/google/callback', passport.authenticate('auth-google', {failureRedirect:'/'}), (req, res) => {
 	console.log('estamos en call backs');
 	const result = controllerAuth.getUserByEmail(req.user.emails[0].value);
+	console.log(result);
+
 	const token = jwt.crearToken(result);
 
 	console.log(result);

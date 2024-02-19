@@ -9,7 +9,7 @@ passport.use('auth-google',new GoogleStrategy({
 	callbackURL: 'https://backend-dimension.onrender.com/api/google/callback'
 },
 async (accessToken, refreshToken, profile,done)  => {
-
+	console.log(profile.emails[0].value, 'email');
 	if (await getUserByEmail(profile.emails[0].value)) {
 		console.log('User alredy exists in DB');
 	} else {
