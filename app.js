@@ -17,12 +17,19 @@ const channelRouter = require('./src/routes/channel.routes');
 const messageChannelRouter = require('./src/routes/messageChannel.routes');
 const tokenRouter = require('./src/routes/token.routes');
 const checkout = require('./src/routes/checkout.routes');
+const passport = require('passport');
+const session = require('express-session');
 // const postTypeARouter = require('./src/routes/postRoute/postTypeA.routes');
 //---FIN----
+
+
+
 
 // Configura los middlewares de la aplicacion
 app.use(express.urlencoded({ extended: false })); // Middleware que analiza los datos de la solicitud HTTP y los pone en un objeto req.body
 app.use(express.json()); // Middleware que analiza los datos de la solicitud HTTP en formato JSON y los pone en un objeto req.body
+
+
 app.use(cors()); //Middleware que permiten el acceso a la API desde cualquier origen
 app.use(morgan('dev')); // morgan nos muestra en consola que peticiones estan entrantes a la API
 app.use(
@@ -31,6 +38,19 @@ app.use(
 		tempFileDir: './uploads', // directorio donde se almacenara los archivos temporales
 	})
 );
+
+app.use(session({
+	secret: 'keyboard cat',
+	resave: true,
+	saveUninitialized: true,
+	cookie: { maxAge: 1000*60*60}
+}));
+
+
+
+app.use(passport.initialize());
+
+app.use(passport.session());
 
 // Configurar las rutas de la aplicacion
 app.use(

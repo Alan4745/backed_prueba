@@ -3,7 +3,8 @@ const controllerUser = require('../controllers/user.controller');
 const controllerAuth = require('../controllers/Auth.controller');
 
 const md_autenticacion = require('../middlewares/authentication');
-
+const passport = require('passport');
+require('./../middlewares/google.js');
 // poder usar la rutas.
 const api = express.Router();
 
@@ -13,6 +14,23 @@ api.get('/viewUsers', controllerUser.viewUser);// ruta actualizada 🆗
 // metodos Post
 api.post('/signUp', controllerAuth.userRegistration); // ruta actualizada 🆗
 api.post('/login', controllerAuth.loginUser); // ruta actualizada 🆗
+
+api.get('/google', passport.authenticate('auth-google', {scope: ['profile'],
+}));
+
+api.get('/google/callback', passport.authenticate('auth-google', {failureRedirect:'/'}), (req, res) => {
+	res.redirect(
+		`memcaps://app/login?firstName=${req.user.firstName}/lastName=${req.user.lastName}/email=${req.user.email}`);
+});
+
+api.get('/hola12', (req, res) => {
+	console.log(req.user);
+	if (req.isAuthenticated()) {
+		res.send(`<h1>you are logged in </h1> <span>${JSON.stringify(req.user, null,2)} </span>`);
+	} else {
+		res.redirect('/');
+	}
+});
 
 // metodos Put
 api.put('/updateUser/:idUser', [md_autenticacion.Auth], controllerUser.updateUser); // ruta actualizada 🆗
