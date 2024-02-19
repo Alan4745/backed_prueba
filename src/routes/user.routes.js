@@ -1,6 +1,7 @@
 const express = require('express');
 const controllerUser = require('../controllers/user.controller');
 const controllerAuth = require('../controllers/Auth.controller');
+const jwt = require('../services/jwt.js');
 
 const md_autenticacion = require('../middlewares/authentication');
 const passport = require('passport');
@@ -20,9 +21,12 @@ api.get('/google', passport.authenticate('auth-google', {scope: ['profile','emai
 
 api.get('/google/callback', passport.authenticate('auth-google', {failureRedirect:'/'}), (req, res) => {
 	console.log('estamos en call backs');
-	console.log(req.user);
+	const result = controllerAuth.getUserByEmail(req.user.emails[0].value);
+	const token = jwt.crearToken(result);
+
+	console.log(result);
 	res.redirect(
-		`memcaps://app/login?firstName=${req.user.name.givenName}/lastName=${req.user.name.familyName}/email=${req.user.emails[0].value}`);
+		`memcaps://app/login?firstName=${req.user.name.givenName}/lastName=${req.user.name.familyName}/email=${req.user.emails[0].value}/token=${token}`);
 });
 
 api.get('/hola12', (req, res) => {

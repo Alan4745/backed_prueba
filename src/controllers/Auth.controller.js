@@ -169,6 +169,41 @@ async function userRegistration(req, res) {
 	}
 }
 
+async function registerUserByOauth(user) {
+	try {
+		console.log(user, 'datos de perfil del usuario');
+		let nameWithoutSpace = user.name.givenName.replace(/\s/g, '');
+
+		const userModel = new User();
+
+		userModel.name = user.name.givenName;
+		userModel.nickName = `@${nameWithoutSpace}`;
+		userModel.email = user.emails[0].value;
+		userModel.password = '',
+		userModel.imageAvatar.public_id = user.photos[0].value;
+		userModel.imageAvatar.secure_url = user.photos[0].value;
+
+		const userSave = await userModel.save();
+
+		console.log(userSave);
+
+		return (userSave);
+
+	} catch (error) {
+		console.error('An error occurred:', error);
+	}
+}
+
+async function getUserByEmail(email) {
+	try {
+		const UserFind = await  User.findOne({ email: email});
+
+		return UserFind;
+	} catch (error) {
+		console.error('An error occurred:', error);
+
+	}
+}
 // funcion de inicio de sesion de parte del servidor
 // function loginUser(req, res) {
 // 	// rastreamos los datos que viene en la petecion
@@ -311,4 +346,6 @@ async function loginUser(req, res) {
 module.exports = {
 	userRegistration,
 	loginUser,
+	registerUserByOauth,
+	getUserByEmail
 };

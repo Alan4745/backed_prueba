@@ -1,5 +1,6 @@
 var passport = require('passport');
 var GoogleStrategy = require('passport-google-oauth20');
+const { registerUserByOauth, getUserByEmail } = require('../controllers/Auth.controller');
 
 
 passport.use('auth-google',new GoogleStrategy({
@@ -8,6 +9,12 @@ passport.use('auth-google',new GoogleStrategy({
 	callbackURL: 'https://backend-dimension.onrender.com/api/google/callback'
 },
 async (accessToken, refreshToken, profile,done)  => {
+
+	if (await getUserByEmail(profile.emails[0].value)) {
+		console.log('User alredy exists in DB');
+	} else {
+		registerUserByOauth(profile);
+	}
 
 	return done(null, profile);
 }
