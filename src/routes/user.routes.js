@@ -19,6 +19,8 @@ api.get('/google', passport.authenticate('auth-google', {scope: ['profile'],
 }));
 
 api.get('/google/callback', passport.authenticate('auth-google', {failureRedirect:'/'}), (req, res) => {
+	console.log('estamos en call backs');
+	console.log(req.user);
 	res.redirect(
 		`memcaps://app/login?firstName=${req.user.firstName}/lastName=${req.user.lastName}/email=${req.user.email}`);
 });
