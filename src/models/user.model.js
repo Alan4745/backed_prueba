@@ -42,6 +42,10 @@ const userSchema = new Schema(
 			type: String,
 			default: 'dimensionUser',
 		},
+		gustos: { // Nuevo campo para los gustos o categorías
+			type: [String], // Se espera un array de cadenas
+			default: [], // Por defecto, el usuario no tiene gustos definidos
+		},
 	},
 	{ timestamps: true }
 );

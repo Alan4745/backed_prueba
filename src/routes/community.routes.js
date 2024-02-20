@@ -29,6 +29,24 @@ api.get(
 	controllerCommunity.obtenercomunidades
 ); // metodos actualizados
 
+api.get(
+	'/comunidadestendencias',
+	[md_autenticacion.Auth],
+	controllerCommunity.obtenerTendenciasComunidades
+);
+
+api.get(
+	'/comunidadesRecomendadas',
+	[md_autenticacion.Auth],
+	controllerCommunity.recomendarComunidadesPorCategorias
+);
+
+api.get(
+	'/comunidadesSinCategorias',
+	[md_autenticacion.Auth],
+	controllerCommunity.obtenerComunidadesSinCategoria
+);
+
 //VERIFICACION DE PAGO PREMIUM
 api.put(
 	'/premiumstatus/:verificado',

@@ -329,6 +329,70 @@ async function obtenercomunidades(req, res) {
 	}
 }
 
+
+const obtenerTendenciasComunidades = async (req, res) => {
+	try {
+		// Obtener las comunidades tendencia
+		const tendencias = await community.find().sort({ followers: -1 }).limit(10);
+
+		// Verificar si se encontraron comunidades tendencia
+		if (tendencias.length === 0) {
+			return res.status(404).json({ message: 'No se encontraron comunidades tendencia' });
+		}
+  
+		// Devolver las comunidades tendencia
+		res.status(200).json(tendencias);
+	} catch (error) {
+		console.error('Error al obtener las tendencias de las comunidades:', error);
+		res.status(500).json({ message: 'Error del servidor al obtener las tendencias de las comunidades' });
+	}
+};
+  
+const recomendarComunidadesPorCategorias = async (req, res) => {
+	try {
+	// Obtener el ID del usuario actual (suponiendo que está autenticado)
+		const userId = req.user.sub;
+  
+		// Obtener los gustos o categorías del usuario
+		const usuario = await user.findById(userId);
+		const categoriasUsuario = usuario.gustos;
+  
+		// Buscar comunidades que coincidan con al menos una de las categorías del usuario
+		const comunidadesRecomendadas = await community.find({ category: { $in: categoriasUsuario } }).limit(10);
+	
+		// Verificar si se encontraron comunidades recomendadas
+		if (comunidadesRecomendadas.length === 0) {
+			return res.status(404).json({ message: 'No se encontraron comunidades recomendadas para estas categorías' });
+		}
+  
+		// Devolver las comunidades recomendadas
+		res.status(200).json(comunidadesRecomendadas);
+	} catch (error) {
+		console.error('Error al recomendar comunidades por categorías:', error);
+		res.status(500).json({ message: 'Error del servidor al recomendar comunidades por categorías' });
+	}
+};
+
+const obtenerComunidadesSinCategoria = async (req, res) => {
+	try {
+	// Buscar comunidades que tengan la categoría igual a "sin categoría"
+		const comunidadesSinCategoria = await community.find({ category: 'sin categoria'}).limit(10);
+	
+		// Verificar si se encontraron comunidades sin categoría
+		if (comunidadesSinCategoria.length === 0) {
+			return res.status(404).json({ message: 'No se encontraron comunidades sin categoría' });
+		}
+  
+		// Devolver las comunidades sin categoría
+		res.status(200).json(comunidadesSinCategoria);
+	} catch (error) {
+		console.error('Error al obtener comunidades sin categoría:', error);
+		res.status(500).json({ message: 'Error del servidor al obtener comunidades sin categoría' });
+	}
+};
+
+
+
 module.exports = {
 	registerCommunity,
 	editarCommunida,
@@ -342,4 +406,7 @@ module.exports = {
 	deleteCategory,
 	youCommunity,
 	obtenercomunidades,
+	obtenerTendenciasComunidades,
+	recomendarComunidadesPorCategorias,
+	obtenerComunidadesSinCategoria
 };
