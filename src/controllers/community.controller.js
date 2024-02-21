@@ -341,7 +341,7 @@ const obtenerTendenciasComunidades = async (req, res) => {
 		}
   
 		// Devolver las comunidades tendencia
-		res.status(200).json(tendencias);
+		res.status(200).send({ message: tendencias });
 	} catch (error) {
 		console.error('Error al obtener las tendencias de las comunidades:', error);
 		res.status(500).json({ message: 'Error del servidor al obtener las tendencias de las comunidades' });
@@ -366,7 +366,7 @@ const recomendarComunidadesPorCategorias = async (req, res) => {
 		}
   
 		// Devolver las comunidades recomendadas
-		res.status(200).json(comunidadesRecomendadas);
+		res.status(200).send({ message: comunidadesRecomendadas });
 	} catch (error) {
 		console.error('Error al recomendar comunidades por categorías:', error);
 		res.status(500).json({ message: 'Error del servidor al recomendar comunidades por categorías' });
@@ -384,7 +384,7 @@ const obtenerComunidadesSinCategoria = async (req, res) => {
 		}
   
 		// Devolver las comunidades sin categoría
-		res.status(200).json(comunidadesSinCategoria);
+		res.status(200).send({ message: comunidadesSinCategoria });
 	} catch (error) {
 		console.error('Error al obtener comunidades sin categoría:', error);
 		res.status(500).json({ message: 'Error del servidor al obtener comunidades sin categoría' });
