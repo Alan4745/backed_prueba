@@ -45,12 +45,24 @@ const communitySchema = new Schema(
 		},
 		config: {
 			bannerUrl: {
-				type: String,
-				default: ''
+				public_id: {
+					type: String,
+					default: '',
+				},
+				secure_url: {
+					type: String,
+					default: '',
+				},
 			},
 			imagePer: {
-				type: String,
-				default: ''
+				public_id: {
+					type: String,
+					default: '',
+				},
+				secure_url: {
+					type: String,
+					default: '',
+				},
 			}
 		}
 	},

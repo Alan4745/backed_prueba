@@ -1,44 +1,71 @@
 const community = require('../models/community.model');
 const user = require('../models/user.model');
+const { UploadImg } = require('../utils/cloudinary');
+const fs = require('fs-extra');
 
-function registerCommunity(req, res) {
+async function registerCommunity(req, res) {
 	const communityModels = new community();
 	const parameters = req.body;
 
-	community.find(
-		{ nameCommunity: parameters.nameCommunity },
-		(err, communityName) => {
-			if (communityName.length > 0) {
-				return res
-					.status(500)
-					.send({ message: 'este nombre de la comunidad ya esta en uso' });
+	try {
+		const communityName = await community.find({ nameCommunity: parameters.nameCommunity });
+		if (communityName.length > 0) {
+			return res.status(500).send({ message: 'este nombre de la comunidad ya esta en uso' });
+		}
+
+		if (req.files?.imagePer) {
+			// Subir la imagen a Cloudinary y obtener el resultado
+			const result = await UploadImg(req.files.imagePer.tempFilePath);
+			// Guardar la información de la imagen en el modelo de usuario
+			communityModels.config.imagePer.secure_url = result.secure_url;
+			communityModels.config.imagePer.public_id = result.public_id;
+
+			// Verificar si el archivo temporal existe antes de intentar eliminarlo
+			if (fs.existsSync(req.files.imagePer.tempFilePath)) {
+				await fs.unlink(req.files.imagePer.tempFilePath);
+			} else {
+				console.warn('El archivo temporal no existe.');
 			}
 		}
-	);
 
-	communityModels.nameCommunity = parameters.nameCommunity;
-	communityModels.desc = parameters.desc;
-	communityModels.followers = [];
-	communityModels.followings = [];
-	communityModels.category = ['sin categoria'];
-	communityModels.idOwner = req.user.sub;
-	communityModels.nameOwner = req.user.nickName;
-	communityModels.administrators = [];
-	communityModels.config.bannerUrl = parameters.bannerUrl;
-	communityModels.config.imagePer = parameters.imagePer;
+		if (req.files?.bannerUrl) {
+			// Subir la imagen a Cloudinary y obtener el resultado
+			const result = await UploadImg(req.files.bannerUrl.tempFilePath);
+			// Guardar la información de la imagen en el modelo de usuario
+			communityModels.config.bannerUrl.secure_url = result.secure_url;
+			communityModels.config.bannerUrl.public_id = result.public_id;
 
-	communityModels.save((err, community) => {
-		if (err) {
-			return res.status(500).send({ message: 'err en la peticion' });
-		}
-		if (!community) {
-			return res
-				.status(500)
-				.send({ message: 'err al guardar en la comunidad' });
+			// Verificar si el archivo temporal existe antes de intentar eliminarlo
+			if (fs.existsSync(req.files.bannerUrl.tempFilePath)) {
+				await fs.unlink(req.files.bannerUrl.tempFilePath);
+			} else {
+				console.warn('El archivo temporal no existe.');
+			}
 		}
 
-		return res.status(200).send({ message: community });
-	});
+
+		// const bannerUrl = await UploadImg(parameters.bannerUrl);
+		// console.log(bannerUrl);
+
+		communityModels.nameCommunity = parameters.nameCommunity;
+		communityModels.desc = parameters.desc;
+		communityModels.followers = [];
+		communityModels.followings = [];
+		communityModels.category = JSON.parse(parameters.categorias);
+		communityModels.idOwner = req.user.sub;
+		communityModels.nameOwner = req.user.nickName;
+		communityModels.administrators = [];
+
+
+		const savedCommunity = await communityModels.save();
+		if (!savedCommunity) {
+			return res.status(500).send({ message: 'err al guardar en la comunidad' });
+		}
+
+		return res.status(200).send({ message: savedCommunity });
+	} catch (error) {
+		return res.status(500).send({ message: 'err en la peticion' });
+	}
 }
 
 function editarCommunida(req, res) {
@@ -332,6 +359,7 @@ async function obtenercomunidades(req, res) {
 
 const obtenerTendenciasComunidades = async (req, res) => {
 	try {
+		console.log('estamoa aca');
 		// Obtener las comunidades tendencia
 		const tendencias = await community.find().sort({ followers: -1 }).limit(10);
 
