@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 
 const communitySchema = new Schema(
 	{
-		nameCommunity: {
+		name: {
 			type: String,
 			required: true,
 		},
@@ -13,7 +13,10 @@ const communitySchema = new Schema(
 			max: 500,
 			default: 'Escribe Tu descripcion de Tu comunidad'
 		},
-		like: {
+		nameOwner: {
+			type: String,
+		},
+		categories: {
 			type: Array,
 			default: [],
 		},
@@ -21,30 +24,16 @@ const communitySchema = new Schema(
 			type: Array,
 			default: [],
 		},
-		followings: {
+		admins: {
 			type: Array,
 			default: [],
 		},
-		category: {
-			type: Array,
-			default: [],
-		},
-		idOwner: {
-			type: String,
-		},
-		nameOwner: {
-			type: String,
-		},
-		administrators: {
-			type: Array,
-			default: [],
-		},
-		verificado: {
+		verified: {
 			type: Boolean,
 			default: false,
 		},
 		config: {
-			bannerUrl: {
+			bgImage: {
 				public_id: {
 					type: String,
 					default: '',
@@ -54,7 +43,7 @@ const communitySchema = new Schema(
 					default: '',
 				},
 			},
-			imagePer: {
+			pfp: {
 				public_id: {
 					type: String,
 					default: '',

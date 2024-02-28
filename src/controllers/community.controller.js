@@ -8,36 +8,36 @@ async function registerCommunity(req, res) {
 	const parameters = req.body;
 
 	try {
-		const communityName = await community.find({ nameCommunity: parameters.nameCommunity });
+		const communityName = await community.find({ name: parameters.nameCommunity });
 		if (communityName.length > 0) {
 			return res.status(500).send({ message: 'este nombre de la comunidad ya esta en uso' });
 		}
 
-		if (req.files?.imagePer) {
+		if (req.files?.pfp) {
 			// Subir la imagen a Cloudinary y obtener el resultado
-			const result = await UploadImg(req.files.imagePer.tempFilePath);
+			const result = await UploadImg(req.files.pfp.tempFilePath);
 			// Guardar la información de la imagen en el modelo de usuario
-			communityModels.config.imagePer.secure_url = result.secure_url;
-			communityModels.config.imagePer.public_id = result.public_id;
+			communityModels.config.pfp.secure_url = result.secure_url;
+			communityModels.config.pfp.public_id = result.public_id;
 
 			// Verificar si el archivo temporal existe antes de intentar eliminarlo
-			if (fs.existsSync(req.files.imagePer.tempFilePath)) {
-				await fs.unlink(req.files.imagePer.tempFilePath);
+			if (fs.existsSync(req.files.pfp.tempFilePath)) {
+				await fs.unlink(req.files.pfp.tempFilePath);
 			} else {
 				console.warn('El archivo temporal no existe.');
 			}
 		}
 
-		if (req.files?.bannerUrl) {
+		if (req.files?.bgImage) {
 			// Subir la imagen a Cloudinary y obtener el resultado
-			const result = await UploadImg(req.files.bannerUrl.tempFilePath);
+			const result = await UploadImg(req.files.bgImage.tempFilePath);
 			// Guardar la información de la imagen en el modelo de usuario
-			communityModels.config.bannerUrl.secure_url = result.secure_url;
-			communityModels.config.bannerUrl.public_id = result.public_id;
+			communityModels.config.bgImage.secure_url = result.secure_url;
+			communityModels.config.bgImage.public_id = result.public_id;
 
 			// Verificar si el archivo temporal existe antes de intentar eliminarlo
-			if (fs.existsSync(req.files.bannerUrl.tempFilePath)) {
-				await fs.unlink(req.files.bannerUrl.tempFilePath);
+			if (fs.existsSync(req.files.bgImage.tempFilePath)) {
+				await fs.unlink(req.files.bgImage.tempFilePath);
 			} else {
 				console.warn('El archivo temporal no existe.');
 			}
@@ -47,14 +47,12 @@ async function registerCommunity(req, res) {
 		// const bannerUrl = await UploadImg(parameters.bannerUrl);
 		// console.log(bannerUrl);
 
-		communityModels.nameCommunity = parameters.nameCommunity;
+		communityModels.name = parameters.nameCommunity;
 		communityModels.desc = parameters.desc;
 		communityModels.followers = [];
-		communityModels.followings = [];
-		communityModels.category = JSON.parse(parameters.categorias);
-		communityModels.idOwner = req.user.sub;
+		communityModels.categories = JSON.parse(parameters.categorias);
 		communityModels.nameOwner = req.user.nickName;
-		communityModels.administrators = [];
+		communityModels.admins = [];
 
 
 		const savedCommunity = await communityModels.save();
@@ -206,12 +204,12 @@ async function viewCommunityId(req, res) {
 }
 
 function followersCommunity(req, res) {
-	const { idCommuunity } = req.params;
-	community.findOne({ _id: idCommuunity }, (err, communityOne) => {
+	const { idCommunity } = req.params;
+	community.findOne({ _id: idCommunity }, (err, communityOne) => {
 		const userInclud = communityOne.followers.includes(req.user.sub);
 		if (userInclud) {
 			community.findByIdAndUpdate(
-				{ _id: idCommuunity },
+				{ _id: idCommunity },
 				{ $pull: { followers: req.user.sub } },
 				{ new: true },
 				(err, communityFollowers) => {
@@ -221,12 +219,12 @@ function followersCommunity(req, res) {
 					if (!communityFollowers) {
 						return res.status(500).send({ err: 'error en communityFollowers' });
 					}
-					return res.status(200).send({ mensaje: communityFollowers });
+					return res.status(200).send({ message: communityFollowers });
 				}
 			);
 		} else {
 			community.findByIdAndUpdate(
-				{ _id: idCommuunity },
+				{ _id: idCommunity },
 				{ $push: { followers: req.user.sub } },
 				{ new: true },
 				(err, communityUnFollowers) => {
@@ -236,7 +234,7 @@ function followersCommunity(req, res) {
 					if (!communityUnFollowers) {
 						return res.status(500).send({ err: 'error en communityFollowers' });
 					}
-					return res.status(200).send({ mensaje: communityUnFollowers });
+					return res.status(200).send({ message: communityUnFollowers });
 				}
 			);
 		}
@@ -386,7 +384,7 @@ const recomendarComunidadesPorCategorias = async (req, res) => {
 		const categoriasUsuario = usuario.gustos;
   
 		// Buscar comunidades que coincidan con al menos una de las categorías del usuario
-		const comunidadesRecomendadas = await community.find({ category: { $in: categoriasUsuario } }).limit(10);
+		const comunidadesRecomendadas = await community.find({ categories: { $in: categoriasUsuario } }).limit(10);
 	
 		// Verificar si se encontraron comunidades recomendadas
 		if (comunidadesRecomendadas.length === 0) {
@@ -401,23 +399,35 @@ const recomendarComunidadesPorCategorias = async (req, res) => {
 	}
 };
 
-const obtenerComunidadesSinCategoria = async (req, res) => {
+const obtenerComunidadesPorCategoria = async (req, res) => {
 	try {
-	// Buscar comunidades que tengan la categoría igual a "sin categoría"
-		const comunidadesSinCategoria = await community.find({ category: 'sin categoria'}).limit(10);
-	
-		// Verificar si se encontraron comunidades sin categoría
-		if (comunidadesSinCategoria.length === 0) {
-			return res.status(404).json({ message: 'No se encontraron comunidades sin categoría' });
+		// Obtener las categorías de interés desde la solicitud (por ejemplo, desde el query params)
+		const categorias = req.params.categorias.split(',');
+
+		console.log(categorias);
+
+
+		// Verificar si se proporcionaron categorías en la solicitud
+		if (!categorias || categorias.length === 0) {
+			return res.status(400).json({ message: 'Se deben proporcionar categorías para realizar la búsqueda' });
+		}
+
+		// Buscar comunidades que tengan las categorías especificadas
+		const comunidadesPorCategoria = await community.find({ categories: { $in: categorias } }).limit(10);
+
+		// Verificar si se encontraron comunidades con las categorías especificadas
+		if (comunidadesPorCategoria.length === 0) {
+			return res.status(404).json({ message: 'No se encontraron comunidades para las categorías especificadas' });
 		}
   
-		// Devolver las comunidades sin categoría
-		res.status(200).send({ message: comunidadesSinCategoria });
+		// Devolver las comunidades encontradas
+		res.status(200).send({ message: comunidadesPorCategoria });
 	} catch (error) {
-		console.error('Error al obtener comunidades sin categoría:', error);
-		res.status(500).json({ message: 'Error del servidor al obtener comunidades sin categoría' });
+		console.error('Error al obtener comunidades por categoría:', error);
+		res.status(500).json({ message: 'Error del servidor al obtener comunidades por categoría' });
 	}
 };
+
 
 
 
@@ -436,5 +446,5 @@ module.exports = {
 	obtenercomunidades,
 	obtenerTendenciasComunidades,
 	recomendarComunidadesPorCategorias,
-	obtenerComunidadesSinCategoria
+	obtenerComunidadesPorCategoria
 };

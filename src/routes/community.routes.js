@@ -42,9 +42,9 @@ api.get(
 );
 
 api.get(
-	'/comunidadesSinCategorias',
+	'/comunidadesPorCategorias/:categorias',
 	[md_autenticacion.Auth],
-	controllerCommunity.obtenerComunidadesSinCategoria
+	controllerCommunity.obtenerComunidadesPorCategoria
 );
 
 //VERIFICACION DE PAGO PREMIUM
