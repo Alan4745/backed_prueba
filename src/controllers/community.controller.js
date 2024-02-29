@@ -330,7 +330,7 @@ async function followersView(req, res) {
 async function youCommunity(req, res) {
 	try {
 		// Buscar las comunidades propiedad del usuario actual
-		const youCommunityFind = await community.find({ idOwner: req.user.sub });
+		const youCommunityFind = await community.find({ nameOwner: req.user.nickName });
 
 		// Enviar la lista de comunidades encontradas
 		return res.status(200).send({ message: youCommunityFind });

@@ -4,6 +4,9 @@ const TokenCollection = require('../models/tokens/tokenCollection.model');
 const Collections = require('../models/tokens/collections.model');
 const Community = require('../models/community.model');
 const Token = require('../models/tokens/tokenUnitary.model');
+const fs = require('fs-extra');
+
+const { UploadImg } = require('../utils/cloudinary');
 // function agregarTokenAColecion(req, res) {
 //   const parameters = req.body;
 //   const { tokenAmount } = parameters;
@@ -131,7 +134,7 @@ async function addTokenToCollection(req, res) {
 	}
 }
 
-function createCollection(req, res) {
+async function createCollection (req, res) { 
 	try {
 		const modelCollections = new Collections();
 		const parameters = req.body;
@@ -145,7 +148,7 @@ function createCollection(req, res) {
 			return res.status(500).send({ message: 'Datos obligatorios faltantes' });
 		}
 
-		Community.find({ idOwner: req.user.sub }, (err, communityOwner) => {
+		Community.find({ idOwner: req.user.sub },  (err, communityOwner) => {
 			if (communityOwner.length === 0) {
 				return res.status(500).send({
 					message: 'Debes tener una comunidad para poder crear colecciones',
@@ -154,7 +157,7 @@ function createCollection(req, res) {
 
 			Collections.find(
 				{ nameCollection: parameters.nameCollection },
-				(err, collectionsName) => {
+				async  (err, collectionsName)  => {
 					if (collectionsName.length > 0) {
 						return res
 							.status(500)
@@ -165,6 +168,23 @@ function createCollection(req, res) {
 					modelCollections.nameCollection = parameters.nameCollection;
 					modelCollections.desc = parameters.desc;
 					modelCollections.author = parameters.author;
+
+
+					if (req.files?.image) {
+						// Subir la imagen a Cloudinary y obtener el resultado
+						const result = await UploadImg(req.files.image.tempFilePath);
+						// Guardar la información de la imagen en el modelo de usuario
+		
+						modelCollections.img.imgUrl = result.secure_url;
+						modelCollections.img.imgId = result.public_id;
+			
+						// Verificar si el archivo temporal existe antes de intentar eliminarlo
+						if (fs.existsSync(req.files.image.tempFilePath)) {
+							await fs.unlink(req.files.image.tempFilePath);
+						} else {
+							console.warn('El archivo temporal no existe.');
+						}
+					}
 
 					modelCollections.save((err, collectionSave) => {
 						if (err || !collectionSave) {
