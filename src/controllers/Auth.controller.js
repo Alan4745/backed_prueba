@@ -196,8 +196,7 @@ async function registerUserByOauth(user) {
 
 async function getUserByEmail(email) {
 	try {
-		const UserFind = await User.findOne({ email: email});
-
+		const UserFind = await User.findOne({ email: email}).select('-password');
 		return UserFind;
 	} catch (error) {
 		console.error('An error occurred:', error);
