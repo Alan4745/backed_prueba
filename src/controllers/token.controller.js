@@ -68,10 +68,11 @@ async function addTokenToCollection(req, res) {
 		const parameters = req.body;
 		const { tokenAmount } = parameters;
 		const tokens = [];
+		let result = {};
 
 		const community = await Community.findOne({
 			nameCommunity: parameters.nameCommunity,
-			idOwner: req.user.sub,
+			nameOwner: req.user.nickName,
 		});
 
 		if (!community) {
@@ -89,6 +90,9 @@ async function addTokenToCollection(req, res) {
 			nameCollection: parameters.nameCollection,
 		});
 
+		console.log(parameters.nameCollection, 'nameCollection');
+		console.log(parameters.nameCommunity, 'nameCommunity');
+
 		if (!collectionFind) {
 			return res
 				.status(500)
@@ -99,6 +103,22 @@ async function addTokenToCollection(req, res) {
 			author: parameters.nameCommunity,
 			idCollection: collectionFind._id,
 		});
+
+		
+		if (req.files?.image) {
+			// Subir la imagen a Cloudinary y obtener el resultado
+			result = await UploadImg(req.files.image.tempFilePath);
+			// Guardar la información de la imagen en el modelo de usuario
+
+	
+
+			// Verificar si el archivo temporal existe antes de intentar eliminarlo
+			if (fs.existsSync(req.files.image.tempFilePath)) {
+				await fs.unlink(req.files.image.tempFilePath);
+			} else {
+				console.warn('El archivo temporal no existe.');
+			}
+		}
 
 		for (let i = 0; i < tokenAmount; i++) {
 			const { min } = parameters;
@@ -118,6 +138,9 @@ async function addTokenToCollection(req, res) {
 			modelToken.idCollection = collectionFind._id;
 			modelToken.author = parameters.nameCommunity;
 			modelToken.price = randomNumber;
+
+			modelToken.img.imgUrl = result.secure_url;
+			modelToken.img.imgId = result.public_id;
 
 			tokens.push(modelToken);
 		}
@@ -211,10 +234,10 @@ async function createCollection (req, res) {
 }
 
 async function viewToken(req, res) {
+	
 	try {
 		const tokensFid = await TokenCollection.find({
-			title: 'test',
-			author: 'comunidad de las papas',
+			idCollection: req.params.idCollection,
 		}).exec();
 		res.status(200).send({ message: tokensFid });
 	} catch (error) {
