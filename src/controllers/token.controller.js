@@ -144,11 +144,11 @@ async function createCollection (req, res) {
 			.update(parameters.nameCollection + randomBytes)
 			.digest('hex');
 
-		if (!parameters.nameCollection || !parameters.desc) {
+		if (!parameters.nameCollection || !parameters.desc || !parameters.author) {
 			return res.status(500).send({ message: 'Datos obligatorios faltantes' });
 		}
 
-		Community.find({ idOwner: req.user.sub },  (err, communityOwner) => {
+		Community.find({ nameOwner: req.user.nickName },  (err, communityOwner) => {
 			if (communityOwner.length === 0) {
 				return res.status(500).send({
 					message: 'Debes tener una comunidad para poder crear colecciones',
@@ -206,7 +206,7 @@ async function createCollection (req, res) {
 		console.error('Error al crear la colección:', error);
 		return res
 			.status(500)
-			.send({ error: 'Hubo un error al crear la colección' });
+			.send({ message: 'Hubo un error al crear la colección' });
 	}
 }
 
@@ -223,6 +223,27 @@ async function viewToken(req, res) {
 	}
 }
 
+
+async function findCollectionByName(req, res) {
+	const { name } = req.params; // Supongamos que el nombre se pasa como parámetro en la URL
+	console.log(name);
+	try {
+		// Buscar la colección por su nombre
+		const collection = await Collections.find({ author: name });
+        
+		if (collection) {
+			// Si se encuentra la colección, devolverla en la respuesta
+			return res.status(200).send({message: collection});
+		} else {
+			// Si no se encuentra la colección, devolver un mensaje de error
+			return res.status(404).send({ message: 'No se encontró ninguna colección con ese nombre.' });
+		}
+	} catch (error) {
+		// Manejar errores
+		console.error('Error al buscar la colección:', error);
+		return res.status(500).send({ message: 'Error interno del servidor.' });
+	}
+}
 function tokensSolos(req, res) {
 	Token.find((err, tokenOne) => {
 		console.log(tokenOne);
@@ -233,6 +254,7 @@ module.exports = {
 	createCollection,
 	viewToken,
 	tokensSolos,
+	findCollectionByName
 };
 
 // estas funciones estaran comentadas por son las versiones anteriores

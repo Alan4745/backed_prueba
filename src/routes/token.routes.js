@@ -10,6 +10,7 @@ const cobro_ticket_controller = require('../controllers/tickets/cobrar_ticket');
 
 // metodos Get
 api.get('/obtenerTokens', [md_autenticacion.Auth], controllerToken.viewToken); // metodo actualizado 🆗
+api.get('/getcollections/:name', [md_autenticacion.Auth], controllerToken.findCollectionByName); // metodo actualizado 🆗
 
 // metodos Post
 api.post('/addTokenToCollection', [md_autenticacion.Auth], controllerToken.addTokenToCollection); // metodo actualizado 🆗

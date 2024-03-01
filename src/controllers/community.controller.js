@@ -49,7 +49,7 @@ async function registerCommunity(req, res) {
 
 		communityModels.name = parameters.nameCommunity;
 		communityModels.desc = parameters.desc;
-		communityModels.followers = [];
+		communityModels.followers = [req.user.sub];
 		communityModels.categories = JSON.parse(parameters.categorias);
 		communityModels.nameOwner = req.user.nickName;
 		communityModels.admins = [];
@@ -340,6 +340,19 @@ async function youCommunity(req, res) {
 	}
 }
 
+async function SubscribedCommunities(req, res) {
+	try {
+		// Buscar las comunidades propiedad del usuario actual
+		const youCommunityFind = await community.find({ followers: req.user.sub });
+
+		// Enviar la lista de comunidades encontradas
+		return res.status(200).send({ message: youCommunityFind });
+	} catch (error) {
+		console.error('An error occurred:', error);
+		return res.status(500).send({ message: 'Internal server error.' });
+	}
+}
+
 // Metodo actualizado 🆗
 async function obtenercomunidades(req, res) {
 	try {
@@ -446,5 +459,6 @@ module.exports = {
 	obtenercomunidades,
 	obtenerTendenciasComunidades,
 	recomendarComunidadesPorCategorias,
-	obtenerComunidadesPorCategoria
+	obtenerComunidadesPorCategoria,
+	SubscribedCommunities
 };

@@ -36,6 +36,12 @@ api.get(
 );
 
 api.get(
+	'/subscribedcommunities',
+	[md_autenticacion.Auth],
+	controllerCommunity.SubscribedCommunities
+);
+
+api.get(
 	'/comunidadesRecomendadas',
 	[md_autenticacion.Auth],
 	controllerCommunity.recomendarComunidadesPorCategorias
