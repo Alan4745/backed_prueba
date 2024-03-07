@@ -35,6 +35,7 @@ const tokenCollectionSchema = new Schema({
 	},
 	price: {
 		type: Number,
+		default: 0,
 		required: true
 	},
 	idCollection: {
@@ -45,9 +46,9 @@ const tokenCollectionSchema = new Schema({
 		type: String,
 		require: true
 	},
-	buyers: {
-		type: Array,
-		default: []
+	buyerid: {
+		type: String,
+		default: ''
 	},
 	estado:{
 		type: String,

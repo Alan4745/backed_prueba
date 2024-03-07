@@ -422,7 +422,7 @@ const obtenerComunidadesPorCategoria = async (req, res) => {
 
 		// Verificar si se proporcionaron categorías en la solicitud
 		if (!categorias || categorias.length === 0) {
-			return res.status(400).json({ message: 'Se deben proporcionar categorías para realizar la búsqueda' });
+			return res.status(400).send({ message: 'Se deben proporcionar categorías para realizar la búsqueda' });
 		}
 
 		// Buscar comunidades que tengan las categorías especificadas
@@ -430,7 +430,7 @@ const obtenerComunidadesPorCategoria = async (req, res) => {
 
 		// Verificar si se encontraron comunidades con las categorías especificadas
 		if (comunidadesPorCategoria.length === 0) {
-			return res.status(404).json({ message: 'No se encontraron comunidades para las categorías especificadas' });
+			return res.status(404).send({ message: 'No se encontraron comunidades para las categorías especificadas' });
 		}
   
 		// Devolver las comunidades encontradas

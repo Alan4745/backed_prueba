@@ -121,9 +121,6 @@ async function addTokenToCollection(req, res) {
 		}
 
 		for (let i = 0; i < tokenAmount; i++) {
-			const { min } = parameters;
-			const { max } = parameters;
-			const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
 			const modelToken = new TokenCollection();
 			const randomBytes = crypto.randomBytes(32).toString('hex');
 			const hash = crypto
@@ -137,7 +134,7 @@ async function addTokenToCollection(req, res) {
 			modelToken.numertoken = tokenFind.length + i + 1;
 			modelToken.idCollection = collectionFind._id;
 			modelToken.author = parameters.nameCommunity;
-			modelToken.price = randomNumber;
+			modelToken.price = parameters.price;
 
 			modelToken.img.imgUrl = result.secure_url;
 			modelToken.img.imgId = result.public_id;
@@ -239,6 +236,11 @@ async function viewToken(req, res) {
 		const tokensFid = await TokenCollection.find({
 			idCollection: req.params.idCollection,
 		}).exec();
+
+		if (tokensFid.length === 0) {
+			return res.status(404).send({ message: 'No se encontraron tokens para esta colección' });
+		}
+
 		res.status(200).send({ message: tokensFid });
 	} catch (error) {
 		console.error('Error al buscar tokens:', error);

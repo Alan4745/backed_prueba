@@ -26,10 +26,11 @@ api.get('/google/callback', passport.authenticate('auth-google', {failureRedirec
 	console.log(result);
 
 	const token = await jwt.crearToken(result);
+	const cadenaTextp = JSON.stringify(result);
 
 	console.log(token);
 	res.redirect(
-		`memcaps://app/login?firstName=${req.user.name.givenName}/lastName=${req.user.name.familyName}/email=${req.user.emails[0].value}/token=${token}/identidad=${result}`);
+		`memcaps://app/login?firstName=${req.user.name.givenName}/lastName=${req.user.name.familyName}/email=${req.user.emails[0].value}/token=${token}/identidad=${cadenaTextp}`);
 });
 
 api.get('/hola12', (req, res) => {
