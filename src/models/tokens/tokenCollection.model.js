@@ -50,9 +50,9 @@ const tokenCollectionSchema = new Schema({
 		type: String,
 		default: ''
 	},
-	estado:{
-		type: String,
-		default: 'NoAdquirido'
+	adquirido:{
+		type: Boolean,
+		default: false
 	},
 	canjeado:{
 		type: Boolean,

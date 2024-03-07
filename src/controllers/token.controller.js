@@ -5,6 +5,7 @@ const Collections = require('../models/tokens/collections.model');
 const Community = require('../models/community.model');
 const Token = require('../models/tokens/tokenUnitary.model');
 const fs = require('fs-extra');
+const User = require('../models/user.model');
 
 const { UploadImg } = require('../utils/cloudinary');
 // function agregarTokenAColecion(req, res) {
@@ -134,7 +135,7 @@ async function addTokenToCollection(req, res) {
 			modelToken.numertoken = tokenFind.length + i + 1;
 			modelToken.idCollection = collectionFind._id;
 			modelToken.author = parameters.nameCommunity;
-			modelToken.price = parameters.price;
+			modelToken.price = parameters.price * 100;
 
 			modelToken.img.imgUrl = result.secure_url;
 			modelToken.img.imgId = result.public_id;
@@ -231,14 +232,14 @@ async function createCollection (req, res) {
 }
 
 async function viewToken(req, res) {
-	
 	try {
 		const tokensFid = await TokenCollection.find({
 			idCollection: req.params.idCollection,
+			adquirido: false // Filtrar por tokens no adquiridos
 		}).exec();
 
 		if (tokensFid.length === 0) {
-			return res.status(404).send({ message: 'No se encontraron tokens para esta colección' });
+			return res.status(404).send({ message: 'No se encontraron tokens no adquiridos para esta colección' });
 		}
 
 		res.status(200).send({ message: tokensFid });
@@ -247,6 +248,7 @@ async function viewToken(req, res) {
 		res.status(500).send({ error: 'Hubo un error al buscar tokens' });
 	}
 }
+
 
 
 async function findCollectionByName(req, res) {
@@ -274,12 +276,63 @@ function tokensSolos(req, res) {
 		console.log(tokenOne);
 	});
 }
+
+
+async function redeemTicket(req, res) {
+	try {
+		const idTicket = req.params.idTicket;
+		const idUsuario = req.user.sub;
+
+		console.log(idTicket);
+		console.log(idUsuario);
+
+		const nuevoBuyerId = req.body.buyerid;
+
+		// Validar si los IDs son válidos
+		if (!idTicket || !idUsuario) {
+			return res.status(400).send({ message: 'Se requieren IDs de ticket y usuario válidos.' });
+		}
+
+		// Verificar si el usuario ya ha adquirido el ticket
+		const usuario = await User.findById(idUsuario);
+		if (!usuario) {
+			return res.status(404).send({ message: 'No se encontró ningún usuario con ese ID.' });
+		}
+		if (usuario.tokensAbotenidos.includes(idTicket)) {
+			return res.status(400).send({ message: 'El usuario ya ha adquirido este ticket.' });
+		}
+
+		// Actualizar el ticket
+		const ticketActualizado = await TokenCollection.findByIdAndUpdate(
+			idTicket,
+			{ buyerid: nuevoBuyerId, adquirido: true },
+			{ new: true }
+		);
+
+		if (!ticketActualizado) {
+			return res.status(404).send({ message: 'No se encontró ningún ticket con ese ID.' });
+		}
+
+		// Agregar el ticket a los tokens obtenidos del usuario
+		usuario.tokensAbotenidos.push(ticketActualizado);
+
+		// Guardar los cambios en el usuario
+		await usuario.save();
+
+		res.status(200).send({ message: 'Ticket redimido exitosamente.', ticket: ticketActualizado });
+	} catch (error) {
+		console.error('Error al redimir el ticket:', error);
+		res.status(500).send({ message: 'Error interno del servidor.' });
+	}
+}
+
 module.exports = {
 	addTokenToCollection,
 	createCollection,
 	viewToken,
 	tokensSolos,
-	findCollectionByName
+	findCollectionByName,
+	redeemTicket
 };
 
 // estas funciones estaran comentadas por son las versiones anteriores

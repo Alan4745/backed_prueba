@@ -17,7 +17,7 @@ api.post('/addTokenToCollection', [md_autenticacion.Auth], controllerToken.addTo
 api.post('/createCollection', [md_autenticacion.Auth], controllerToken.createCollection); // metodo actualizado 🆗
 api.post('/tokensSolo', [md_autenticacion.Auth], controllerToken.tokensSolos); // metodo no actualizado ❌  
 // metodos Put
-
+api.put('/redeemTiceket/:idTicket', [md_autenticacion.Auth], controllerToken.redeemTicket); // metodo actualizado 🆗
 // metodos Delete
 
 

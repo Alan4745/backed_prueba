@@ -30,6 +30,16 @@ const userSchema = new Schema(
 				default: '',
 			},
 		},
+		bgImage: {
+			public_id: {
+				type: String,
+				default: '',
+			},
+			secure_url: {
+				type: String,
+				default: '',
+			},
+		},
 		fichas: {
 			type: Array,
 			default: [],
