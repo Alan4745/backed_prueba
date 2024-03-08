@@ -18,6 +18,11 @@ api.post('/createCollection', [md_autenticacion.Auth], controllerToken.createCol
 api.post('/tokensSolo', [md_autenticacion.Auth], controllerToken.tokensSolos); // metodo no actualizado ❌  
 // metodos Put
 api.put('/redeemTiceket/:idTicket', [md_autenticacion.Auth], controllerToken.redeemTicket); // metodo actualizado 🆗
+api.put('/burnTicket/:idTicket', [md_autenticacion.Auth], controllerToken.burnTicket); // metodo actualizado 🆗
+
+
+
+//burnTicket
 // metodos Delete
 
 
