@@ -2,36 +2,34 @@ const MessagesChannels = require('../models/messagesChannel.model');
 const ChannelCommun = require('../models/channelCommunity.model');
 const User = require('../models/user.model');
 
-function saveMessagesChannel(req, res) {
-	const messageModel = new MessagesChannels();
-	const parameters = req.body;
-	const { channelId } = req.params;
+async function saveMessagesChannel(req, res) {
+	try {
+		const messageModel = new MessagesChannels();
+		const parameters = req.body;
+		const { channelId } = req.params;
 
-	messageModel.channelId = channelId;
-	messageModel.sender = req.user.sub;
-	messageModel.text = parameters.text;
+		messageModel.channelId = channelId;
+		messageModel.sender = req.user.sub;
+		messageModel.text = parameters.text;
 
-	ChannelCommun.findOne({ _id: channelId }, (err, channel) => {
-		// console.log(channel, req.user.sub);
-		const mensbers = channel.members.some((item) => item === req.user.sub);
-
-		if (mensbers) {
-			messageModel.save((err, saveMessage) => {
-				if (err) {
-					return res.status(500).send({ message: 'error en la peticion' });
-				}
-
-				if (!saveMessage) {
-					return res.status(500).send({ message: 'err al guardar el mesaje en canal' });
-				}
-
-				return res.status(200).send({ saveMessage });
-			});
-		} else {
-			return res.status(500).send({ err: 'no puede mandar mensajes en este canal' });
+		const channel = await ChannelCommun.findOne({ _id: channelId }).exec();
+		if (!channel) {
+			return res.status(404).send({ message: 'Canal no encontrado' });
 		}
-	});
+
+		const isMember = channel.members.some((item) => item === req.user.sub);
+		if (!isMember) {
+			return res.status(403).send({ message: 'No puede enviar mensajes en este canal' });
+		}
+
+		const saveMessage = await messageModel.save();
+
+		return res.status(200).send({ message: saveMessage });
+	} catch (error) {
+		return res.status(500).send({ message: 'Error en la petición', error: error });
+	}
 }
+
 
 function viewMessagesChannel(req, res) {
 	const { channelId } = req.params;

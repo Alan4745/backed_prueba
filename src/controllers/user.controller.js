@@ -111,7 +111,6 @@ async function viewUser(req, res) {
 
 async function userFindId(req, res) {
 	try {
-		console.log(req.user);
 		let findUser = await User.findOne({ _id: req.user.sub});
 		res.status(200).send({ message: findUser });
 

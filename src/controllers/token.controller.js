@@ -6,6 +6,7 @@ const Community = require('../models/community.model');
 const Token = require('../models/tokens/tokenUnitary.model');
 const fs = require('fs-extra');
 const User = require('../models/user.model');
+const io = require('./../../Server');
 
 const { UploadImg } = require('../utils/cloudinary');
 // function agregarTokenAColecion(req, res) {
@@ -361,7 +362,11 @@ async function burnTicket(req, res) {
 		if (!documentoActualizado) {
 			return res.status(404).send({ message: 'No se encontró ningún documento con ese ID.' });
 		}
-
+		// io.on('connection', (socket) => {
+		// 	console.log('Un cliente se ha conectado');
+		// });
+		// io.on('documentoActualizado', { documento: documentoActualizado });
+		console.log(io);
 		res.status(200).send({ message: 'Documento actualizado con éxito.', documento: documentoActualizado });
 	} catch (error) {
 		console.error('Error al actualizar el documento:', error);

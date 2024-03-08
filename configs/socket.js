@@ -62,12 +62,29 @@ const socketFunctions = (io) => {
 				.to(room.roomName)
 				.emit('message', `${room.userName} has joined the chat`);
 		});
+
+
+		socket.on('ticketCanal', (roomName) => {
+			console.log(roomName);
+			socket.join(roomName); // El cliente se une a la habitación especificada
+			console.log(`Cliente se ha unido a la habitación ${roomName}`);
+		});
+	
+
+		socket.on('ticketCanalEvent', (roomName, message) => {
+			io.to(roomName).emit('checkTicket', message); // Se envía el mensaje a la habitación especificada
+		});
+	
 		//----FIN----
 
 		//----INICIO---- de la evento "PING PONG"
-		socket.on('ping', () => {
-			socket.emit('pong');
+		socket.on('ping', (message) => {
+			console.log('Mensaje recibido:', message);
+			// Devolver el mismo mensaje al cliente con 'ping' y 'pong' concatenados
+			const responseMessage = 'pong';
+			socket.emit('pong', responseMessage);
 		});
+	
 		//----FIN----
 
 		//----INICIO---- evento de enviar mensajes del canal
@@ -104,6 +121,9 @@ const socketFunctions = (io) => {
 				});
 			}
 		});
+
+
+
 		//----FIN----
 
 		//---- INICIO ---- evento de desconectar el socket
