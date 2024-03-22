@@ -368,11 +368,37 @@ async function obtenercomunidades(req, res) {
 }
 
 
+// const obtenerTendenciasComunidades = async (req, res) => {
+// 	try {
+// 		console.log('estamoa aca');
+// 		// Obtener las comunidades tendencia
+// 		const tendencias = await community.find().sort({ followers: -1 }).limit(10);
+
+// 		// Verificar si se encontraron comunidades tendencia
+// 		if (tendencias.length === 0) {
+// 			return res.status(404).json({ message: 'No se encontraron comunidades tendencia' });
+// 		}
+  
+// 		// Devolver las comunidades tendencia
+// 		res.status(200).send({ message: tendencias });
+// 	} catch (error) {
+// 		console.error('Error al obtener las tendencias de las comunidades:', error);
+// 		res.status(500).json({ message: 'Error del servidor al obtener las tendencias de las comunidades' });
+// 	}
+// };
+
 const obtenerTendenciasComunidades = async (req, res) => {
 	try {
-		console.log('estamoa aca');
-		// Obtener las comunidades tendencia
-		const tendencias = await community.find().sort({ followers: -1 }).limit(10);
+		console.log('estamos aquí');
+
+		// Obtener el ID del usuario actual
+		const usuarioId = req.user.sub; // Suponiendo que req.user contiene la información del usuario
+
+		// Obtener las comunidades tendencia excluyendo al usuario actual
+		const tendencias = await community
+			.find({ followers: { $ne: usuarioId } }) // $ne: "not equal"
+			.sort({ followers: -1 })
+			.limit(10);
 
 		// Verificar si se encontraron comunidades tendencia
 		if (tendencias.length === 0) {
@@ -386,6 +412,7 @@ const obtenerTendenciasComunidades = async (req, res) => {
 		res.status(500).json({ message: 'Error del servidor al obtener las tendencias de las comunidades' });
 	}
 };
+
   
 const recomendarComunidadesPorCategorias = async (req, res) => {
 	try {
@@ -442,6 +469,22 @@ const obtenerComunidadesPorCategoria = async (req, res) => {
 };
 
 
+async function findComunidadesRegex(req, res) {
+	const { name } = req.params;
+  
+	try {
+	// Utilizamos una expresión regular para buscar nombres similares o coincidentes
+		const communities = await community.find({ name: { $regex: name, $options: 'i' } })
+			.limit(10) // Limitamos los resultados a 10 comunidades
+			.exec();
+  
+		res.status(200).send({message: communities});
+	} catch (error) {
+		console.error('Error al buscar comunidades:', error);
+		res.status(500).json({ message: 'Error al buscar comunidades' });
+	}
+}
+  
 
 
 module.exports = {
@@ -460,5 +503,6 @@ module.exports = {
 	obtenerTendenciasComunidades,
 	recomendarComunidadesPorCategorias,
 	obtenerComunidadesPorCategoria,
-	SubscribedCommunities
+	SubscribedCommunities,
+	findComunidadesRegex
 };

@@ -53,6 +53,12 @@ api.get(
 	controllerCommunity.obtenerComunidadesPorCategoria
 );
 
+api.get(
+	'/findComunidadesRegex/:name',
+	[md_autenticacion.Auth],
+	controllerCommunity.findComunidadesRegex
+);
+
 //VERIFICACION DE PAGO PREMIUM
 api.put(
 	'/premiumstatus/:verificado',

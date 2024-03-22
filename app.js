@@ -24,7 +24,10 @@ const session = require('express-session');
 // const postTypeARouter = require('./src/routes/postRoute/postTypeA.routes');
 //---FIN----
 
-
+// POST NORMAL
+const NormalPostRouter = require('./src/routes/Post.Routes/normalPost.routes');
+// POST event
+const EventPostRouter = require('./src/routes/Post.Routes/eventPost.routes');
 
 
 // Configura los middlewares de la aplicacion
@@ -64,6 +67,8 @@ app.use(
 	communityRouter, // Rutas para comunidad
 	channelRouter, // Rutas para Canales
 	messageChannelRouter, // Rutas para mensajes de canal
+	NormalPostRouter, // POST NORMAL
+	EventPostRouter, // event post
 	tokenRouter, // Rutas para tokens
 	checkout, //ruta de cobro
 	paymentRouter// ruta de pagos (stripe)
