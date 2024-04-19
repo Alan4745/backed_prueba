@@ -45,6 +45,8 @@ api.get('/hola12', (req, res) => {
 // metodos Put
 api.put('/updateUser/:idUser', [md_autenticacion.Auth], controllerUser.updateUser); // ruta actualizada 🆗
 
+// .patch('/patchUser/:idUser', [md_autenticacion.Auth], controllerUser.patchUser); // ruta actualizada 🆗
+
 // metodos Delete
 api.delete('/deleteUser/:idUser', [md_autenticacion.Auth], controllerUser.deleteUser); // ruta actualizada 🆗
 

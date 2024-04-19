@@ -124,5 +124,5 @@ module.exports = {
 	updateUser,
 	deleteUser,
 	viewUser,
-	userFindId
+	userFindId,
 };

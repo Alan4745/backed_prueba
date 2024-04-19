@@ -20,6 +20,10 @@ const userSchema = new Schema(
 			type: String,
 			require: true,
 		},
+		bio: {
+			type: String,
+			require: true,
+		},
 		imageAvatar: {
 			public_id: {
 				type: String,
@@ -30,7 +34,7 @@ const userSchema = new Schema(
 				default: '',
 			},
 		},
-		bgImage: {
+		imageBanner: {
 			public_id: {
 				type: String,
 				default: '',
@@ -56,6 +60,58 @@ const userSchema = new Schema(
 			type: [String], // Se espera un array de cadenas
 			default: [], // Por defecto, el usuario no tiene gustos definidos
 		},
+		birthday: {
+			type: String,
+			require: false,
+		},
+		sex: {
+			type: String,
+		},
+		place: {
+			type: String,
+		},
+		socialMedia: {
+			Facebook: {
+				link: {
+					type: String,
+					default: 'https://www.facebook.com',
+				},
+				username: {
+					type: String,
+					default: '',
+				}
+			},
+			Instagram: {
+				link: {
+					type: String,
+					default: 'https://www.instagram.com',
+				},
+				username: {
+					type: String,
+					default: '',
+				}
+			},
+			Twitch: {
+				link: {
+					type: String,
+					default: 'https://www.twitch.tv',
+				},
+				username: {
+					type: String,
+					default: '',
+				}
+			},
+			Twitter: {
+				link: {
+					type: String,
+					default: 'https://www.Twitter.com',
+				},
+				username: {
+					type: String,
+					default: '',
+				}
+			}
+		}
 	},
 	{ timestamps: true }
 );
