@@ -61,6 +61,17 @@ async function userRegistration(req, res) {
 		// Hashear la contraseña antes de almacenarla en la base de datos
 		const hash = await bcrypt.hash(parameters.password, saltRounds);
 		userModel.password = hash;
+
+		// if (parameters.imageAvatar.secure_url !== '') {
+		// 	userModel.imageAvatar.public_id = parameters.imageAvatar.public_id;
+		// 	userModel.imageAvatar.secure_url = parameters.imageAvatar.secure_url;
+		// }
+
+		// if (parameters.imageBanner.secure_url !== '') {
+		// 	userModel.imageBanner.public_id = parameters.imageBanner.public_id;
+		// 	userModel.imageBanner.secure_url = parameters.imageBanner.secure_url;
+		// }
+
 		// Guardar el modelo de usuario en la base de datos
 		const userSave = await userModel.save();
 		// Verificar si la operación de guardado fue exitosa

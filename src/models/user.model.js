@@ -44,11 +44,7 @@ const userSchema = new Schema(
 				default: '',
 			},
 		},
-		fichas: {
-			type: Array,
-			default: [],
-		},
-		tokensAbotenidos: {
+		ticketsObtained: {
 			type: Array,
 			default: [],
 		},
@@ -110,7 +106,35 @@ const userSchema = new Schema(
 					type: String,
 					default: '',
 				}
-			}
+			},
+			Tiktok: {
+				link: {
+					type: String,
+					default: 'https://www.tiktok.com/',
+				},
+				username: {
+					type: String,
+					default: '',
+				}
+			},
+			Youtube: {
+				link: {
+					type: String,
+					default: 'https://www.youtube.com/channel/',
+				},
+				username: {
+					type: String,
+					default: '',
+				}
+			},
+		},
+		following: {
+			type: [String],
+			default: [],
+		},
+		followers: {
+			type: [String],
+			default: [],
 		}
 	},
 	{ timestamps: true }
