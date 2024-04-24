@@ -34,15 +34,15 @@ async function createPost(req, res) {
 			if (req.body.content.coordinates) {
 				content.coordinates = req.body.content.coordinates;
 			}
-			content.fechaF = req.body.fechaF;
-			content.fechaF = req.body.fechaF;
+			if (req.body.content.ubicacion) {
+				content.ubicacion = req.body.content.ubicacion;
+			}
+			content.pictures = req.body.content.pictures;
 
 		} else if (type === 'Poll') {
 			content.question = req.body.content.question;
 			content.desc = req.body.content.desc;
 			content.options = req.body.content.options;
-			content.votes = req.body.content.votes;
-			content.availableuntil = req.body.content.availableuntil;
 
 		} else if (type === 'Normal') {
 			content.title = req.body.content.title;

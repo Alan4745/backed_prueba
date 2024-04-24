@@ -77,38 +77,22 @@ const pollSchema = new Schema({
 	desc: {
 		type: String,
 		required: true,
-		default: '',
 	},
 	options: {
 		type: [String],
-		default: [],
 		required: true,
 	},
 	votes: {
-		type: {
-			option1: {
-				type: [String],
-				default: []
-			},
-			option2: {
-				type: [String],
-				default: []
-			},
-			option4: {
-				type: [String],
-				default: []
-			},
-			option5: {
-				type: [String],
-				default: []
-			},
-		},
-		required: true,
-	}, 
-	availableuntil: {
-		type: String,
-		required: true,
-	}
+		type: Map,
+		of: [String],
+		default: function() {
+			const votesObject = {};
+			this.options.forEach(option => {
+				votesObject[option] = [];
+			});
+			return votesObject;
+		}
+	},
 });
 
 const normalSchema = new Schema({
