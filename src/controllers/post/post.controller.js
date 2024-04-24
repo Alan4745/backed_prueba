@@ -21,34 +21,47 @@ async function createPost(req, res) {
 		newPost.image = image;
 		newPost.type = type;
 
-		console.log('author', content);
+		console.log('content', content);
 		console.log('body', req.body);
+		console.log('type', type);
 
-		// if (type === 'Event') {
-		// 	content['name'] = req.body.name;
-		// 	content['desc'] = req.body.desc;
-		// 	content['fechaI'] = req.body.fechaI;
-		// 	content['fechaF'] = req.body.fechaF;
-		// 	content['req'] = req.body.req;
-		// 	if (req.body.coordinates) {
-		// 		content['coordinates'] = req.body.coordinates;
-		// 	}
-		// 	content['fechaF'] = req.body.fechaF;
-		// 	content['fechaF'] = req.body.fechaF;
+		if (type === 'Event') {
+			content.name = req.body.content.name;
+			content.desc = req.body.content.desc;
+			content.fechaI = req.body.content.fechaI;
+			content.fechaF = req.body.content.fechaF;
+			content.req = req.body.content.req;
+			if (req.body.content.coordinates) {
+				content.coordinates = req.body.content.coordinates;
+			}
+			content.fechaF = req.body.fechaF;
+			content.fechaF = req.body.fechaF;
 
+		} else if (type === 'Poll') {
+			content.question = req.body.content.question;
+			content.desc = req.body.content.desc;
+			content.options = req.body.content.options;
+			content.votes = req.body.content.votes;
+			content.availableuntil = req.body.content.availableuntil;
 
-		// } else if (type === 'Poll') {
-		// 	content[''] = req.body;
-		// } else if (type === 'Normal') {
-		// 	content[''] = req.body;
-		// }
+		} else if (type === 'Normal') {
+			content.title = req.body.content.title;
+			content.desc = req.body.content.desc;
+			content.pictures = req.body.content.pictures;
+		}
 
-		// const PostSave = await newPost.save();
-		// // Verificar si la operación de guardado fue exitosa
-		// if (!PostSave) {
-		// 	return res.status(500).send({ message: 'Error saving the POST.' });
-		// }
-		return res.status(200).send({});
+		console.log('content', content);
+
+		newPost.content = content;
+
+		console.log('newPost', newPost);
+
+		const PostSave = await newPost.save();
+		// Verificar si la operación de guardado fue exitosa
+		if (!PostSave) {
+			return res.status(500).send({ message: 'Error saving the POST.' });
+		}
+		return res.status(200).send({message: PostSave});
 
 	} catch (error) {
 		console.error('Error al crear el post:', error);

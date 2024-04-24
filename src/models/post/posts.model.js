@@ -64,7 +64,7 @@ const eventSchema = new Schema({
 	},
 	pictures: {
 		type: [picSchema],
-		required: String,
+		required: true,
 	},
 });
 
@@ -118,11 +118,11 @@ const normalSchema = new Schema({
 	},
 	desc: {
 		type: String,
-		required: '',
+		required: true,
 	},
 	pictures: {
 		type: [picSchema],
-		required: String,
+		required: true,
 	},
 });
 
@@ -146,11 +146,12 @@ const postSchema = new Schema({
 	},
 	type: {
 		type: String,
-		default: 'NormalPost',
+		default: 'Normal',
 		required: true,
 	},
 	content: {
-		type: eventSchema | pollSchema | normalSchema,
+		type: Schema.Types.Mixed,
+		required: true,
 	},
 	comments : {
 		type: [commentSchema],
@@ -171,5 +172,10 @@ const postSchema = new Schema({
 		required: true,
 	},
 });
+
+// discriminators
+postSchema.discriminator('Event', eventSchema);
+postSchema.discriminator('Poll', pollSchema);
+postSchema.discriminator('Normal', normalSchema);
 
 module.exports = mongoose.model('posts', postSchema);
