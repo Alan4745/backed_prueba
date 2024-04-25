@@ -70,4 +70,29 @@ async function createPost(req, res) {
 	}
 }
 
-module.exports = { createPost };
+async function getFeedPosts(req, res) {
+	console.log('getFeedPosts');
+	try {
+		const authorsId = req.query.authorsId; // Access query parameters
+		const authorsIdSplit = authorsId.split(',');
+		console.log('Authors IDs:', authorsIdSplit);
+		console.log('Authors IDs:', typeof(authorsIdSplit));
+		// const {authorsId} = JSON.parse(req.headers.data);
+		// console.log(authorsId);
+
+		const latestPosts = await Post
+			.find({author: {$in: authorsIdSplit}})
+			.sort({ createdAt: -1 })
+			.limit(15)
+			.exec();
+
+		// console.log(latestPosts);
+
+		return res.status(200).send({message: latestPosts});
+	} catch (err) {
+		console.error('Error', err);
+		res.status(500).send({ message: 'Error al obtener' });
+	}
+}
+
+module.exports = { createPost, getFeedPosts };

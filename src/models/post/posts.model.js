@@ -110,52 +110,54 @@ const normalSchema = new Schema({
 	},
 });
 
-const postSchema = new Schema({
-	author: {
-		type: String,
-		required: true,
-	},
-	image: {
-		type: {
-			public_id: {
-				type: String,
-				default: '',
-			},
-			secure_url: {
-				type: String,
-				default: '',
-			},
+const postSchema = new Schema(
+	{
+		author: {
+			type: String,
+			required: true,
 		},
-		required: true,
-	},
-	type: {
-		type: String,
-		default: 'Normal',
-		required: true,
-	},
-	content: {
-		type: Schema.Types.Mixed,
-		required: true,
-	},
-	comments : {
-		type: [commentSchema],
-		default: [],
-	},
-	likes: {
-		type: [{
-			userId: {
-				type: String,
-				required: true,
+		image: {
+			type: {
+				public_id: {
+					type: String,
+					default: '',
+				},
+				secure_url: {
+					type: String,
+					default: '',
+				},
 			},
-			date: {
-				type: String,
-				required: true,
-			}
-		}],
-		default: [],
-		required: true,
-	},
-});
+			required: true,
+		},
+		type: {
+			type: String,
+			default: 'Normal',
+			required: true,
+		},
+		content: {
+			type: Schema.Types.Mixed,
+			required: true,
+		},
+		comments : {
+			type: [commentSchema],
+			default: [],
+		},
+		likes: {
+			type: [{
+				userId: {
+					type: String,
+					required: true,
+				},
+				date: {
+					type: String,
+					required: true,
+				}
+			}],
+			default: [],
+			required: true,
+		},
+	}, { timestamps: true}
+);
 
 // discriminators
 postSchema.discriminator('Event', eventSchema);

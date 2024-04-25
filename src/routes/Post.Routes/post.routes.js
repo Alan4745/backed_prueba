@@ -4,6 +4,10 @@ const controllerAuth = require('../../middlewares/authentication');
 
 const api = express.Router();
 
+// post
 api.post('/postPost/:idUser', [controllerAuth.Auth], controllerPost.createPost);
+
+// get
+api.get('/feedPosts/', controllerPost.getFeedPosts);
 
 module.exports = api;
