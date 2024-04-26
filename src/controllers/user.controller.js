@@ -111,9 +111,21 @@ async function viewUser(req, res) {
 
 async function userFindId(req, res) {
 	try {
-		let findUser = await User.findOne({ _id: req.user.sub});
+		let findUser = await User.findOne({ _id: req.user.sub });
 		res.status(200).send({ message: findUser });
+	} catch (error) {
+		console.error('Error al buscar usuarios:', error);
+		res.status(500).send({ error: 'Hubo un error al buscar usuarios' });
+	}
+}
 
+async function userByFindId(req, res) {
+	const { idUser } = req.params;
+	console.log(idUser);
+
+	try {
+		let findUser = await User.findOne({ _id: idUser });
+		res.status(200).send({ message: findUser });
 	} catch (error) {
 		console.error('Error al buscar usuarios:', error);
 		res.status(500).send({ error: 'Hubo un error al buscar usuarios' });
@@ -125,4 +137,5 @@ module.exports = {
 	deleteUser,
 	viewUser,
 	userFindId,
+	userByFindId
 };
