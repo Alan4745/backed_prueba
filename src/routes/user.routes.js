@@ -18,7 +18,12 @@ api.get(
 	controllerUser.userByFindId
 );
 
+api.get('/trendingUser', [md_autenticacion.Auth], controllerUser.GetUserTrends);
+
+
+
 // metodos Post
+
 api.post('/signUp', controllerAuth.userRegistration); // ruta actualizada 🆗
 api.post('/login', controllerAuth.loginUser); // ruta actualizada 🆗
 
@@ -68,6 +73,8 @@ api.put(
 	[md_autenticacion.Auth],
 	controllerUser.updateUser
 ); // ruta actualizada 🆗
+api.put('/FollowAUser/:idUser',[md_autenticacion.Auth],controllerUser.FollowAUser); // ruta actualizada 🆗
+
 
 // .patch('/patchUser/:idUser', [md_autenticacion.Auth], controllerUser.patchUser); // ruta actualizada 🆗
 

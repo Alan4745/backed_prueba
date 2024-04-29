@@ -2,14 +2,14 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const channelSchema = new Schema({
+const ChannelSchema = new Schema({
 	members: {
 		type: Array,
 		default: [],
 	},
-	idCommunity: {
-		type: String,
-		require: true
+	admins: {
+		type: Array,
+		default: [],
 	},
 	idOwner: {
 		type: String,
@@ -22,10 +22,15 @@ const channelSchema = new Schema({
 	passwordChannel: {
 		type: String,
 	},
-	precio:{
+	price:{
 		type: Number,
 		default: 0
+	},
+	private: {
+		type: Boolean,
+		default: false
 	}
 }, { timestamps: true });
 
-module.exports = mongoose.model('channels', channelSchema);
+
+module.exports = mongoose.model('channels', ChannelSchema);

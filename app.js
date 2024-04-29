@@ -12,7 +12,6 @@ const userRouter = require('./src/routes/user.routes');
 const messageRouter = require('./src/routes/message.routes');
 const conversationRouter = require('./src/routes/Conversation.routes');
 const postRouter = require('./src/routes/Post.Routes/post.routes');
-const communityRouter = require('./src/routes/community.routes');
 const channelRouter = require('./src/routes/channel.routes');
 const messageChannelRouter = require('./src/routes/messageChannel.routes');
 const tokenRouter = require('./src/routes/token.routes');
@@ -64,7 +63,6 @@ app.use(
 	messageRouter, // Rutas para mensajes
 	conversationRouter, // Rutas para conversaciones
 	postRouter, //Rutas para publicaciones
-	communityRouter, // Rutas para comunidad
 	channelRouter, // Rutas para Canales
 	messageChannelRouter, // Rutas para mensajes de canal
 	// NormalPostRouter, // POST NORMAL

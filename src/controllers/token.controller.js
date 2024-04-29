@@ -2,7 +2,6 @@
 const crypto = require('crypto');
 const TokenCollection = require('../models/tokens/tokenCollection.model');
 const Collections = require('../models/tokens/collections.model');
-const Community = require('../models/community.model');
 const Token = require('../models/tokens/tokenUnitary.model');
 const fs = require('fs-extra');
 const User = require('../models/user.model');

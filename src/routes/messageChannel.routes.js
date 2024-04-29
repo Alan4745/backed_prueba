@@ -1,11 +1,11 @@
 const express = require('express');
-const controllerMessageChannel = require('../controllers/messagesChannel.controller');
+// const controllerMessageChannel = require('../controllers/messagesChannel.controller');
 const md_autenticacion = require('../middlewares/authentication');
 
 const api = express.Router();
 
-api.post('/sendMessageChannel/:channelId', [md_autenticacion.Auth], controllerMessageChannel.saveMessagesChannel);
+// api.post('/sendMessageChannel/:channelId', [md_autenticacion.Auth], controllerMessageChannel.saveMessagesChannel);
 
-api.get('/viewMessageChannel/:channelId', [md_autenticacion.Auth], controllerMessageChannel.viewMessagesChannel);
+// api.get('/viewMessageChannel/:channelId', [md_autenticacion.Auth], controllerMessageChannel.viewMessagesChannel);
 
 module.exports = api;
