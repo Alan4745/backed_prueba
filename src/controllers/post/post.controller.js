@@ -43,6 +43,12 @@ async function createPost(req, res) {
 			content.question = req.body.content.question;
 			content.desc = req.body.content.desc;
 			content.options = req.body.content.options;
+			content.votes = {
+				option1: [],
+				option2: [],
+				option3: [],
+				option4: []
+			};
 
 		} else if (type === 'Normal') {
 			content.title = req.body.content.title;
