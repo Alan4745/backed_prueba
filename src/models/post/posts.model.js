@@ -29,8 +29,7 @@ const commentSchema = new Schema({
 		default: '',
 	},
 	rating: {
-		type: Number,
-		default: 1,
+		type: Number| undefined,
 	},
 });
 
@@ -68,6 +67,25 @@ const eventSchema = new Schema({
 	},
 });
 
+const votesSchema = new Schema({
+	option1: {
+		type: [String],
+		default: [],
+	},
+	option2: {
+		type: [String],
+		default: [],
+	},
+	option3: {
+		type: [String],
+		default: [],
+	},
+	option4: {
+		type: [String],
+		default: [],
+	},
+});
+
 const pollSchema = new Schema({
 	question: {
 		type: String,
@@ -83,15 +101,7 @@ const pollSchema = new Schema({
 		required: true,
 	},
 	votes: {
-		type: Map,
-		of: [String],
-		default: function() {
-			const votesObject = {};
-			this.options.forEach(option => {
-				votesObject[option] = [];
-			});
-			return votesObject;
-		}
+		type: votesSchema,
 	},
 });
 

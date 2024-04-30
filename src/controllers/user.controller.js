@@ -35,7 +35,6 @@ async function updateUser(req, res) {
 	}
 }
 
-
 async function deleteUser(req, res) {
 	try {
 		const { idUser } = req.params;
