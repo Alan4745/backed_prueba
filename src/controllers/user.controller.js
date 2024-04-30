@@ -57,21 +57,6 @@ async function updateUser(req, res) {
 	}
 }
 
-// function deleteUser(req, res) {
-// 	const { idUser } = req.params.idUser;
-
-// 	if (req.user.sub !== idUser) {
-// 		return res.status(500).send({ mensaje: 'No tiene los permisos para eliminar este Usuario.' });
-// 	}
-
-// 	User.findByIdAndDelete(idUser, (err, userDelete) => {
-// 		if (err) return res.status(500).send({ message: 'error en la peticion' });
-// 		if (!userDelete) return res.status(500).send({ message: 'erro en la peticion' });
-
-// 		return res.status(200).send({ UserInfo: userDelete });
-// 	});
-// }
-
 async function deleteUser(req, res) {
 	try {
 		const { idUser } = req.params;

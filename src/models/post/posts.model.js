@@ -29,8 +29,7 @@ const commentSchema = new Schema({
 		default: '',
 	},
 	rating: {
-		type: Number,
-		default: 1,
+		type: Number| undefined,
 	},
 });
 
