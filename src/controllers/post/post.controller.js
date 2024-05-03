@@ -1,6 +1,7 @@
 const Post = require('../../models/post/posts.model');
-// const { UploadImg } = require('../../utils/cloudinary');
-// const fs = require('fs-extra');
+const { UploadImg } = require('../../utils/cloudinary');
+const fs = require('fs-extra');
+
 
 async function createPost(req, res) {
 	console.log('createPost');
@@ -9,11 +10,98 @@ async function createPost(req, res) {
 
 		// id del autor pasado como parámetro
 		const {idUser} = req.params;
+		let image = {};
+		let imagens = [];
 
 		const {
-			image,
 			type,
 		} = req.body;
+
+
+		if (req.files?.image) {
+			// Subir la imagen a Cloudinary y obtener el resultado
+			const result = await UploadImg(req.files.image.tempFilePath);
+			// Guardar la información de la imagen en el modelo de usuario
+
+			image.public_id = result.public_id;
+			image.secure_url = result.secure_url;
+
+			// Verificar si el archivo temporal existe antes de intentar eliminarlo
+			if (fs.existsSync(req.files.image.tempFilePath)) {
+				await fs.unlink(req.files.image.tempFilePath);
+			} else {
+				console.warn('El archivo temporal no existe.');
+			}
+		}
+
+
+		if (req.files?.image1) {
+			// Subir la imagen a Cloudinary y obtener el resultado
+			const result = await UploadImg(req.files.image1.tempFilePath);
+			// Guardar la información de la imagen en el modelo de usuario
+
+			imagens.push({
+				public_id: result.public_id,
+				secure_url: result.secure_url
+			});
+			// Verificar si el archivo temporal existe antes de intentar eliminarlo
+			if (fs.existsSync(req.files.image1.tempFilePath)) {
+				await fs.unlink(req.files.image1.tempFilePath);
+			} else {
+				console.warn('El archivo temporal no existe.');
+			}
+		}
+
+		if (req.files?.image2) {
+			// Subir la imagen a Cloudinary y obtener el resultado
+			const result = await UploadImg(req.files.image2.tempFilePath);
+			// Guardar la información de la imagen en el modelo de usuario
+
+			imagens.push({
+				public_id: result.public_id,
+				secure_url: result.secure_url
+			});
+			// Verificar si el archivo temporal existe antes de intentar eliminarlo
+			if (fs.existsSync(req.files.image2.tempFilePath)) {
+				await fs.unlink(req.files.image2.tempFilePath);
+			} else {
+				console.warn('El archivo temporal no existe.');
+			}
+		}
+
+		if (req.files?.image3) {
+			// Subir la imagen a Cloudinary y obtener el resultado
+			const result = await UploadImg(req.files.image3.tempFilePath);
+			// Guardar la información de la imagen en el modelo de usuario
+
+			imagens.push({
+				public_id: result.public_id,
+				secure_url: result.secure_url
+			});
+			// Verificar si el archivo temporal existe antes de intentar eliminarlo
+			if (fs.existsSync(req.files.image3.tempFilePath)) {
+				await fs.unlink(req.files.image3.tempFilePath);
+			} else {
+				console.warn('El archivo temporal no existe.');
+			}
+		}
+
+		if (req.files?.image4) {
+			// Subir la imagen a Cloudinary y obtener el resultado
+			const result = await UploadImg(req.files.image4.tempFilePath);
+			// Guardar la información de la imagen en el modelo de usuario
+
+			imagens.push({
+				public_id: result.public_id,
+				secure_url: result.secure_url
+			});
+			// Verificar si el archivo temporal existe antes de intentar eliminarlo
+			if (fs.existsSync(req.files.image4.tempFilePath)) {
+				await fs.unlink(req.files.image4.tempFilePath);
+			} else {
+				console.warn('El archivo temporal no existe.');
+			}
+		}
 
 		const content = {};
 
@@ -22,38 +110,40 @@ async function createPost(req, res) {
 		newPost.type = type;
 
 		console.log('content', content);
-		console.log('body', req.body);
-		console.log('type', type);
+		// console.log('body', req.body);
+		// console.log('type', type);
 
 		if (type === 'Event') {
-			content.name = req.body.content.name;
-			content.desc = req.body.content.desc;
-			content.fechaI = req.body.content.fechaI;
-			content.fechaF = req.body.content.fechaF;
-			content.req = req.body.content.req;
-			if (req.body.content.coordinates) {
-				content.coordinates = req.body.content.coordinates;
+			content.name = req.body.name;
+			content.desc = req.body.desc;
+			content.fechaI = JSON.parse(req.body.fechaI) ;
+			content.fechaF = JSON.parse(req.body.fechaF) ;
+			content.req = JSON.parse(req.body.req) ;
+			if (JSON.parse(req.body.coordinates) ) {
+				content.coordinates = JSON.parse(req.body.coordinates); 
 			}
-			if (req.body.content.ubicacion) {
-				content.ubicacion = req.body.content.ubicacion;
+			if (JSON.parse(req.body.ubicacion) ) {
+				content.ubicacion = JSON.parse(req.body.ubicacion);
 			}
-			content.pictures = req.body.content.pictures;
+			content.pictures = imagens;
 
 		} else if (type === 'Poll') {
-			content.question = req.body.content.question;
-			content.desc = req.body.content.desc;
-			content.options = req.body.content.options;
+
+			console.log(req.body.options);
+			content.question = req.body.question;
+			content.desc = req.body.desc;
+			content.options = JSON.parse(req.body.options) ;
 			content.votes = {
-				option1: [],
-				option2: [],
-				option3: [],
-				option4: []
+				option1: [''],
+				option2: [''],
+				option3: [''],
+				option4: ['']
 			};
 
 		} else if (type === 'Normal') {
-			content.title = req.body.content.title;
-			content.desc = req.body.content.desc;
-			content.pictures = req.body.content.pictures;
+			content.title = req.body.title;
+			content.desc = req.body.desc;
+			content.pictures = imagens;
 		}
 
 		console.log('content', content);

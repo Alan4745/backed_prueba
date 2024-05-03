@@ -117,6 +117,7 @@ const normalSchema = new Schema({
 	pictures: {
 		type: [picSchema],
 		required: true,
+		default: []
 	},
 });
 
