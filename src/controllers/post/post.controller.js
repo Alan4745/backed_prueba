@@ -1,5 +1,5 @@
 const Post = require('../../models/post/posts.model');
-// const { UploadImg } = require('../../utils/cloudinary');
+// const {UploadImg} = require('../../utils/cloudinary');
 // const fs = require('fs-extra');
 
 async function createPost(req, res) {
@@ -18,8 +18,13 @@ async function createPost(req, res) {
 		const content = {};
 
 		newPost.author = idUser;
-		newPost.image = image;
 		newPost.type = type;
+		
+		// transformar imagen
+		console.log('imagen: ', image.secure_url);
+		// const image_ = await UploadImg(image.secure_url);
+		// console.log(image_);
+		newPost.image = image;
 
 		console.log('content', content);
 		console.log('body', req.body);
@@ -76,6 +81,7 @@ async function createPost(req, res) {
 	}
 }
 
+
 async function getFeedPosts(req, res) {
 	console.log('getFeedPosts');
 	try {
@@ -101,4 +107,25 @@ async function getFeedPosts(req, res) {
 	}
 }
 
-module.exports = { createPost, getFeedPosts };
+async function getEvents(req, res) {
+	console.log('getEvents');
+	try {
+		const authorsId = req.query.authorsId;
+		const authorsIdSplit = authorsId.split(',');
+		console.log('Authors IDs:', authorsIdSplit);
+		console.log('Authors IDs:', typeof(authorsIdSplit));
+
+		const latestPosts = await Post
+			.find({author: {$in: authorsIdSplit}})
+			.find({type: 'Event'})
+			.limit(15)
+			.exec();
+
+		return res.status(200).send({message: latestPosts});
+	} catch (err) {
+		console.error('Error', err);
+		res.status(500).send({ message: 'Error al obtener' });
+	}
+}
+
+module.exports = { createPost, getFeedPosts, getEvents };

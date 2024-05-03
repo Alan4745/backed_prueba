@@ -9,5 +9,6 @@ api.post('/postPost/:idUser', [controllerAuth.Auth], controllerPost.createPost);
 
 // get
 api.get('/feedPosts/', controllerPost.getFeedPosts);
+api.get('/events/', controllerPost.getEvents);
 
 module.exports = api;
