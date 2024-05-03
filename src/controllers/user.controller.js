@@ -72,6 +72,25 @@ async function viewUser(req, res) {
 	}
 }
 
+async function getRandomUsers(req, res) {
+	try {
+		const currentUserID = req.user.sub; // Suponiendo que currentUser es el usuario actual
+	
+		// Obtener 100 usuarios aleatorios excluyendo al usuario actual
+		const users = await User.aggregate([
+			{ $match: { _id: { $ne: currentUserID } } }, // Excluir al usuario actual
+			{ $sample: { size: 100 } } // Obtener 100 usuarios aleatorios
+		]);
+	
+		return res.status(200).send({ message: users });
+		
+	} catch (error) {
+		console.error('Error al buscar usuarios:', error);
+		res.status(500).send({ error: 'Hubo un error al buscar usuarios' });
+	}
+}
+
+
 async function userFindId(req, res) {
 	try {
 		let findUser = await User.findOne({ _id: req.user.sub });
@@ -302,5 +321,6 @@ module.exports = {
 	userByFindId,
 	FollowAUser,
 	GetUserTrends,
-	findUserRegex
+	findUserRegex,
+	getRandomUsers
 };
