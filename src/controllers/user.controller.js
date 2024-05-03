@@ -276,10 +276,12 @@ const  GetUserByCategory = async (req, res) => {
 
 async function findUserRegex(req, res) {
 	const { name } = req.params;
+
+	console.log(name);
   
 	try {
 	// Utilizamos una expresión regular para buscar nombres similares o coincidentes
-		const communities = await User.find({ name: { $regex: name, $options: 'i' } })
+		const communities = await User.find({ name: { $regex:  name, $options: 'i' } })
 			.limit(10) // Limitamos los resultados a 10 comunidades
 			.exec();
   
@@ -300,4 +302,5 @@ module.exports = {
 	userByFindId,
 	FollowAUser,
 	GetUserTrends,
+	findUserRegex
 };

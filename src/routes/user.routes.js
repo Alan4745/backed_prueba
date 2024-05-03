@@ -11,6 +11,8 @@ const api = express.Router();
 
 // metodos Get
 api.get('/viewUsers', controllerUser.viewUser); // ruta actualizada 🆗
+api.get('/findUsuariosRegex/:name',  [md_autenticacion.Auth] ,controllerUser.findUserRegex); // ruta actualizada 🆗
+
 api.get('/userFindId', [md_autenticacion.Auth], controllerUser.userFindId);
 api.get(
 	'/userFindById/:idUser',
