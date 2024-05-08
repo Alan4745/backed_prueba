@@ -187,24 +187,17 @@ function FollowAUser(req, res) {
 
 async function UserIFollow(req, res) {
 	try {
-		const { idCommunity } = req.params;
-
-		// Buscar la comunidad por su identificador
-		const communityUser = await User.findOne({ _id: idCommunity });
-		// Verificar si la búsqueda de la comunidad fue exitosa
-		if (!communityUser) {
-			return res.status(404).send({ message: 'Comunidad no encontrada.' });
+		const { userId } = req.params;
+		const user = await User.findById(userId, { password: 0 }); // Proyectamos todos los campos excepto 'password'
+		if (!user) {
+			return res.status(404).send({ message: 'Usuario no encontrado' });
 		}
-		// Encontrar los usuarios que son seguidores de la comunidad
-		const userFollowers = await User.find({
-			_id: { $in: communityUser.followers },
-		});
-		console.log(communityUser.followers);
-		// Enviar la lista de seguidores de la comunidad
-		return res.status(200).send({ mensaje: userFollowers });
+		const followingIds = user.following; // Array de IDs de los usuarios seguidos por el usuario
+		const followingUsers = await User.find({ _id: { $in: followingIds } }, { password: 0 }); // Excluimos 'password'
+		return res.status(200).send({message: followingUsers});
 	} catch (error) {
-		console.error('An error occurred:', error);
-		return res.status(500).send({ message: 'Internal server error.' });
+		console.error('Error al obtener usuarios seguidos:', error);
+		res.status(500).json({ message: 'Error interno del servidor' });
 	}
 }
 
@@ -322,5 +315,6 @@ module.exports = {
 	FollowAUser,
 	GetUserTrends,
 	findUserRegex,
-	getRandomUsers
+	getRandomUsers,
+	UserIFollow
 };
