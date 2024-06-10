@@ -14,9 +14,7 @@ async function userRegistration(req, res) {
 		const parameters = req.body;
 
 		// Verificar que los datos requeridos estén presentes
-		if (!parameters.name ||
-        !parameters.nickName ||
-        !parameters.email ||
+		if (!parameters.email ||
         !parameters.password
 		) {
 			return res.status(400).send({ message: 'Required data is missing.' });
@@ -55,8 +53,8 @@ async function userRegistration(req, res) {
 		}
 
 		// Asignar los demás datos al modelo de usuario
-		userModel.name = parameters.name;
-		userModel.nickName = `@${parameters.nickName}`;
+		userModel.name = '';
+		userModel.nickName = '';
 		userModel.email = parameters.email;
 		// Hashear la contraseña antes de almacenarla en la base de datos
 		const hash = await bcrypt.hash(parameters.password, saltRounds);

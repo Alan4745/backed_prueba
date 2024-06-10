@@ -159,6 +159,11 @@ const postSchema = new Schema(
 					type: String,
 					required: true,
 				},
+				type: {
+					type: String,
+					enum: [], // Tipos de reacciones
+					required: true,
+				},
 				date: {
 					type: String,
 					required: true,
@@ -167,6 +172,10 @@ const postSchema = new Schema(
 			default: [],
 			required: true,
 		},
+		originalPost: {
+			type: String,
+			default: null,
+		  },
 	}, { timestamps: true}
 );
 

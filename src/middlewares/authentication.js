@@ -1,6 +1,5 @@
 const jwt_simple = require('jwt-simple');
 const moment = require('moment');
-
 const claveSecreta = 'clave_secreta_DIMENSIO';
 
 exports.Auth = function (req, res, next) {
@@ -8,7 +7,7 @@ exports.Auth = function (req, res, next) {
 		console.log('The request does not have the Authorization header');
 		return res.status(500).send({ mensaje: 'The request does not have the Authorization header' });
 	}
-	const token = req.headers.authorization.replace(/['"]+/g, '');
+	var token = req.headers.authorization.replace(/['"]+/g, '');
 	try {
 		var payload = jwt_simple.decode(token, claveSecreta);
 		// EXP = variable que contiene el tiempo de expiracion del token
