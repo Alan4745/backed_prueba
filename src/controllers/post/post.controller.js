@@ -41,9 +41,10 @@ async function createPost(req, res) {
       const result = await UploadImg(req.files.image1.tempFilePath);
       // Guardar la información de la imagen en el modelo de usuario
 
-      image.public_id = result.public_id;
-      image.secure_url = result.secure_url;
-
+      imagens.push({
+        public_id: result.public_id,
+        secure_url: result.secure_url,
+      });
       // Verificar si el archivo temporal existe antes de intentar eliminarlo
       if (fs.existsSync(req.files.image1.tempFilePath)) {
         await fs.unlink(req.files.image1.tempFilePath);
