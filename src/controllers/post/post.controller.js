@@ -1,7 +1,10 @@
 const Post = require("../../models/post/posts.model");
-const User = require('../../models/user.model');
+const User = require("../../models/user.model");
 const { UploadImg } = require("../../utils/cloudinary");
-const { Notification, createNotification } = require("../../models/notification");
+const {
+  Notification,
+  createNotification,
+} = require("../../models/notification");
 const fs = require("fs-extra");
 
 // HACER POST
@@ -38,10 +41,9 @@ async function createPost(req, res) {
       const result = await UploadImg(req.files.image1.tempFilePath);
       // Guardar la información de la imagen en el modelo de usuario
 
-      imagens.push({
-        public_id: result.public_id,
-        secure_url: result.secure_url,
-      });
+      image.public_id = result.public_id;
+      image.secure_url = result.secure_url;
+
       // Verificar si el archivo temporal existe antes de intentar eliminarlo
       if (fs.existsSync(req.files.image1.tempFilePath)) {
         await fs.unlink(req.files.image1.tempFilePath);
@@ -159,19 +161,18 @@ async function createPost(req, res) {
       return res.status(404).send({ message: "User not found." });
     }
 
-    const notifications = author.followers.map(followerId => {
+    const notifications = author.followers.map((followerId) => {
       return {
         recipient: followerId,
         sender: idUser,
         post: PostSave._id,
-        type: 'new_post',
-        message: `${author.nickName} ha publicado un nuevo Post ${PostSave.type}`
+        type: "new_post",
+        message: `${author.nickName} ha publicado un nuevo Post ${PostSave.type}`,
       };
     });
 
     // Crear las notificaciones
     await Notification.insertMany(notifications);
-
 
     return res.status(200).send({ message: PostSave });
   } catch (error) {
@@ -228,7 +229,7 @@ async function getPostFollowing(req, res) {
     res.status(200).json({
       posts,
       totalPages: Math.ceil(count / limit),
-      currentPage: page
+      currentPage: page,
     });
   } catch (error) {
     res
@@ -237,7 +238,7 @@ async function getPostFollowing(req, res) {
   }
 }
 
-// TRAER MI POST 
+// TRAER MI POST
 async function getPost(req, res) {
   console.log("getPost");
 
@@ -247,19 +248,18 @@ async function getPost(req, res) {
   try {
     const post = await Post.findOne({ _id: Id_Post, author: idUser });
 
-
     if (!post) {
-      return res.status(404).json({ error: 'Post no encontrado o no te pertenece.' });
+      return res
+        .status(404)
+        .json({ error: "Post no encontrado o no te pertenece." });
     }
 
     res.status(200).json(post);
-
   } catch (error) {
     res.status(500).json({ error: "Error al obtener el Post." });
     console.log(error);
   }
 }
-
 
 // ACTUALIZAR POST O EVENTOS
 async function updatePost(req, res) {
@@ -275,7 +275,9 @@ async function updatePost(req, res) {
     // Obtener el post existente
     const type = post.type;
     if (!post) {
-      return res.status(404).send({ message: "Post no encontrado o no te pertenece el Post." });
+      return res
+        .status(404)
+        .send({ message: "Post no encontrado o no te pertenece el Post." });
     }
 
     // Subir y gestionar imágenes si están presentes en la solicitud
@@ -306,7 +308,9 @@ async function updatePost(req, res) {
       }
     };
 
-    await Promise.all(['image1', 'image2', 'image3', 'image4'].map(uploadAdditionalImages));
+    await Promise.all(
+      ["image1", "image2", "image3", "image4"].map(uploadAdditionalImages)
+    );
 
     const content = {};
 
@@ -340,7 +344,7 @@ async function updatePost(req, res) {
     } else if (type === "Normal") {
       content.title = req.body.title;
       content.desc = req.body.desc;
-      content.pictures = imagens.length ? imagens : post.content.pictures;;
+      content.pictures = imagens.length ? imagens : post.content.pictures;
     }
 
     post.content = content;
@@ -360,14 +364,14 @@ async function updatePost(req, res) {
 async function sharePost(req, res) {
   const postId = req.params.idPost; // ID del post a compartir
   const userId = req.user.sub; // ID del usuario que comparte el post
-  console.log(postId)
+  console.log(postId);
 
   try {
     // Encuentra el post original
     const originalPost = await Post.findById(postId);
 
     if (!originalPost) {
-      return res.status(404).json({ error: 'Post original no encontrado.' });
+      return res.status(404).json({ error: "Post original no encontrado." });
     }
 
     // Crea un nuevo post con referencia al post original
@@ -389,16 +393,14 @@ async function sharePost(req, res) {
       originalPost.author,
       userId,
       originalPost._id,
-      'share',
+      "share",
       `${req.user.nickName} ha compartido tu post. ${sharedPost.type}`
     );
 
-
-
     res.status(200).json(sharedPost);
   } catch (error) {
-    console.error('Error al compartir el post:', error);
-    res.status(500).json({ error: 'Error al compartir el post.' });
+    console.error("Error al compartir el post:", error);
+    res.status(500).json({ error: "Error al compartir el post." });
   }
 }
 
@@ -410,7 +412,7 @@ async function commentsPost(req, res) {
   try {
     const post = await Post.findById(postId);
     if (!post) {
-      return res.status(404).json({ message: 'Post not found' });
+      return res.status(404).json({ message: "Post not found" });
     }
 
     // Crear el nuevo comentario
@@ -429,7 +431,7 @@ async function commentsPost(req, res) {
       post.author,
       req.user.sub,
       post._id,
-      'share',
+      "share",
       `Nuevo comentario de ${req.user.nickName}: ${newComment.text}`
     );
 
@@ -441,15 +443,15 @@ async function commentsPost(req, res) {
 
 // RACION POST
 
-//TRAER COMENTARIOS 
+//TRAER COMENTARIOS
 async function getCommentsPost(req, res) {
-  console.log('getCommentsPost');
+  console.log("getCommentsPost");
   const postId = req.params.idPost;
 
   try {
     const post = await Post.findById(postId);
     if (!post) {
-      return res.status(404).json({ message: 'Post not found' });
+      return res.status(404).json({ message: "Post not found" });
     }
 
     const comments = post.comments;
@@ -459,8 +461,6 @@ async function getCommentsPost(req, res) {
     res.status(500).json({ message: error.message });
   }
 }
-
-
 
 module.exports = {
   createPost,
