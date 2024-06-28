@@ -246,6 +246,9 @@ async function getPost(req, res) {
   const Id_Post = req.params.idPost;
   const idUser = req.user.sub;
 
+  console.log(idUser);
+  console.log(Id_Post);
+
   try {
     const post = await Post.findOne({ _id: Id_Post, author: idUser });
 
@@ -253,6 +256,27 @@ async function getPost(req, res) {
       return res
         .status(404)
         .json({ error: "Post no encontrado o no te pertenece." });
+    }
+
+    res.status(200).json(post);
+  } catch (error) {
+    res.status(500).json({ error: "Error al obtener el Post." });
+    console.log(error);
+  }
+}
+
+async function getPublicPost(req, res) {
+  console.log("getPublicPost");
+
+  const Id_Post = req.params.idPost;
+
+  try {
+    const post = await Post.findOne({ _id: Id_Post });
+
+    if (!post) {
+      return res
+        .status(404)
+        .json({ error: "Post no encontrado" });
     }
 
     res.status(200).json(post);
@@ -468,6 +492,7 @@ module.exports = {
   getFeedPosts,
   getPostFollowing,
   getPost,
+  getPublicPost,
   updatePost,
   sharePost,
   commentsPost,
