@@ -11,45 +11,16 @@ const api = express.Router();
 
 // metodos Get
 api.get("/viewUsers", controllerUser.viewUser); // ruta actualizada 🆗
-api.get(
-  "/findUsuariosRegex/:name",
-  [md_autenticacion.Auth],
-  controllerUser.findUserRegex
-); // ruta actualizada 🆗
-api.get(
-  "/userFindRandoms",
-  [md_autenticacion.Auth],
-  controllerUser.getRandomUsers
-);
-
-api.get(
-  "/UserIFollow/:userId",
-  [md_autenticacion.Auth],
-  controllerUser.UserIFollow
-);
-
+api.get("/findUsuariosRegex/:name",[md_autenticacion.Auth],controllerUser.findUserRegex); // ruta actualizada 🆗
+api.get( "/userFindRandoms", [md_autenticacion.Auth], controllerUser.getRandomUsers);
+api.get("/UserIFollow/:userId",[md_autenticacion.Auth],controllerUser.UserIFollow);
 api.get("/userFindId", [md_autenticacion.Auth], controllerUser.userFindId);
-api.get(
-  "/userFindById/:idUser",
-  [md_autenticacion.Auth],
-  controllerUser.userByFindId
-);
-
+api.get("/userFindById/:idUser",[md_autenticacion.Auth],controllerUser.userByFindId);
 api.get("/trendingUser", [md_autenticacion.Auth], controllerUser.GetUserTrends);
 
-// metodos Post
+api.get( "/google", passport.authenticate("auth-google", { scope: ["profile", "email"] }));
+api.get("/google/callback",passport.authenticate("auth-google", { failureRedirect: "/" }),
 
-api.post("/signUp", controllerAuth.userRegistration); // ruta actualizada 🆗
-api.post("/login", controllerAuth.loginUser); // ruta actualizada 🆗
-
-api.get(
-  "/google",
-  passport.authenticate("auth-google", { scope: ["profile", "email"] })
-);
-
-api.get(
-  "/google/callback",
-  passport.authenticate("auth-google", { failureRedirect: "/" }),
   async (req, res) => {
     console.log("estamos en call backs");
     const result = await controllerAuth.getUserByEmail(
@@ -66,7 +37,6 @@ api.get(
     );
   }
 );
-
 api.get("/hola12", (req, res) => {
   console.log(req.user);
   if (req.isAuthenticated()) {
@@ -82,29 +52,20 @@ api.get("/hola12", (req, res) => {
   }
 });
 
+// metodos Post
+api.post("/signUp", controllerAuth.userRegistration); // ruta actualizada 🆗
+api.post("/login", controllerAuth.loginUser); // ruta actualizada 🆗
+
 // metodos Put
-api.put(
-  "/updateUser/:idUser",
-  [md_autenticacion.Auth],
-  controllerUser.updateUser
-); // ruta actualizada 🆗
-api.put(
-  "/FollowAUser/:idUser",
-  [md_autenticacion.Auth],
-  controllerUser.FollowAUser
-); // ruta actualizada 🆗
-
+api.put("/updateUser/:idUser",[md_autenticacion.Auth],controllerUser.updateUser); // ruta actualizada 🆗
+api.put("/updatePasswordUser/:idUser",[md_autenticacion.Auth],controllerUser.updatePasswordUser); // ruta actualizada 🆗
+api.put("/FollowAUser/:idUser",[md_autenticacion.Auth],controllerUser.FollowAUser); // ruta actualizada 🆗
 api.put("/updatedAccountStep1/:idUser", controllerUser.updateProfileStep1); // ruta actualizada 🆗
-
 api.put("/updatedAccountStep2/:idUser", controllerUser.updateProfileStep2); // ruta actualizada 🆗
 
 // .patch('/patchUser/:idUser', [md_autenticacion.Auth], controllerUser.patchUser); // ruta actualizada 🆗
 
 // metodos Delete
-api.delete(
-  "/deleteUser/:idUser",
-  [md_autenticacion.Auth],
-  controllerUser.deleteUser
-); // ruta actualizada 🆗
+api.delete("/deleteUser/:idUser",[md_autenticacion.Auth],controllerUser.deleteUser); // ruta actualizada 🆗
 
 module.exports = api;

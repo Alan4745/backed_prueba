@@ -1,6 +1,8 @@
 const User = require("../models/user.model");
 const { UploadImg } = require("../utils/cloudinary");
 const fs = require("fs-extra");
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 
 async function updateUser(req, res) {
   try {
@@ -37,6 +39,39 @@ async function updateUser(req, res) {
   }
 }
 
+async function updatePasswordUser(req, res) {
+  try {
+    const { idUser } = req.params;
+    const password = req.body.password;
+
+    // Verificamos si el usuario le pertenece al perfil
+    if (req.user.sub !== idUser) {
+      return res.status(403).send({ mensaje: "No tiene los permisos para editar este usuario." });
+    }
+
+    // Se obtiene la contraseña para parsearla
+    const hash = await bcrypt.hash(password, saltRounds);
+
+    // Actualizar el usuario y obtener el resultado actualizado
+    const userUpdate = await User.findByIdAndUpdate(
+      idUser, 
+      {password: hash}, 
+      {new: true}
+    );
+
+    // Verificar si la actualización fue exitosa
+    if (!userUpdate) {
+      return res.status(500).send({ message: "Error al editar el usuario." });
+    }
+
+    // Enviar la información actualizada del usuario
+    return res.status(200).send({ message: userUpdate });
+  } catch (error) {
+    console.error("An error occurred:", error);
+    return res.status(500).send({ message: "Internal server error." });
+  }
+}
+
 async function deleteUser(req, res) {
   try {
     const { idUser } = req.params;
@@ -57,7 +92,7 @@ async function deleteUser(req, res) {
     }
 
     // Enviar la información del usuario eliminado
-    return res.status(200).send({ message: userDelete });
+    return res.status(200).send({ message: "Usuario eliminado." });
   } catch (error) {
     console.error("An error occurred:", error);
     return res.status(500).send({ message: "Internal server error." });
@@ -417,6 +452,7 @@ async function findUserRegex(req, res) {
 
 module.exports = {
   updateUser,
+  updatePasswordUser,
   deleteUser,
   viewUser,
   userFindId,
