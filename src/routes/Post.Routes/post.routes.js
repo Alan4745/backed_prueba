@@ -8,6 +8,7 @@ const api = express.Router();
 api.get('/feedPosts/', controllerPost.getFeedPosts);
 api.get('/PostFrends', [controllerAuth.Auth],controllerPost.getPostFollowing);
 api.get('/MyPost/:idPost',[controllerAuth.Auth], controllerPost.getPost);
+api.get('/PostByUser/:idUser',[controllerAuth.Auth], controllerPost.getPostByUser);
 api.get('/PublicPost/:idPost', controllerPost.getPublicPost);
 api.get('/commentsPost/:idPost', [controllerAuth.Auth], controllerPost.getCommentsPost);
 
@@ -18,5 +19,8 @@ api.post('/comments/:idPost', [controllerAuth.Auth], controllerPost.commentsPost
 
 //put
 api.put('/UpdatePost/:idPost',[controllerAuth.Auth], controllerPost.updatePost);
+
+//delete
+api.delete('/DeletePost/:idPost',[controllerAuth.Auth], controllerPost.deletePost);
 
 module.exports = api;

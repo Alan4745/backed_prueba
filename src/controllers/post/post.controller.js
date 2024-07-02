@@ -265,6 +265,30 @@ async function getPost(req, res) {
   }
 }
 
+//Traer post por usuarios
+async function getPostByUser(req, res) {
+  console.log("getPostByUser");
+
+  const idUser = req.params.idUser;
+
+  try {
+    const post = await Post.find({author: idUser });
+
+    if (!post) {
+      return res
+        .status(404)
+        .json({ error: "Post no encontrado o no te pertenece." });
+    }
+
+    res.status(200).json(post);
+  } catch (error) {
+    res.status(500).json({ error: "Error al obtener el Post." });
+    console.log(error);
+  }
+}
+
+
+//Obtener un post publico por id sin autorización
 async function getPublicPost(req, res) {
   console.log("getPublicPost");
 
@@ -468,6 +492,7 @@ async function commentsPost(req, res) {
 
 // RACION POST
 
+
 //TRAER COMENTARIOS
 async function getCommentsPost(req, res) {
   console.log("getCommentsPost");
@@ -487,14 +512,40 @@ async function getCommentsPost(req, res) {
   }
 }
 
+
+//Eliminar post
+async function deletePost(req, res) {
+  console.log("deletePost");
+
+  const idPost = req.params.idPost; // ID del post a eliminar
+
+  try {
+    //Eliminar el post y el resultado
+    const postDeleted = await Post.findByIdAndDelete({ _id: idPost, author: req.user.sub });
+
+    // Verificar si la eliminación fue exitosa
+    if (!postDeleted) {
+      return res.status(500).send({ message: "Error al eliminar el post." });
+    }
+
+    // Enviar la información del usuario eliminado
+    return res.status(200).send({ message: "Post eliminado." });
+  } catch (error) {
+    console.error("Error al eliminar el post:", error);
+    res.status(500).send({ message: "Error al eliminar el post" });
+  }
+}
+
 module.exports = {
   createPost,
   getFeedPosts,
   getPostFollowing,
   getPost,
+  getPostByUser,
   getPublicPost,
   updatePost,
   sharePost,
   commentsPost,
   getCommentsPost,
+  deletePost
 };
