@@ -75,7 +75,7 @@ async function userRegistration(req, res) {
     }
 
     // Enviar una respuesta exitosa con la información del usuario guardado
-    return res.status(200).send({ message: userSave });
+    return res.status(200).send({ message: 'Usuario registrado exitosamente.' });
   } catch (error) {
     // Capturar y manejar cualquier error que ocurra durante el procesoconsole.error('An error occurred:', error);
     return res.status(500).send({ message: "Internal server error." });
