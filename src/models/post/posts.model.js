@@ -162,6 +162,10 @@ const postSchema = new Schema(
 				type: {
 					type: String,
 					enum: [], // Tipos de reacciones
+					//Like - Me gusta
+					//Me enojo
+					//Risa
+					//Recomendado
 					required: true,
 				},
 				date: {

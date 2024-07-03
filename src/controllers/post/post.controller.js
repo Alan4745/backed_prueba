@@ -183,6 +183,23 @@ async function createPost(req, res) {
   }
 }
 
+//Obtener todos los post 
+async function getAllPosts(req, res) {
+  try {
+    const latestPosts = await Post.find()
+      .sort({ createdAt: -1 })
+      .limit(15)
+      .exec();
+
+    // console.log(latestPosts);
+
+    return res.status(200).send({ message: latestPosts });
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).send({ message: "Error al obtener" });
+  }
+}
+
 async function getFeedPosts(req, res) {
   console.log("getFeedPosts");
   try {
@@ -312,14 +329,14 @@ async function getPublicPost(req, res) {
 
 // ACTUALIZAR POST O EVENTOS
 async function updatePost(req, res) {
-  console.log("updatePost");
-
   const idPost = req.params.idPost; // ID del post a actualizar
   let image = {};
   let imagens = [];
 
   try {
     const post = await Post.findOne({ _id: idPost, author: req.user.sub });
+
+    console.log(req.files);
 
     // Obtener el post existente
     const type = post.type;
@@ -490,6 +507,43 @@ async function commentsPost(req, res) {
   }
 }
 
+// REACCIONAR POST
+async function reactPost(req, res) {
+  const postId = req.params.idPost;
+  const params = req.body;
+
+  try {
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    // Crear el nuevo comentario
+    const newComment = {
+      userId: req.user.sub,
+      text: params.text,
+      date: Date.now(),
+    };
+
+    // Agregar el comentario al post
+    post.comments.push(newComment);
+    await post.save();
+
+    // Crear una notificación
+    await createNotification(
+      post.author,
+      req.user.sub,
+      post._id,
+      "share",
+      `Nuevo comentario de ${req.user.nickName}: ${newComment.text}`
+    );
+
+    res.status(201).json(newComment);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
 // RACION POST
 
 
@@ -539,6 +593,7 @@ async function deletePost(req, res) {
 module.exports = {
   createPost,
   getFeedPosts,
+  getAllPosts,
   getPostFollowing,
   getPost,
   getPostByUser,
