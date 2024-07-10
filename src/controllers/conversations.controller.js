@@ -11,6 +11,7 @@ function NewConversation(req, res) {
 	Conversation.find({ members: { $all: [senderId, req.user.sub] } }, (err, conversationFind) => {
 		// Verificamos si los usuarios obtubieron una conversacion anterior
 		if (conversationFind.length > 0) {
+			console.log(conversationFind);
 			return res
 				.status(500)
 				.send({ error: { message: 'ya Tienes una conversiancion el con este usuario' } });
@@ -32,7 +33,7 @@ function NewConversation(req, res) {
 
 function ConversationIdUser(req, res) {
 	const senderId = req.params.receiverId;
-
+	
 	Conversation.findOne(
 		{ members: { $elemMatch: { senderId: req.user.sub, receiverId: senderId } } },
 		(err, conversationFindIdUser) => {

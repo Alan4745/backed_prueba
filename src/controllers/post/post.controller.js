@@ -596,6 +596,7 @@ module.exports = {
   getAllPosts,
   getPostFollowing,
   getPost,
+  reactPost,
   getPostByUser,
   getPublicPost,
   updatePost,

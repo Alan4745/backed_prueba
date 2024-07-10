@@ -17,7 +17,7 @@ api.get('/commentsPost/:idPost', [controllerAuth.Auth], controllerPost.getCommen
 api.post('/postPost/:idUser', [controllerAuth.Auth], controllerPost.createPost);
 api.post('/compartirPost/:idPost', [controllerAuth.Auth], controllerPost.sharePost);
 api.post('/comments/:idPost', [controllerAuth.Auth], controllerPost.commentsPost );
-api.post('/react/:idPost', [controllerAuth.Auth], controllerPost.commentsPost );
+api.post('/react/:idPost', [controllerAuth.Auth], controllerPost.reactPost );
 
 //put
 api.put('/UpdatePost/:idPost',[controllerAuth.Auth], controllerPost.updatePost);
