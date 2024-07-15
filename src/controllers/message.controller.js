@@ -1,15 +1,18 @@
 const Message = require("../models/message.model");
 const Conversation = require("../models/Conversation.model");
 
-function ViewMessage(req, res) {
+async function ViewMessage(req, res) {
 	const senderId = req.params.receiverId;
 
+	const findConversatio = await Conversation.find({members: {$all: [senderId, req.user.sub]}});
+	console.log(findConversatio);
 	Conversation.find(
 		{ members: { $all: [senderId, req.user.sub] } },
 		(err, ConversationFindOne) => {
 			if (err) {
 				return res.status(500).send({ error: err });
 			}
+			console.log(ConversationFindOne);
 			Message.find(
 				{ conversationId: ConversationFindOne.id },
 				(err, messageView) =>
@@ -24,10 +27,16 @@ function SaveMessage(req, res) {
 	const parameters = req.body;
 	const senderId = req.params.receiverId;
 
+	console.log(senderId);
+	console.log(req.user.sub);
 	Conversation.find(
 		{ members: { $all: [senderId, req.user.sub] } },
 		(err, ConversationFindOne) => {
-			messageModel.conversationId = ConversationFindOne.id;
+			console.log(ConversationFindOne);
+			if(ConversationFindOne.length == 0){
+				return res.status(500).send({message: 'No se encontro la conversacion con este usuario.'})
+			}
+			messageModel.conversationId = ConversationFindOne[0]._id
 			messageModel.sender = req.user.sub;
 			messageModel.text = parameters.text;
 
