@@ -16,6 +16,8 @@ api.get("/obtenerTokenPorId/:tokenId",[md_autenticacion.Auth],controllerToken.vi
 // metodos Post
 api.post("/addTokenToCollection",[md_autenticacion.Auth],controllerToken.addTokenToCollection); 
 // metodo actualizado 🆗
+api.post("/addTokenToCollectionNew",[md_autenticacion.Auth],controllerToken.addTokenToCollectionNew); 
+// metodo actualizado 🆗
 
 api.post("/tokensSolo", [md_autenticacion.Auth], controllerToken.tokensSolos); 
 // metodo no actualizado ❌
