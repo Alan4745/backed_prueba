@@ -40,6 +40,10 @@ const tokenCollectionSchema = new Schema(
       required: true,
     },
 
+    idCollection: {
+      type: String,
+      require: true,
+    },
     author: {
       type: String,
       require: true,

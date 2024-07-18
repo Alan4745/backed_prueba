@@ -167,8 +167,7 @@ async function createCollection(req, res) {
 
     if (
       !parameters.nameCollection ||
-      !parameters.desc ||
-      !parameters.idUsuario
+      !parameters.desc
     ) {
       return res.status(500).send({ message: "Datos obligatorios faltantes" });
     }
@@ -226,6 +225,96 @@ async function createCollection(req, res) {
   }
 }
 
+
+async function updateCollection(req, res) {
+  try {
+    const collectionId = req.params.collectionId;
+
+    const parameters = req.body;
+    const randomBytes = crypto.randomBytes(32).toString("hex");
+    const hash = crypto
+      .createHash("sha256")
+      .update(parameters.nameCollection + randomBytes)
+      .digest("hex");
+
+    if (
+      !parameters.nameCollection ||
+      !parameters.desc
+    ) {
+      return res.status(500).send({ message: "Datos obligatorios faltantes" });
+    }
+
+    Collections.findById(
+      { _id: collectionId },
+      async (err, findColection) => {
+        if (!findColection) {
+          return res
+            .status(500)
+            .send({ message: "No se encontro la coleccion" });
+        }
+
+        findColection.hash = hash;
+        findColection.nameCollection = parameters.nameCollection;
+        findColection.desc = parameters.desc;
+
+        if (req.files?.image) {
+          // Subir la imagen a Cloudinary y obtener el resultado
+          const result = await UploadImg(req.files.image.tempFilePath);
+          // Guardar la información de la imagen en el modelo de usuario
+
+          findColection.img.imgUrl = result.secure_url;
+          findColection.img.imgId = result.public_id;
+
+          // Verificar si el archivo temporal existe antes de intentar eliminarlo
+          if (fs.existsSync(req.files.image.tempFilePath)) {
+            await fs.unlink(req.files.image.tempFilePath);
+          } else {
+            console.warn("El archivo temporal no existe.");
+          }
+        }
+
+        findColection.save((err, collectionSave) => {
+          if (err || !collectionSave) {
+            console.error(
+              "Error al ejecutar la petición de guardar la colección:",
+              err
+            );
+            return res
+              .status(500)
+              .send({ message: "Error al guardar la colección" });
+          }
+
+          return res.status(200).send({ message: collectionSave });
+        });
+      }
+    );
+  } catch (error) {
+    console.error("Error al crear la colección:", error);
+    return res
+      .status(500)
+      .send({ message: "Hubo un error al crear la colección" });
+  }
+}
+
+async function viewTokenById(req, res) {
+  try {
+    const tokensFid = await TokenCollection.findById({
+      _id: req.params.tokenId,
+    }).exec();
+
+    if (!tokensFid) {
+      return res.status(404).send({
+        message: "No se encontro ningun token",
+      });
+    }
+
+    res.status(200).send({ message: tokensFid });
+  } catch (error) {
+    console.error("Error al buscar tokens:", error);
+    res.status(500).send({ error: "Hubo un error al buscar el token" });
+  }
+}
+
 async function viewToken(req, res) {
   try {
     const tokensFid = await TokenCollection.find({
@@ -245,6 +334,8 @@ async function viewToken(req, res) {
     res.status(500).send({ error: "Hubo un error al buscar tokens" });
   }
 }
+
+
 const getCollectionsByAuthorId = async (req, res) => {
   const { authorId } = req.params;
 
@@ -285,6 +376,50 @@ async function findCollectionByName(req, res) {
     return res.status(500).send({ message: "Error interno del servidor." });
   }
 }
+
+async function findCollectionById(req, res) {
+  const { collectionId } = req.params;
+  try {
+    // Buscar la colección por su nombre
+    const collection = await Collections.findById({ _id: collectionId });
+
+    if (collection) {
+      // Si se encuentra la colección, devolverla en la respuesta
+      return res.status(200).send({ message: collection });
+    } else {
+      // Si no se encuentra la colección, devolver un mensaje de error
+      return res
+        .status(404)
+        .send({ message: "No se encontró ninguna colección con ese nombre." });
+    }
+  } catch (error) {
+    // Manejar errores
+    console.error("Error al buscar la colección:", error);
+    return res.status(500).send({ message: "Error interno del servidor." });
+  }
+}
+
+async function findCollectionByUser(req, res) {
+  try {
+    // Buscar la colección por su nombre
+    const collection = await Collections.find({ author: req.user.sub });
+
+    if (collection) {
+      // Si se encuentra la colección, devolverla en la respuesta
+      return res.status(200).send({ message: collection });
+    } else {
+      // Si no se encuentra la colección, devolver un mensaje de error
+      return res
+        .status(404)
+        .send({ message: "No se encontró ninguna colección con ese nombre." });
+    }
+  } catch (error) {
+    // Manejar errores
+    console.error("Error al buscar la colección:", error);
+    return res.status(500).send({ message: "Error interno del servidor." });
+  }
+}
+
 function tokensSolos(req, res) {
   Token.find((err, tokenOne) => {
     console.log(tokenOne);
@@ -407,6 +542,30 @@ async function burnTicket(req, res) {
   }
 }
 
+
+async function deleteOneTicket(req, res) {
+  try {
+    const idTicket = req.params.idTicket; // ID del documento a eliminar
+
+    // Buscar el ticket en la base de datos
+    const ticket = await TokenCollection.findByIdAndDelete({_id: idTicket});
+
+    // Comprobar si el ticket existe
+    if (!ticket) {
+      return res
+        .status(404)
+        .send({ message: "No se encontró ningún ticket con ese ID." });
+    }
+
+    res.status(200).send({
+      message: "Ticket eliminado exitosamente."
+    });
+  } catch (error) {
+    console.error("Error al actualizar el documento:", error);
+    res.status(500).send({ message: "Error interno del servidor." });
+  }
+}
+
 async function createCollectionWithTickets(req, res) {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -501,11 +660,16 @@ async function createCollectionWithTickets(req, res) {
 module.exports = {
   addTokenToCollection,
   createCollection,
+  updateCollection,
   viewToken,
+  viewTokenById,
   tokensSolos,
   findCollectionByName,
+  findCollectionByUser,
+  findCollectionById,
   redeemTicket,
   burnTicket,
+  deleteOneTicket,
   createCollectionWithTickets,
   getCollectionsByAuthorId,
 };

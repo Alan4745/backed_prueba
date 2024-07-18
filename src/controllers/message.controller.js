@@ -21,18 +21,33 @@ async function ViewMessage(req, res) {
 		}
 	);
 }
+async function ViewMessageById(req, res) {
+	const conversationId = req.params.conversationId;
+
+	Conversation.findById(
+		{ _id: conversationId},
+		(err, ConversationFindOne) => {
+			if (err) {
+				return res.status(500).send({ error: err });
+			}
+			console.log(ConversationFindOne);
+			Message.find(
+				{ conversationId: conversationId },
+				(err, messageView) =>
+					res.status(200).send({ status: "Success", messageView })
+			);
+		}
+	);
+}
 
 function SaveMessage(req, res) {
 	const messageModel = new Message();
 	const parameters = req.body;
 	const senderId = req.params.receiverId;
 
-	console.log(senderId);
-	console.log(req.user.sub);
 	Conversation.find(
 		{ members: { $all: [senderId, req.user.sub] } },
 		(err, ConversationFindOne) => {
-			console.log(ConversationFindOne);
 			if(ConversationFindOne.length == 0){
 				return res.status(500).send({message: 'No se encontro la conversacion con este usuario.'})
 			}
@@ -54,6 +69,39 @@ function SaveMessage(req, res) {
 		}
 	);
 }
+
+function SaveMessageGlobal(req, res) {
+	const messageModel = new Message();
+	const parameters = req.body;
+	const conversationId = req.params.conversationId;
+
+	Conversation.findOne({ _id: conversationId },
+		(err, ConversationFindOne) => {
+			if(err) {
+				res.status(500).send({message: err})
+			}
+			if(ConversationFindOne.length == 0){
+				return res.status(500).send({message: 'No se encontro la conversacion con este usuario.'})
+			}
+			messageModel.conversationId = conversationId
+			messageModel.sender = req.user.sub;
+			messageModel.text = parameters.text;
+
+			messageModel.save((err, saveMessage) => {
+				if (err) {
+					return res.status(500).send({ message: "err en la peticion", err });
+				}
+
+				if (!saveMessage) {
+					return res.status(500).send({ message: "err al guardar el usuario" });
+				}
+
+				return res.status(200).send({ status: "Success", saveMessage });
+			});
+		}
+	);
+}
+
 async function EditMessage(req, res) {
 	const parameters = req.body;
 	const idMessage = req.params.messageId;
@@ -86,7 +134,9 @@ async function DeleteMessage(req, res) {
 
 module.exports = {
 	SaveMessage,
+	SaveMessageGlobal,
 	ViewMessage,
+	ViewMessageById,
 	EditMessage,
 	DeleteMessage,
 };
