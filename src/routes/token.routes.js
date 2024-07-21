@@ -11,6 +11,7 @@ const cobro_ticket_controller = require("../controllers/tickets/cobrar_ticket");
 // metodos Get
 api.get("/obtenerToken/:author",[md_autenticacion.Auth],controllerToken.viewToken); 
 api.get("/obtenerTokenPorId/:tokenId",[md_autenticacion.Auth],controllerToken.viewTokenById); 
+api.get("/obtenerTokenPorColletion/:idColletion",[md_autenticacion.Auth],controllerToken.getTicketsByColletion); 
 // metodo actualizado 🆗
 
 // metodos Post
@@ -34,6 +35,7 @@ api.put("/burnTicket/:idTicket",[md_autenticacion.Auth],controllerToken.burnTick
 // metodos Delete
 //Eliminar solo un tikect
 api.delete("/deleteOneTicket/:idTicket",[md_autenticacion.Auth],controllerToken.deleteOneTicket); 
+api.delete("/deleteManyTicket/:idTicket",[md_autenticacion.Auth],controllerToken.deleteManyTicket); 
 
 //COBRAR TICKET A LAS PERSONAS
 api.put("/cobrar/:ticket_id", cobro_ticket_controller.cobrar); 

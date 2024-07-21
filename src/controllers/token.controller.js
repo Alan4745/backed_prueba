@@ -392,6 +392,25 @@ async function viewTokenById(req, res) {
   }
 }
 
+async function getTicketsByColletion(req, res) {
+  try {
+    const tickets = await TokenCollection.find({
+      idCollection: req.params.idColletion,
+    }).exec();
+
+    if (!tickets) {
+      return res.status(404).send({
+        message: "No se encontro ningun token",
+      });
+    }
+
+    res.status(200).send({ tickets });
+  } catch (error) {
+    console.error("Error al buscar tokens:", error);
+    res.status(500).send({ error: "Hubo un error al buscar el token" });
+  }
+}
+
 async function viewToken(req, res) {
   try {
     const tokensFid = await TokenCollection.find({
@@ -507,9 +526,6 @@ async function redeemTicket(req, res) {
   try {
     const idTicket = req.params.idTicket;
     const idUsuario = req.user.sub;
-
-    console.log(idTicket);
-    console.log(idUsuario);
 
     const nuevoBuyerId = req.body.buyerid;
 
@@ -643,6 +659,29 @@ async function deleteOneTicket(req, res) {
   }
 }
 
+async function deleteManyTicket(req, res) {
+  try {
+    const {idTickets} = req.body; // Arreglo  de ids de los tickets
+
+    // Buscar el ticket en la base de datos
+    const tickets = await TokenCollection.deleteMany({idTickets});
+
+    // Comprobar si el ticket existe
+    if (!tickets) {
+      return res
+        .status(404)
+        .send({ message: "No se encontró ningún ticket con ese ID." });
+    }
+
+    res.status(200).send({
+      message: "Los tickets fuerion eliminado exitosamente."
+    });
+  } catch (error) {
+    console.error("Error al actualizar el documento:", error);
+    res.status(500).send({ message: "Error interno del servidor." });
+  }
+}
+
 async function createCollectionWithTickets(req, res) {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -740,6 +779,7 @@ module.exports = {
   createCollection,
   updateCollection,
   viewToken,
+  getTicketsByColletion,
   viewTokenById,
   tokensSolos,
   findCollectionByName,
@@ -748,6 +788,7 @@ module.exports = {
   redeemTicket,
   burnTicket,
   deleteOneTicket,
+  deleteManyTicket,
   createCollectionWithTickets,
   getCollectionsByAuthorId,
 };
