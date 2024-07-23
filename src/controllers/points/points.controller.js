@@ -1,4 +1,4 @@
-const {Points} = require('../../models/points.model')
+const {Points} = require('../../models/points/points.model')
 
 const createPerimeterPoints = async(req, res) => {
     const { amount, longitude, latitude, radius, emitterId } = req.body;
