@@ -2,7 +2,11 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const pointsSchema = new Schema({
-    amount: {
+    amountCurrent: {
+        type: Number,
+        required: true
+    },
+    amountInitial: {
         type: Number,
         required: true
     },
