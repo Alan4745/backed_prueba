@@ -17,7 +17,8 @@ const createPerimeterPoints = async (req, res) => {
 
     try {
         const newPoint = new Points({
-            amount,
+            amountCurrent: amount,
+            amountInitial: amount,
             location: {
                 type,
                 coordinates: type === 'Polygon' ? [coordinates] : coordinates
