@@ -16,7 +16,7 @@ const channelRouter = require('./src/routes/channel.routes');
 const messageChannelRouter = require('./src/routes/messageChannel.routes');
 const tokenRouter = require('./src/routes/token.routes');
 const paymentRouter = require('./src/routes/payment/payment.routes');
-const pointsRouter = require('./src/routes/points/points.routes')
+const pointsRouter = require('./src/routes/points/points.routes');
 
 const checkout = require('./src/routes/checkout.routes');
 const passport = require('passport');
