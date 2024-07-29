@@ -13,17 +13,8 @@ const pointsRedeemedSchema = new Schema({
             required: true
         },
         coordinates: {
-            type: Array, // Can be [longitude, latitude] for Point or an array of arrays for Polygon
-            required: true,
-            validate: {
-                validator: function(value) {
-                    if (this.location.type === 'Point') {
-                        return value.length === 2 && typeof value[0] === 'number' && typeof value[1] === 'number';
-                    } 
-                    return false;
-                },
-                message: props => `${props.value} no es una coordenada válida para ${props.type}`
-            }
+            type: [Number], // Array de números para coordenadas
+            required: true
         }
     },
     idPointsMarked: {
@@ -41,8 +32,6 @@ const pointsRedeemedSchema = new Schema({
         default: Date.now
     }
 });
-
-pointsRedeemedSchema.index({ location: '2dsphere' });
 
 const PointsRedeemed = mongoose.model('PointsRedeemed', pointsRedeemedSchema);
 
