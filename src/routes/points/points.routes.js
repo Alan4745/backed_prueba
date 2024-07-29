@@ -5,7 +5,10 @@ const { createPerimeterPoints,
         updatePerimeterPointById, 
         deletePerimeterPointById 
     } = require("../../controllers/points/points.controller");
-const { createPointsRedeemed, getPointsRedeemed, getPointsRedeemedById, deletePointRedeemedById } = require("../../controllers/points/pointsReemed.controller");
+const { createPointsRedeemed, 
+        getPointsRedeemed, 
+        getPointsRedeemedById, 
+        deletePointRedeemedById } = require("../../controllers/points/pointsReemed.controller");
 const { createPointsMarked, 
         getAllPointsMarked, 
         getPointMarkedById, 
