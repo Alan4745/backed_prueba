@@ -183,7 +183,7 @@ async function createPost(req, res) {
   }
 }
 
-//Obtener todos los post 
+//Obtener todos los post
 async function getAllPosts(req, res) {
   try {
     const latestPosts = await Post.find()
@@ -289,7 +289,7 @@ async function getPostByUser(req, res) {
   const idUser = req.params.idUser;
 
   try {
-    const post = await Post.find({author: idUser });
+    const post = await Post.find({ author: idUser });
 
     if (!post) {
       return res
@@ -304,7 +304,6 @@ async function getPostByUser(req, res) {
   }
 }
 
-
 //Obtener un post publico por id sin autorización
 async function getPublicPost(req, res) {
   console.log("getPublicPost");
@@ -315,9 +314,7 @@ async function getPublicPost(req, res) {
     const post = await Post.findOne({ _id: Id_Post });
 
     if (!post) {
-      return res
-        .status(404)
-        .json({ error: "Post no encontrado" });
+      return res.status(404).json({ error: "Post no encontrado" });
     }
 
     res.status(200).json(post);
@@ -546,7 +543,6 @@ async function reactPost(req, res) {
 
 // RACION POST
 
-
 //TRAER COMENTARIOS
 async function getCommentsPost(req, res) {
   console.log("getCommentsPost");
@@ -566,7 +562,6 @@ async function getCommentsPost(req, res) {
   }
 }
 
-
 //Eliminar post
 async function deletePost(req, res) {
   console.log("deletePost");
@@ -575,7 +570,10 @@ async function deletePost(req, res) {
 
   try {
     //Eliminar el post y el resultado
-    const postDeleted = await Post.findByIdAndDelete({ _id: idPost, author: req.user.sub });
+    const postDeleted = await Post.findByIdAndDelete({
+      _id: idPost,
+      author: req.user.sub,
+    });
 
     // Verificar si la eliminación fue exitosa
     if (!postDeleted) {
@@ -603,5 +601,5 @@ module.exports = {
   sharePost,
   commentsPost,
   getCommentsPost,
-  deletePost
+  deletePost,
 };

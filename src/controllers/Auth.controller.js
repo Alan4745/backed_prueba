@@ -34,16 +34,32 @@ async function userRegistration(req, res) {
     }
 
     // Si se adjunta una imagen en la solicitud
-    if (req.files?.image) {
+    if (req.files?.imageBanner) {
       // Subir la imagen a Cloudinary y obtener el resultado
-      const result = await UploadImg(req.files.image.tempFilePath);
+      const result = await UploadImg(req.files.imageBanner.tempFilePath);
+      // Guardar la información de la imagen en el modelo de usuario
+      userModel.imageBanner.public_id = result.public_id;
+      userModel.imageBanner.secure_url = result.secure_url;
+
+      // Verificar si el archivo temporal existe antes de intentar eliminarlo
+      if (fs.existsSync(req.files.imageBanner.tempFilePath)) {
+        await fs.unlink(req.files.imageBanner.tempFilePath);
+      } else {
+        console.warn("El archivo temporal no existe.");
+      }
+    }
+
+    // Si se adjunta una imagen en la solicitud
+    if (req.files?.profileImage) {
+      // Subir la imagen a Cloudinary y obtener el resultado
+      const result = await UploadImg(req.files.profileImage.tempFilePath);
       // Guardar la información de la imagen en el modelo de usuario
       userModel.imageAvatar.public_id = result.public_id;
       userModel.imageAvatar.secure_url = result.secure_url;
 
       // Verificar si el archivo temporal existe antes de intentar eliminarlo
-      if (fs.existsSync(req.files.image.tempFilePath)) {
-        await fs.unlink(req.files.image.tempFilePath);
+      if (fs.existsSync(req.files.profileImage.tempFilePath)) {
+        await fs.unlink(req.files.profileImage.tempFilePath);
       } else {
         console.warn("El archivo temporal no existe.");
       }
@@ -57,16 +73,6 @@ async function userRegistration(req, res) {
     const hash = await bcrypt.hash(parameters.password, saltRounds);
     userModel.password = hash;
 
-    // if (parameters.imageAvatar.secure_url !== '') {
-    // 	userModel.imageAvatar.public_id = parameters.imageAvatar.public_id;
-    // 	userModel.imageAvatar.secure_url = parameters.imageAvatar.secure_url;
-    // }
-
-    // if (parameters.imageBanner.secure_url !== '') {
-    // 	userModel.imageBanner.public_id = parameters.imageBanner.public_id;
-    // 	userModel.imageBanner.secure_url = parameters.imageBanner.secure_url;
-    // }
-
     // Guardar el modelo de usuario en la base de datos
     const userSave = await userModel.save();
     // Verificar si la operación de guardado fue exitosa
@@ -77,13 +83,11 @@ async function userRegistration(req, res) {
     const token = jwt.crearToken(userSave);
 
     // Enviar una respuesta exitosa con la información del usuario guardado
-    return res.status(200).send(
-      { 
-        message: 'Usuario registrado exitosamente.' ,
-        token: token,
-        user: userSave
-      }
-    );
+    return res.status(200).send({
+      message: "Usuario registrado exitosamente.",
+      token: token,
+      user: userSave,
+    });
   } catch (error) {
     // Capturar y manejar cualquier error que ocurra durante el procesoconsole.error('An error occurred:', error);
     return res.status(500).send({ message: "Internal server error." });
