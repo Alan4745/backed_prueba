@@ -26,8 +26,14 @@ const collectionsSchema = new Schema({
 		}
 	},
 	author: {
-		type: String,
-		require: true
+		type: Schema.Types.ObjectId, // referencia al usuario emisor
+        ref: 'Users',
+        required: true
+	},
+	idPost: {
+		type: Schema.Types.ObjectId, // referencia al post
+        ref: 'Post',
+        required: true
 	}
 }, { timestamps: true },);
 
