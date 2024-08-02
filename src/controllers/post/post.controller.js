@@ -117,15 +117,15 @@ async function createPost(req, res) {
     if (type === "Event") {
       content.name = req.body.name;
       content.desc = req.body.desc;
-      content.fechaI = JSON.parse(req.body.fechaI);
-      content.fechaF = JSON.parse(req.body.fechaF);
-      content.req = JSON.parse(req.body.req);
-      if (JSON.parse(req.body.coordinates)) {
-        content.coordinates = JSON.parse(req.body.coordinates);
-      }
-      if (JSON.parse(req.body.ubicacion)) {
-        content.ubicacion = JSON.parse(req.body.ubicacion);
-      }
+      // content.fechaI = JSON.parse(req.body.fechaI);
+      // content.fechaF = JSON.parse(req.body.fechaF);
+      // content.req = JSON.parse(req.body.req);
+      // if (JSON.parse(req.body.coordinates)) {
+      //   content.coordinates = JSON.parse(req.body.coordinates);
+      // }
+      // if (JSON.parse(req.body.ubicacion)) {
+      //   content.ubicacion = JSON.parse(req.body.ubicacion);
+      // }
       content.pictures = imagens;
     } else if (type === "Poll") {
       console.log(req.body.options);
@@ -327,6 +327,8 @@ async function getPublicPost(req, res) {
 // ACTUALIZAR POST O EVENTOS
 async function updatePost(req, res) {
   const idPost = req.params.idPost; // ID del post a actualizar
+
+  console.log(idPost);
   let image = {};
   let imagens = [];
 
@@ -334,7 +336,7 @@ async function updatePost(req, res) {
     const post = await Post.findOne({ _id: idPost, author: req.user.sub });
 
     console.log(req.files);
-
+    console.log(post);
     // Obtener el post existente
     const type = post.type;
     if (!post) {
@@ -384,15 +386,15 @@ async function updatePost(req, res) {
     if (type === "Event") {
       content.name = req.body.name;
       content.desc = req.body.desc;
-      content.fechaI = JSON.parse(req.body.fechaI);
-      content.fechaF = JSON.parse(req.body.fechaF);
-      content.req = JSON.parse(req.body.req);
-      if (JSON.parse(req.body.coordinates)) {
-        content.coordinates = JSON.parse(req.body.coordinates);
-      }
-      if (JSON.parse(req.body.ubicacion)) {
-        content.ubicacion = JSON.parse(req.body.ubicacion);
-      }
+      // content.fechaI = JSON.parse(req.body.fechaI);
+      // content.fechaF = JSON.parse(req.body.fechaF);
+      // content.req = JSON.parse(req.body.req);
+      // if (JSON.parse(req.body.coordinates)) {
+      //   content.coordinates = JSON.parse(req.body.coordinates);
+      // }
+      // if (JSON.parse(req.body.ubicacion)) {
+      //   content.ubicacion = JSON.parse(req.body.ubicacion);
+      // }
       content.pictures = imagens.length ? imagens : post.content.pictures;
     } else if (type === "Poll") {
       content.question = req.body.question;

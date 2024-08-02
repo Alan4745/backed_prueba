@@ -46,7 +46,9 @@ async function updatePasswordUser(req, res) {
 
     // Verificamos si el usuario le pertenece al perfil
     if (req.user.sub !== idUser) {
-      return res.status(403).send({ mensaje: "No tiene los permisos para editar este usuario." });
+      return res
+        .status(403)
+        .send({ mensaje: "No tiene los permisos para editar este usuario." });
     }
 
     // Se obtiene la contraseña para parsearla
@@ -54,9 +56,9 @@ async function updatePasswordUser(req, res) {
 
     // Actualizar el usuario y obtener el resultado actualizado
     const userUpdate = await User.findByIdAndUpdate(
-      idUser, 
-      {password: hash}, 
-      {new: true}
+      idUser,
+      { password: hash },
+      { new: true }
     );
 
     // Verificar si la actualización fue exitosa
@@ -156,37 +158,35 @@ async function updateProfileStep2(req, res) {
     user.bio = bio;
     user.sex = sex;
 
-    // Subir y actualizar la imagen de avatar si existe
-    if (req.files?.profileImage) {
-      const profileImageResult = await UploadImg(
-        req.files.profileImage.tempFilePath
-      );
-      user.imageAvatar = {
-        public_id: profileImageResult.public_id,
-        secure_url: profileImageResult.secure_url,
-      };
+    // Si se adjunta una imagen en la solicitud
+    if (req.files?.imageBanner) {
+      // Subir la imagen a Cloudinary y obtener el resultado
+      const result = await UploadImg(req.files.imageBanner.tempFilePath);
+      // Guardar la información de la imagen en el modelo de usuario
+      user.imageBanner.public_id = result.public_id;
+      user.imageBanner.secure_url = result.secure_url;
 
-      if (fs.existsSync(req.files.profileImage.tempFilePath)) {
-        await fs.unlink(req.files.profileImage.tempFilePath);
+      // Verificar si el archivo temporal existe antes de intentar eliminarlo
+      if (fs.existsSync(req.files.imageBanner.tempFilePath)) {
+        await fs.unlink(req.files.imageBanner.tempFilePath);
       } else {
-        console.warn("El archivo temporal de avatar no existe.");
+        console.warn("El archivo temporal no existe.");
       }
     }
 
-    // Subir y actualizar la imagen de banner si existe
-    if (req.files?.bannerImage) {
-      const bannerImageResult = await UploadImg(
-        req.files.bannerImage.tempFilePath
-      );
-      user.imageBanner = {
-        public_id: bannerImageResult.public_id,
-        secure_url: bannerImageResult.secure_url,
-      };
+    // Si se adjunta una imagen en la solicitud
+    if (req.files?.profileImage) {
+      // Subir la imagen a Cloudinary y obtener el resultado
+      const result = await UploadImg(req.files.profileImage.tempFilePath);
+      // Guardar la información de la imagen en el modelo de usuario
+      user.imageAvatar.public_id = result.public_id;
+      user.imageAvatar.secure_url = result.secure_url;
 
-      if (fs.existsSync(req.files.bannerImage.tempFilePath)) {
-        await fs.unlink(req.files.bannerImage.tempFilePath);
+      // Verificar si el archivo temporal existe antes de intentar eliminarlo
+      if (fs.existsSync(req.files.profileImage.tempFilePath)) {
+        await fs.unlink(req.files.profileImage.tempFilePath);
       } else {
-        console.warn("El archivo temporal de banner no existe.");
+        console.warn("El archivo temporal no existe.");
       }
     }
 

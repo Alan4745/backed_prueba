@@ -63,7 +63,7 @@ app.use(
   messageRouter, // Rutas para mensajes
   conversationRouter, // Rutas para conversaciones
   postRouter, //Rutas para publicaciones
-  channelRouter, // Rutas para Canales
+  //channelRouter, // Rutas para Canales
   messageChannelRouter, // Rutas para mensajes de canal
   // NormalPostRouter, // POST NORMAL
   // EventPostRouter, // event post
