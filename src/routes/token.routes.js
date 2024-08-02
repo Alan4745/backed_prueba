@@ -1,5 +1,5 @@
 const express = require("express");
-const controllerToken = require("../controllers/token.controller");
+const controllerToken = require("../controllers/token");
 
 const md_autenticacion = require("../middlewares/authentication");
 
@@ -10,7 +10,7 @@ const cobro_ticket_controller = require("../controllers/tickets/cobrar_ticket");
 
 // metodos Get
 api.get("/obtenerToken/:author",[md_autenticacion.Auth],controllerToken.viewToken); 
-api.get("/obtenerTokenPorId/:tokenId",[md_autenticacion.Auth],controllerToken.viewTokenById); 
+// api.get("/obtenerTokenPorId/:tokenId",[md_autenticacion.Auth],controllerToken.viewTokenById); 
 api.get("/obtenerTokenPorColletion/:idColletion",[md_autenticacion.Auth],controllerToken.getTicketsByColletion); 
 // metodo actualizado 🆗
 
@@ -23,7 +23,7 @@ api.post("/addTokenToCollectionNew",[md_autenticacion.Auth],controllerToken.addT
 api.post("/tokensSolo", [md_autenticacion.Auth], controllerToken.tokensSolos); 
 // metodo no actualizado ❌
 
-api.post("/create-collection",[md_autenticacion.Auth],controllerToken.createCollectionWithTickets);
+api.post("/createCollection",[md_autenticacion.Auth],controllerToken.createCollectionWithTickets);
 
 // metodos Put
 api.put("/redeemTiceket/:idTicket",[md_autenticacion.Auth],controllerToken.redeemTicket); 
