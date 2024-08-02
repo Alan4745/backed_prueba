@@ -9,11 +9,7 @@ api.get("/allPost", [controllerAuth.Auth], controllerPost.getAllPosts);
 api.get("/feedPosts/", controllerPost.getFeedPosts);
 api.get("/PostFrends", [controllerAuth.Auth], controllerPost.getPostFollowing);
 api.get("/MyPost/:idPost", [controllerAuth.Auth], controllerPost.getPost);
-api.get(
-  "/PostByUser/:idUser",
-  [controllerAuth.Auth],
-  controllerPost.getPostByUser
-);
+api.get("/PostByUser/:idUser", controllerPost.getPostByUser);
 api.get("/PublicPost/:idPost", controllerPost.getPublicPost);
 api.get(
   "/commentsPost/:idPost",
