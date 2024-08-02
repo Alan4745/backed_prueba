@@ -3,7 +3,7 @@ const controllerAuth = require("../../middlewares/authentication");
 const postController = require("../../controllers/post");
 
 const api = express.Router();
-//rytas gets
+//rutas gets
 api.get("/allPosts", [controllerAuth.Auth], postController.getAllPosts);
 api.get("/feedPosts", [controllerAuth.Auth], postController.getFeedPosts);
 api.get("/PostFrends", [controllerAuth.Auth], postController.getPostFollowing);
