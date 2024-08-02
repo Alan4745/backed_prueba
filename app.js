@@ -16,6 +16,7 @@ const channelRouter = require("./src/routes/channel.routes");
 const messageChannelRouter = require("./src/routes/messageChannel.routes");
 const tokenRouter = require("./src/routes/token.routes");
 const StatisticRouter = require("./src/routes/Statistic/Statistic.routes");
+const PotentialUserRouter = require("./src/routes/potentialUsers/potentialUsers.routes");
 
 const paymentRouter = require("./src/routes/payment/payment.routes");
 
@@ -67,6 +68,7 @@ app.use(
   messageChannelRouter, // Rutas para mensajes de canal
   // NormalPostRouter, // POST NORMAL
   // EventPostRouter, // event post
+  PotentialUserRouter, // para pepsi
   StatisticRouter, // aca la rutas de las estadisticas
   tokenRouter, // Rutas para tokens
   checkout, //ruta de cobro

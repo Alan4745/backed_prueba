@@ -60,6 +60,10 @@ const tokenCollectionSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    category: {
+      type: String,
+      require: true,
+    },
   },
   { timestamps: true }
 );

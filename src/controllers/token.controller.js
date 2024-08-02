@@ -9,6 +9,7 @@ const io = require("./../../Server");
 
 const { UploadImg } = require("../utils/cloudinary");
 const { default: mongoose } = require("mongoose");
+const PotentialUsers = require("../models/potentialUsers/potentialUsers.model");
 // function agregarTokenAColecion(req, res) {
 //   const parameters = req.body;
 //   const { tokenAmount } = parameters;
@@ -156,7 +157,16 @@ async function addTokenToCollection(req, res) {
 async function addTokenToCollectionNew(req, res) {
   try {
     const parameters = req.body;
-    const { tokenAmount, colletionId,name,title,desc,price } = parameters;
+    const {
+      tokenAmount,
+      colletionId,
+      name,
+      title,
+      desc,
+      price,
+      category,
+      subTitle,
+    } = parameters;
     const tokens = [];
     let result = {};
 
@@ -169,14 +179,13 @@ async function addTokenToCollectionNew(req, res) {
       _id: colletionId,
     });
 
-
     if (!collectionFind) {
       return res
         .status(500)
         .send({ message: "Error, no se encontro la coleccion." });
     }
 
-    const findToken = await TokenCollection.find({idCollection: colletionId});
+    const findToken = await TokenCollection.find({ idCollection: colletionId });
 
     if (req.files?.image) {
       // Subir la imagen a Cloudinary y obtener el resultado
@@ -201,17 +210,18 @@ async function addTokenToCollectionNew(req, res) {
 
       modelToken.hash = hash;
       modelToken.title = title;
+      modelToken.subTitle = subTitle;
       modelToken.desc = desc;
       modelToken.author = req.user.sub;
       modelToken.price = price * 100;
       modelToken.idCollection = colletionId;
-      
-      if(findToken && findToken.length > 0){
+      modelToken.category = category;
+      if (findToken && findToken.length > 0) {
         modelToken.numertoken = findToken.length + i + 1;
       } else {
         modelToken.numertoken = i + 1;
       }
-      
+
       modelToken.img.imgUrl = result.secure_url;
       modelToken.img.imgId = result.public_id;
 
@@ -242,10 +252,7 @@ async function createCollection(req, res) {
       .update(parameters.nameCollection + randomBytes)
       .digest("hex");
 
-    if (
-      !parameters.nameCollection ||
-      !parameters.desc
-    ) {
+    if (!parameters.nameCollection || !parameters.desc) {
       return res.status(500).send({ message: "Datos obligatorios faltantes" });
     }
 
@@ -302,7 +309,6 @@ async function createCollection(req, res) {
   }
 }
 
-
 async function updateCollection(req, res) {
   try {
     const collectionId = req.params.collectionId;
@@ -314,57 +320,49 @@ async function updateCollection(req, res) {
       .update(parameters.nameCollection + randomBytes)
       .digest("hex");
 
-    if (
-      !parameters.nameCollection ||
-      !parameters.desc
-    ) {
+    if (!parameters.nameCollection || !parameters.desc) {
       return res.status(500).send({ message: "Datos obligatorios faltantes" });
     }
 
-    Collections.findById(
-      { _id: collectionId },
-      async (err, findColection) => {
-        if (!findColection) {
+    Collections.findById({ _id: collectionId }, async (err, findColection) => {
+      if (!findColection) {
+        return res.status(500).send({ message: "No se encontro la coleccion" });
+      }
+
+      findColection.hash = hash;
+      findColection.nameCollection = parameters.nameCollection;
+      findColection.desc = parameters.desc;
+
+      if (req.files?.image) {
+        // Subir la imagen a Cloudinary y obtener el resultado
+        const result = await UploadImg(req.files.image.tempFilePath);
+        // Guardar la información de la imagen en el modelo de usuario
+
+        findColection.img.imgUrl = result.secure_url;
+        findColection.img.imgId = result.public_id;
+
+        // Verificar si el archivo temporal existe antes de intentar eliminarlo
+        if (fs.existsSync(req.files.image.tempFilePath)) {
+          await fs.unlink(req.files.image.tempFilePath);
+        } else {
+          console.warn("El archivo temporal no existe.");
+        }
+      }
+
+      findColection.save((err, collectionSave) => {
+        if (err || !collectionSave) {
+          console.error(
+            "Error al ejecutar la petición de guardar la colección:",
+            err
+          );
           return res
             .status(500)
-            .send({ message: "No se encontro la coleccion" });
+            .send({ message: "Error al guardar la colección" });
         }
 
-        findColection.hash = hash;
-        findColection.nameCollection = parameters.nameCollection;
-        findColection.desc = parameters.desc;
-
-        if (req.files?.image) {
-          // Subir la imagen a Cloudinary y obtener el resultado
-          const result = await UploadImg(req.files.image.tempFilePath);
-          // Guardar la información de la imagen en el modelo de usuario
-
-          findColection.img.imgUrl = result.secure_url;
-          findColection.img.imgId = result.public_id;
-
-          // Verificar si el archivo temporal existe antes de intentar eliminarlo
-          if (fs.existsSync(req.files.image.tempFilePath)) {
-            await fs.unlink(req.files.image.tempFilePath);
-          } else {
-            console.warn("El archivo temporal no existe.");
-          }
-        }
-
-        findColection.save((err, collectionSave) => {
-          if (err || !collectionSave) {
-            console.error(
-              "Error al ejecutar la petición de guardar la colección:",
-              err
-            );
-            return res
-              .status(500)
-              .send({ message: "Error al guardar la colección" });
-          }
-
-          return res.status(200).send({ message: collectionSave });
-        });
-      }
-    );
+        return res.status(200).send({ message: collectionSave });
+      });
+    });
   } catch (error) {
     console.error("Error al crear la colección:", error);
     return res
@@ -430,7 +428,6 @@ async function viewToken(req, res) {
     res.status(500).send({ error: "Hubo un error al buscar tokens" });
   }
 }
-
 
 const getCollectionsByAuthorId = async (req, res) => {
   const { authorId } = req.params;
@@ -578,6 +575,60 @@ async function redeemTicket(req, res) {
   }
 }
 
+async function redeemTicketPepsi(req, res) {
+  try {
+    const idTicket = req.params.idTicket;
+
+    const nuevoBuyerId = req.body.buyerid;
+
+    // Validar si los IDs son válidos
+    if (!idTicket || !nuevoBuyerId) {
+      return res
+        .status(400)
+        .send({ message: "Se requieren IDs de ticket y usuario válidos." });
+    }
+
+    // Verificar si el usuario ya ha adquirido el ticket
+    const usuario = await PotentialUsers.findById(nuevoBuyerId);
+    if (!usuario) {
+      return res
+        .status(404)
+        .send({ message: "No se encontró ningún usuario con ese ID." });
+    }
+    if (usuario.ticketsObtained.includes(idTicket)) {
+      return res
+        .status(400)
+        .send({ message: "El usuario ya ha adquirido este ticket." });
+    }
+
+    // Actualizar el ticket
+    const ticketActualizado = await TokenCollection.findByIdAndUpdate(
+      idTicket,
+      { buyerid: nuevoBuyerId, adquirido: true },
+      { new: true }
+    );
+
+    if (!ticketActualizado) {
+      return res
+        .status(404)
+        .send({ message: "No se encontró ningún ticket con ese ID." });
+    }
+
+    // Agregar el ticket a los tokens obtenidos del usuario
+    usuario.ticketsObtained.push(ticketActualizado);
+
+    // Guardar los cambios en el usuario
+    await usuario.save();
+
+    res.status(200).send({
+      message: "Ticket redimido exitosamente.",
+      ticket: ticketActualizado,
+    });
+  } catch (error) {
+    console.error("Error al redimir el ticket:", error);
+    res.status(500).send({ message: "Error interno del servidor." });
+  }
+}
 async function burnTicket(req, res) {
   try {
     const idDocumento = req.params.idTicket; // ID del documento a actualizar
@@ -635,13 +686,12 @@ async function burnTicket(req, res) {
   }
 }
 
-
 async function deleteOneTicket(req, res) {
   try {
     const idTicket = req.params.idTicket; // ID del documento a eliminar
 
     // Buscar el ticket en la base de datos
-    const ticket = await TokenCollection.findByIdAndDelete({_id: idTicket});
+    const ticket = await TokenCollection.findByIdAndDelete({ _id: idTicket });
 
     // Comprobar si el ticket existe
     if (!ticket) {
@@ -651,7 +701,7 @@ async function deleteOneTicket(req, res) {
     }
 
     res.status(200).send({
-      message: "Ticket eliminado exitosamente."
+      message: "Ticket eliminado exitosamente.",
     });
   } catch (error) {
     console.error("Error al actualizar el documento:", error);
@@ -661,10 +711,10 @@ async function deleteOneTicket(req, res) {
 
 async function deleteManyTicket(req, res) {
   try {
-    const {idTickets} = req.body; // Arreglo  de ids de los tickets
+    const { idTickets } = req.body; // Arreglo  de ids de los tickets
 
     // Buscar el ticket en la base de datos
-    const tickets = await TokenCollection.deleteMany({idTickets});
+    const tickets = await TokenCollection.deleteMany({ idTickets });
 
     // Comprobar si el ticket existe
     if (!tickets) {
@@ -674,7 +724,7 @@ async function deleteManyTicket(req, res) {
     }
 
     res.status(200).send({
-      message: "Los tickets fuerion eliminado exitosamente."
+      message: "Los tickets fuerion eliminado exitosamente.",
     });
   } catch (error) {
     console.error("Error al actualizar el documento:", error);
@@ -696,6 +746,8 @@ async function createCollectionWithTickets(req, res) {
       ticketDesc,
       price,
       tokenAmount,
+      categoryTiket,
+      idEvent,
     } = req.body;
     const collectionImg = req.files.collectionImg;
     const ticketImg = req.files.ticketImg;
@@ -713,6 +765,7 @@ async function createCollectionWithTickets(req, res) {
         imgId: collectionImgResult.public_id,
       },
       author,
+      idEvent: idEvent,
     });
 
     const savedCollection = await collection.save({ session });
@@ -742,6 +795,7 @@ async function createCollectionWithTickets(req, res) {
         price: price * 100,
         author: author,
         idCollection: savedCollection._id,
+        category: categoryTiket,
       });
 
       tickets.push(ticket);
@@ -791,6 +845,7 @@ module.exports = {
   deleteManyTicket,
   createCollectionWithTickets,
   getCollectionsByAuthorId,
+  redeemTicketPepsi,
 };
 
 // estas funciones estaran comentadas por son las versiones anteriores

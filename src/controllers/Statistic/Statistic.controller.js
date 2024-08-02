@@ -165,7 +165,7 @@ async function UpdateStatisticEntry(req, res) {
   } catch (error) {
     console.error(
       "Error al actualizar o agregar la entrada de estadística:",
-      error.message
+      error
     );
     res.status(500).json({ message: "Error interno del servidor" });
   }
