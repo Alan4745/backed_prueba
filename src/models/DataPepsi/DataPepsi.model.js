@@ -33,6 +33,16 @@ const dataPepsiSchema = new Schema(
       type: String,
       required: true,
     },
+    // Nuevo campo: Array para guardar ciertos datos
+    additionalData: {
+      type: [Schema.Types.Mixed], // Array que puede contener cualquier tipo de datos
+      default: [], // Valor por defecto es un array vacío
+    },
+    // Nuevo campo: Contador de registros
+    registrationCount: {
+      type: Number,
+      default: 0, // Valor por defecto es 0
+    },
   },
   {
     timestamps: true, // Añade campos createdAt y updatedAt automáticamente
