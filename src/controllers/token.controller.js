@@ -577,58 +577,59 @@ async function redeemTicket(req, res) {
 
 async function redeemTicketPepsi(req, res) {
   try {
-    const idTicket = req.params.idTicket;
+    // Generar un número aleatorio entre 0 y 100
+    const randomNumber = Math.random() * 100;
 
-    const nuevoBuyerId = req.body.buyerid;
+    // Determinar la categoría del ticket basado en la probabilidad
+    // Primero intentamos obtener un ticket de "entrada doble"
+    let category = "participacion"; // Por defecto es participación
+    let ticket = null;
 
-    // Validar si los IDs son válidos
-    if (!idTicket || !nuevoBuyerId) {
-      return res
-        .status(400)
-        .send({ message: "Se requieren IDs de ticket y usuario válidos." });
+    if (randomNumber < 5) {
+      // Buscar un ticket de "entrada doble" disponible
+      ticket = await TokenCollection.findOne({
+        canjeado: false,
+        category: "entrada doble",
+      });
+
+      if (!ticket) {
+        // Si no hay tickets de "entrada doble", buscar un ticket de "participacion"
+        ticket = await TokenCollection.findOne({
+          canjeado: false,
+          category: "participacion",
+        });
+      } else {
+        category = "entrada doble"; // Confirmar que encontramos un ticket de "entrada doble"
+      }
+    } else {
+      // Buscar un ticket de "participacion" disponible
+      ticket = await TokenCollection.findOne({
+        canjeado: false,
+        category: "participacion",
+      });
     }
 
-    // Verificar si el usuario ya ha adquirido el ticket
-    const usuario = await PotentialUsers.findById(nuevoBuyerId);
-    if (!usuario) {
+    if (!ticket) {
       return res
         .status(404)
-        .send({ message: "No se encontró ningún usuario con ese ID." });
-    }
-    if (usuario.ticketsObtained.includes(idTicket)) {
-      return res
-        .status(400)
-        .send({ message: "El usuario ya ha adquirido este ticket." });
+        .json({ message: "No hay tickets disponibles para canjear" });
     }
 
-    // Actualizar el ticket
-    const ticketActualizado = await TokenCollection.findByIdAndUpdate(
-      idTicket,
-      { buyerid: nuevoBuyerId, adquirido: true },
-      { new: true }
-    );
+    // Actualizar el ticket encontrado
+    ticket.canjeado = true;
+    ticket.category = category; // Aunque el ticket ya tiene la categoría correcta, puedes actualizarla si es necesario
 
-    if (!ticketActualizado) {
-      return res
-        .status(404)
-        .send({ message: "No se encontró ningún ticket con ese ID." });
-    }
+    // Guardar los cambios en la base de datos
+    await ticket.save();
 
-    // Agregar el ticket a los tokens obtenidos del usuario
-    usuario.ticketsObtained.push(ticketActualizado);
-
-    // Guardar los cambios en el usuario
-    await usuario.save();
-
-    res.status(200).send({
-      message: "Ticket redimido exitosamente.",
-      ticket: ticketActualizado,
-    });
+    // Devolver el ticket actualizado como respuesta
+    res.status(200).json({ message: "Ticket canjeado exitosamente", ticket });
   } catch (error) {
-    console.error("Error al redimir el ticket:", error);
-    res.status(500).send({ message: "Error interno del servidor." });
+    // Manejo de errores
+    res.status(500).json({ error: error.message });
   }
 }
+
 async function burnTicket(req, res) {
   try {
     const idDocumento = req.params.idTicket; // ID del documento a actualizar

@@ -144,6 +144,8 @@ async function UpdateStatisticEntry(req, res) {
       statisticDoc.entries.push(entry);
     }
 
+    console.log(timeInMinutes);
+
     // Obtener el siguiente ID
     const newId = await getNextSequenceValue(nameStatic); // Usa nameStatic como el valor de model
 
