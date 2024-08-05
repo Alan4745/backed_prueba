@@ -1,10 +1,12 @@
+const DataPepsiModel = require("../../models/DataPepsi/DataPepsi.model");
+
 // Función para registrar datos
 async function RegistrarData(req, res) {
   try {
     const { name, lastname, dpi, email, phone, dob, department } = req.body;
 
     // Crear un nuevo documento
-    const newDataPepsi = new DataPepsi({
+    const newDataPepsi = new DataPepsiModel({
       name,
       lastname,
       dpi,
