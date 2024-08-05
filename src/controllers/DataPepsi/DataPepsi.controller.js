@@ -20,7 +20,7 @@ async function RegistrarData(req, res) {
     await newDataPepsi.save();
 
     res
-      .status(201)
+      .status(200)
       .json({ message: "Datos registrados con éxito", data: newDataPepsi });
   } catch (error) {
     console.error("Error al registrar los datos:", error);
