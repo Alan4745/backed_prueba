@@ -7,11 +7,14 @@ async function RegistrarData(req, res) {
     const { name, lastname, dpi, email, phone, dob, department } = req.body;
 
     // Buscar un documento existente por DPI
-    let data = await DataPepsi.findOne({ dpi });
+    let data = await DataPepsiModel.findOne({ dpi });
 
     if (data) {
       // Si el DPI ya existe, actualizar el contador de registros
-      await DataPepsi.updateOne({ dpi }, { $inc: { registrationCount: 1 } });
+      await DataPepsiModel.updateOne(
+        { dpi },
+        { $inc: { registrationCount: 1 } }
+      );
 
       // Enviar una respuesta indicando que el DPI ya existe
       res.status(200).json({
@@ -20,7 +23,7 @@ async function RegistrarData(req, res) {
       });
     } else {
       // Si el DPI no existe, crear una nueva entrada
-      const newData = new DataPepsi({
+      const newData = new DataPepsiModel({
         name,
         lastname,
         dpi,
@@ -43,7 +46,7 @@ async function RegistrarData(req, res) {
     res.status(500).json({
       success: false,
       message: "Error al registrar los datos",
-      error: error.message,
+      error: error,
     });
   }
 }
