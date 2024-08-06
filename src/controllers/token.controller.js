@@ -10,6 +10,7 @@ const io = require("./../../Server");
 const { UploadImg } = require("../utils/cloudinary");
 const { default: mongoose } = require("mongoose");
 const PotentialUsers = require("../models/potentialUsers/potentialUsers.model");
+const DataPepsiModel = require("../models/DataPepsi/DataPepsi.model");
 // function agregarTokenAColecion(req, res) {
 //   const parameters = req.body;
 //   const { tokenAmount } = parameters;
@@ -577,11 +578,12 @@ async function redeemTicket(req, res) {
 
 async function redeemTicketPepsi(req, res) {
   try {
+    const idbuyer = req.params.idbuyer; // ID del documento DataPepsi a actualizar
+
     // Generar un número aleatorio entre 0 y 100
     const randomNumber = Math.random() * 100;
 
     // Determinar la categoría del ticket basado en la probabilidad
-    // Primero intentamos obtener un ticket de "entrada doble"
     let category = "participacion"; // Por defecto es participación
     let ticket = null;
 
@@ -617,10 +619,20 @@ async function redeemTicketPepsi(req, res) {
 
     // Actualizar el ticket encontrado
     ticket.canjeado = true;
-    ticket.category = category; // Aunque el ticket ya tiene la categoría correcta, puedes actualizarla si es necesario
-
-    // Guardar los cambios en la base de datos
     await ticket.save();
+
+    // Buscar el documento DataPepsi correspondiente al idbuyer
+    const dataPepsi = await DataPepsi.findById(idbuyer);
+    if (!dataPepsi) {
+      return res.status(404).json({ message: "No se encontró el comprador" });
+    }
+
+    // Agregar el ticket al campo ticketsCollected
+    dataPepsi.ticketsCollected.push(ticket);
+    dataPepsi.registrationCount += 1; // Incrementar el contador de registros si es necesario
+
+    // Guardar los cambios en el documento DataPepsi
+    await dataPepsi.save();
 
     // Devolver el ticket actualizado como respuesta
     res.status(200).json({ message: "Ticket canjeado exitosamente", ticket });
@@ -629,7 +641,6 @@ async function redeemTicketPepsi(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
-
 async function burnTicket(req, res) {
   try {
     const idDocumento = req.params.idTicket; // ID del documento a actualizar

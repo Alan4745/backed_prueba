@@ -34,7 +34,7 @@ const dataPepsiSchema = new Schema(
       required: true,
     },
     // Nuevo campo: Array para guardar ciertos datos
-    additionalData: {
+    ticketsCollected: {
       type: [Schema.Types.Mixed], // Array que puede contener cualquier tipo de datos
       default: [], // Valor por defecto es un array vacío
     },

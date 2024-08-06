@@ -51,11 +51,11 @@ api.post(
 
 // metodos Put
 api.put(
-  "/redeemTiceket/:idTicket",
+  "/redeemTiceket/:idbuyer",
   [md_autenticacion.Auth],
   controllerToken.redeemTicket
 );
-api.put("/redeemTiceketPepsi", controllerToken.redeemTicketPepsi);
+api.put("/redeemTiceketPepsi/:idUser", controllerToken.redeemTicketPepsi);
 
 // metodo actualizado 🆗
 api.put(
