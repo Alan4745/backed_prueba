@@ -580,6 +580,8 @@ async function redeemTicketPepsi(req, res) {
   try {
     const idbuyer = req.params.idbuyer; // ID del documento DataPepsi a actualizar
 
+    console.log(idbuyer);
+
     // Generar un número aleatorio entre 0 y 100
     const randomNumber = Math.random() * 100;
 
@@ -619,10 +621,12 @@ async function redeemTicketPepsi(req, res) {
 
     // Actualizar el ticket encontrado
     ticket.canjeado = true;
+    ticket.buyerid = idbuyer;
+    ticket.adquirido = true;
     await ticket.save();
 
     // Buscar el documento DataPepsi correspondiente al idbuyer
-    const dataPepsi = await DataPepsi.findById(idbuyer);
+    const dataPepsi = await DataPepsiModel.findById(idbuyer);
     if (!dataPepsi) {
       return res.status(404).json({ message: "No se encontró el comprador" });
     }
