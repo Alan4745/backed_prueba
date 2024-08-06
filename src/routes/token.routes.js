@@ -55,7 +55,7 @@ api.put(
   [md_autenticacion.Auth],
   controllerToken.redeemTicket
 );
-api.put("/redeemTiceketPepsi/:idUser", controllerToken.redeemTicketPepsi);
+api.put("/redeemTiceketPepsi/:idbuyer", controllerToken.redeemTicketPepsi);
 
 // metodo actualizado 🆗
 api.put(
