@@ -19,7 +19,7 @@ async function RegistrarData(req, res) {
       // Enviar una respuesta indicando que el DPI ya existe
       res.status(200).json({
         success: true,
-        message: "DPI ya registrado. Contador incrementado.",
+        message: data,
       });
     } else {
       // Si el DPI no existe, crear una nueva entrada
@@ -37,9 +37,7 @@ async function RegistrarData(req, res) {
       await newData.save();
 
       // Enviar una respuesta de éxito
-      res
-        .status(200)
-        .json({ success: true, message: "Datos registrados exitosamente" });
+      res.status(200).json({ success: true, message: newData });
     }
   } catch (error) {
     // Enviar una respuesta de error en caso de excepción
