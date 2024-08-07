@@ -20,9 +20,7 @@ async function RegistrarData(req, res) {
         // Si el DPI existe pero no se ha registrado, permitir el registro sin modificar `hasRegistered`
         return res.status(200).json({
           success: true,
-          message:
-            "El DPI existe pero no se ha registrado. Puedes registrar los datos.",
-          data: existingData,
+          message: existingData,
         });
       }
     } else {
@@ -44,8 +42,7 @@ async function RegistrarData(req, res) {
       // Enviar una respuesta de éxito
       res.status(200).json({
         success: true,
-        message: "Datos registrados exitosamente.",
-        data: newData,
+        message: newData,
       });
     }
   } catch (error) {
