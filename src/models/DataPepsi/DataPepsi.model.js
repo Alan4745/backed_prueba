@@ -15,6 +15,7 @@ const dataPepsiSchema = new Schema(
     dpi: {
       type: String,
       required: true,
+      unique: true, // Asegurarse de que el DPI sea único
     },
     email: {
       type: String,
@@ -33,10 +34,15 @@ const dataPepsiSchema = new Schema(
       type: String,
       required: true,
     },
-    // Nuevo campo: Indicador de si el usuario ha ganado
+    // Nuevo campo: Indica si ya se ha registrado
+    hasRegistered: {
+      type: Boolean,
+      default: false, // Por defecto, aún no se ha registrado
+    },
+    // Nuevo campo: Indica si el usuario es un ganador
     winner: {
       type: Boolean,
-      default: false, // Valor por defecto es false
+      default: false, // Inicialmente no se considera ganador
     },
   },
   {

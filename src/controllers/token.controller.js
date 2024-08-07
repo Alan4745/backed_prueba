@@ -633,6 +633,7 @@ async function redeemTicketPepsi(req, res) {
 
     // Actualizar el campo winner en el documento DataPepsi
     dataPepsi.winner = category === "entrada doble";
+    dataPepsi.hasRegistered = true;
 
     // Guardar los cambios en el documento DataPepsi
     await dataPepsi.save();
