@@ -33,15 +33,10 @@ const dataPepsiSchema = new Schema(
       type: String,
       required: true,
     },
-    // Nuevo campo: Array para guardar ciertos datos
-    ticketsCollected: {
-      type: [Schema.Types.Mixed], // Array que puede contener cualquier tipo de datos
-      default: [], // Valor por defecto es un array vacío
-    },
-    // Nuevo campo: Contador de registros
-    registrationCount: {
-      type: Number,
-      default: 0, // Valor por defecto es 0
+    // Nuevo campo: Indicador de si el usuario ha ganado
+    winner: {
+      type: Boolean,
+      default: false, // Valor por defecto es false
     },
   },
   {

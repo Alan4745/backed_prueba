@@ -631,20 +631,24 @@ async function redeemTicketPepsi(req, res) {
       return res.status(404).json({ message: "No se encontró el comprador" });
     }
 
-    // Agregar el ticket al campo ticketsCollected
-    dataPepsi.ticketsCollected.push(ticket);
-    dataPepsi.registrationCount += 1; // Incrementar el contador de registros si es necesario
+    // Actualizar el campo winner en el documento DataPepsi
+    dataPepsi.winner = category === "entrada doble";
 
     // Guardar los cambios en el documento DataPepsi
     await dataPepsi.save();
 
     // Devolver el ticket actualizado como respuesta
-    res.status(200).json({ message: "Ticket canjeado exitosamente", ticket });
+    res.status(200).json({
+      message: "Ticket canjeado exitosamente",
+      ticket,
+      registro: dataPepsi,
+    });
   } catch (error) {
     // Manejo de errores
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error });
   }
 }
+
 async function burnTicket(req, res) {
   try {
     const idDocumento = req.params.idTicket; // ID del documento a actualizar
