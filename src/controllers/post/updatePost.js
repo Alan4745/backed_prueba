@@ -1,12 +1,10 @@
-const { EventPost, PollPost, NormalPost } = require("../../models/post/posts.model");
+const { EventPost, PollPost, NormalPost, Post } = require("../../models/post/posts.model");
 const User = require("../../models/user.model");
 const { UploadImg } = require("../../utils/cloudinary");
 const fs = require("fs-extra");
 const { Notification } = require("../../models/notification");
 
 async function updatePost(req, res) {
-  console.log("updatePost");
-
   try {
     const idUser = req.user.sub;
     const postId = req.params.idPost;
