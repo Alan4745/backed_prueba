@@ -44,19 +44,20 @@ async function RegistrarData(req, res) {
     const existingData = await DataPepsiModel.findOne({ dpi });
 
     if (existingData) {
-      if (existingData.hasRegistered) {
-        // Si el DPI ya existe y ya se ha registrado, devolver un error
+      if (existingData.winner) {
+        // Si el usuario ya es un ganador, devolver un error
         return res.status(400).json({
           success: false,
-          message: "El DPI ya ha sido registrado.",
-        });
-      } else {
-        // Si el DPI existe pero no se ha registrado, permitir el registro sin modificar `hasRegistered`
-        return res.status(200).json({
-          success: true,
-          message: existingData,
+          message:
+            "El usuario ya ha ganado un premio y no puede participar más.",
         });
       }
+
+      // Si el DPI ya existe y el usuario no es un ganador, permitir el registro
+      return res.status(200).json({
+        success: true,
+        message: existingData,
+      });
     } else {
       // Si el DPI no existe, crear una nueva entrada
       const newData = new DataPepsiModel({
@@ -67,7 +68,6 @@ async function RegistrarData(req, res) {
         phone,
         dob,
         department,
-        // No se modifica `hasRegistered` en la creación
       });
 
       // Guardar los datos en la base de datos

@@ -34,15 +34,20 @@ const dataPepsiSchema = new Schema(
       type: String,
       required: true,
     },
-    // Nuevo campo: Indica si ya se ha registrado
+    // Campo que indica si el usuario ya se ha registrado
     hasRegistered: {
       type: Boolean,
       default: false, // Por defecto, aún no se ha registrado
     },
-    // Nuevo campo: Indica si el usuario es un ganador
+    // Campo que indica si el usuario es un ganador
     winner: {
       type: Boolean,
       default: false, // Inicialmente no se considera ganador
+    },
+    // Campo para almacenar los tickets recogidos
+    ticketsCollected: {
+      type: [Schema.Types.Mixed], // Array que puede contener cualquier tipo de datos
+      default: [], // Valor por defecto es un array vacío
     },
   },
   {

@@ -635,6 +635,9 @@ async function redeemTicketPepsi(req, res) {
     dataPepsi.winner = category === "entrada doble";
     dataPepsi.hasRegistered = true;
 
+    // Agregar el ticket al campo ticketsCollected
+    dataPepsi.ticketsCollected.push(ticket);
+
     // Guardar los cambios en el documento DataPepsi
     await dataPepsi.save();
 
@@ -646,7 +649,7 @@ async function redeemTicketPepsi(req, res) {
     });
   } catch (error) {
     // Manejo de errores
-    res.status(500).json({ error: error });
+    res.status(500).json({ error: error.message });
   }
 }
 
