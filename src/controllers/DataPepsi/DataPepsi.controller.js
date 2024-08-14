@@ -6,21 +6,13 @@ const validator = require("validator"); // Asegúrate de instalar la librería v
 async function RegistrarData(req, res) {
   try {
     // Extraer datos del cuerpo de la solicitud
-    const { name, lastname, dpi, email, phone, dob, department } = req.body;
+    const { name, lastname, email, phone, dob, department } = req.body;
 
     // Validar campos requeridos
-    if (!name || !lastname || !dpi || !email || !phone || !dob || !department) {
+    if (!name || !lastname || !email || !phone || !dob || !department) {
       return res.status(400).json({
         success: false,
         message: "Todos los campos son requeridos.",
-      });
-    }
-
-    // Validar que el DPI tenga 13 dígitos
-    if (!/^\d{13}$/.test(dpi)) {
-      return res.status(400).json({
-        success: false,
-        message: "El DPI debe tener exactamente 13 dígitos.",
       });
     }
 
@@ -40,8 +32,8 @@ async function RegistrarData(req, res) {
       });
     }
 
-    // Buscar un documento existente por DPI
-    const existingData = await DataPepsiModel.findOne({ dpi });
+    // Buscar un documento existente por correo electrónico
+    const existingData = await DataPepsiModel.findOne({ email });
 
     if (existingData) {
       if (existingData.winner) {
@@ -53,21 +45,21 @@ async function RegistrarData(req, res) {
         });
       }
 
-      // Si el DPI ya existe y el usuario no es un ganador, permitir el registro
+      // Si el correo electrónico ya existe y el usuario no es un ganador, permitir el registro
       return res.status(200).json({
         success: true,
         message: existingData,
       });
     } else {
-      // Si el DPI no existe, crear una nueva entrada
+      // Si el correo electrónico no existe, crear una nueva entrada
       const newData = new DataPepsiModel({
         name,
         lastname,
-        dpi,
         email,
         phone,
         dob,
         department,
+        // No se incluye el campo DPI
       });
 
       // Guardar los datos en la base de datos
@@ -87,7 +79,6 @@ async function RegistrarData(req, res) {
     });
   }
 }
-
 module.exports = {
   RegistrarData,
 };

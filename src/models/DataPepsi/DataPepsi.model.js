@@ -12,11 +12,6 @@ const dataPepsiSchema = new Schema(
       type: String,
       required: true,
     },
-    dpi: {
-      type: String,
-      required: true,
-      unique: true, // Asegurarse de que el DPI sea único
-    },
     email: {
       type: String,
       required: true,
