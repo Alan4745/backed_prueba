@@ -18,6 +18,7 @@ async function RegistrarData(req, res) {
 
     // Validar el formato del correo electrónico
     if (!validator.isEmail(email)) {
+      console.log("El correo electrónico no es válido.");
       return res.status(400).json({
         success: false,
         message: "El correo electrónico no es válido.",
@@ -26,6 +27,7 @@ async function RegistrarData(req, res) {
 
     // Validar que el teléfono tenga 8 dígitos
     if (!/^\d{8}$/.test(phone)) {
+      console.log("El número de teléfono debe tener exactamente 8 dígitos.");
       return res.status(400).json({
         success: false,
         message: "El número de teléfono debe tener exactamente 8 dígitos.",
@@ -38,6 +40,10 @@ async function RegistrarData(req, res) {
     if (existingData) {
       if (existingData.winner) {
         // Si el usuario ya es un ganador, devolver un error
+        console.log(
+          "El usuario ya ha ganado un premio y no puede participar más."
+        );
+
         return res.status(400).json({
           success: false,
           message:
@@ -73,6 +79,7 @@ async function RegistrarData(req, res) {
     }
   } catch (error) {
     // Enviar una respuesta de error en caso de excepción
+    console.log(error);
     res.status(500).json({
       success: false,
       message: `Error al registrar los datos: ${error.message}`,
