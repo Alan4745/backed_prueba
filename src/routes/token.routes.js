@@ -42,6 +42,7 @@ api.put("/cobrar/:ticket_id", cobro_ticket_controller.cobrar);
 // metodo actualizado 🆗
 
 // Colecciones
+api.get("/getCollectionByIdPost/:idPost",[md_autenticacion.Auth], controllerToken.getCollectionByIdPost)
 api.get("/getcollections/:name",[md_autenticacion.Auth],controllerToken.findCollectionByName); 
 // metodo actualizado 🆗
 api.get("/getcollectionsById/:collectionId",[md_autenticacion.Auth],controllerToken.findCollectionById); 
