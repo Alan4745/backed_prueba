@@ -15,6 +15,7 @@ const { deleteOneTicket } = require('./deleteOneTicket')
 const { deleteManyTicket } = require('./deleteManyTicket')
 const { createCollectionWithTickets } = require('./createCollectionWithTickets')
 const { getCollectionsByAuthorId } = require('./getCollectionsByAuthorId')
+const { getCollectionByIdPost } = require('./getCollectionByIdPost')
 
 
 module.exports = {
@@ -35,4 +36,5 @@ module.exports = {
     deleteManyTicket,
     createCollectionWithTickets,
     getCollectionsByAuthorId,
+    getCollectionByIdPost
 };
