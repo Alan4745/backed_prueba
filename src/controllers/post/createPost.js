@@ -51,17 +51,26 @@ async function createPost(req, res) {
         fechaI: req.body.fechaI,
         fechaF: req.body.fechaF,
         req: req.body.req,
-        coordinates: req.body.coordinates,
+        coordinates: JSON.parse(req.body.coordinates),
         ubicacion: req.body.ubicacion,
         pictures: imagens,
       });
     } else if (type === "Poll") {
+      let options = req.body.options;
+      // Verificar si options es una cadena y convertirla a array
+      if (typeof options === 'string') {
+        try {
+          options = JSON.parse(options);
+        } catch (error) {
+          options = options.split(','); // Si falla la conversión, intenta dividir por comas
+        }
+      }
       newPost = new PollPost({
         author: idUser,
         image: image,
         question: req.body.question,
         desc: req.body.desc,
-        options: JSON.parse(req.body.options),
+        options: options,
         votes: {
           option1: [""],
           option2: [""],
@@ -80,7 +89,6 @@ async function createPost(req, res) {
     } else {
       return res.status(400).send({ message: "Invalid post type." });
     }
-
     const PostSave = await newPost.save();
     if (!PostSave) {
       return res.status(500).send({ message: "Error saving the POST." });
