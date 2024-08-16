@@ -1,13 +1,33 @@
 const { Post } = require("../../models/post/posts.model");
-const User = require("../../models/user.model");
+const Collections = require("../../models/tokens/collections.model");
+const TokenCollection = require("../../models/tokens/tokenCollection.model");
 
 async function getAllPosts(req, res) {
   try {
-    const latestPosts = await Post.find();
-    return res.status(200).send({ message: latestPosts });
+    const allPosts = await Post.find(); // Obtener todos los posts
+
+    // Crear un array para almacenar los resultados
+    const results = await Promise.all(allPosts.map(async (post) => {
+      let collectionFound = await Collections.findOne({ idPost: post._id });
+
+      if (!collectionFound) {
+        collectionFound = { message: "Colección no encontrada." };
+      }
+
+      const ticketsFounds = await TokenCollection.find({ idCollection: collectionFound._id });
+      const numberOfTickets = ticketsFounds.length > 0 ? ticketsFounds.length : 0;
+
+      return {
+        post,
+        collectionFound,
+        numberOfTickets,
+      };
+    }));
+
+    return res.status(200).send({ message: "Posts encontrados", results });
   } catch (err) {
     console.error("Error", err);
-    res.status(500).send({ message: "Error al obtener" });
+    res.status(500).send({ message: "Error al obtener los posts" });
   }
 }
 
