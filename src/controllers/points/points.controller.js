@@ -1,5 +1,4 @@
 const { Points } = require('../../models/points/points.model');
-const userModel = require('../../models/user.model');
 
 const createPerimeterPoints = async (req, res) => {
     const { amount, type, coordinates, emitterId } = req.body;
@@ -8,20 +7,10 @@ const createPerimeterPoints = async (req, res) => {
         return res.status(400).json({ message: 'Faltan datos requeridos' });
     }
 
-    if (type === 'Point' && (!Array.isArray(coordinates) || coordinates.length !== 2)) {
-        return res.status(400).json({ message: 'Coordenadas inválidas para Point' });
-    }
-
-    let formattedCoordinates = [];
-    if (type === 'Polygon') {
-        if (!Array.isArray(coordinates) || coordinates.length < 8 || coordinates.length % 2 !== 0) {
-            return res.status(400).json({ message: 'Coordenadas inválidas para Polygon' });
-        }
-        for (let i = 0; i < coordinates.length; i += 2) {
-            formattedCoordinates.push([coordinates[i], coordinates[i + 1]]);
-        }
-        if (formattedCoordinates.length < 4) {
-            return res.status(400).json({ message: 'Coordenadas inválidas para Polygon' });
+    // Validación para 'Point'
+    if (type === 'Point') {
+        if (!Array.isArray(coordinates) || coordinates.length !== 2 || !coordinates.every(coord => typeof coord === 'number')) {
+            return res.status(400).json({ message: 'Coordenadas inválidas para Point' });
         }
     }
 
@@ -31,7 +20,7 @@ const createPerimeterPoints = async (req, res) => {
             amountInitial: amount,
             location: {
                 type,
-                coordinates: type === 'Polygon' ? [formattedCoordinates] : coordinates
+                coordinates: type === 'Polygon' ? coordinates : coordinates
             },
             emitter: emitterId
         });
@@ -43,6 +32,7 @@ const createPerimeterPoints = async (req, res) => {
         res.status(500).json({ message: 'Error al crear el punto', error });
     }
 };
+
 
 const getPerimeterPoints = async (req, res) => {
     try {
@@ -150,5 +140,5 @@ module.exports = {
     getPerimeterPoints,
     getPerimeterPointById,
     updatePerimeterPointById,
-    deletePerimeterPointById
+    deletePerimeterPointById,
 };
