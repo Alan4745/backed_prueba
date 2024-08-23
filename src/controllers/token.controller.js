@@ -607,7 +607,7 @@ async function redeemTicketPepsi(req, res) {
     let category = "participacion"; // Por defecto es participación
     let ticket = null;
 
-    if (randomNumber < 60) {
+    if (randomNumber < 5) {
       console.log('Buscando ticket de "entrada doble"...');
 
       // Buscar un ticket de "entrada doble" disponible
