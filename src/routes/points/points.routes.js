@@ -3,7 +3,7 @@ const { createPerimeterPoints,
         getPerimeterPoints, 
         getPerimeterPointById, 
         updatePerimeterPointById, 
-        deletePerimeterPointById 
+        deletePerimeterPointById,
     } = require("../../controllers/points/points.controller");
 const { createPointsRedeemed, 
         getPointsRedeemed, 
@@ -14,17 +14,19 @@ const { createPointsMarked,
         getPointMarkedById, 
         updatePointMarkedById, 
         deletePointMarkedById } = require("../../controllers/points/pointsMarked.controller");
+const { createPerimeterAndDistributePoints } = require("../../controllers/points/pointsRandomPerimeter.controller");
 const api = express.Router();
 
 // Rutas para emitir puntos
 api.get('/getPerimeterPoints', getPerimeterPoints)
 api.get('/getPerimeterPoints/:id', getPerimeterPointById)
 api.post('/createPerimeterPoints', createPerimeterPoints)
+api.post('/createPerimeterAndDistributePoints', createPerimeterAndDistributePoints)
 api.put('/updatePerimeterPointsById/:id', updatePerimeterPointById)
 api.delete('/deletePerimeterPointById/:id', deletePerimeterPointById)
 
 // Rutas para marcar puntos
-api.get('/getMarkedPoints', getAllPointsMarked)
+api.get('/getAllPointsMarked', getAllPointsMarked)
 api.get('/getMarkedPoints/:id', getPointMarkedById)
 api.post('/createMarkedPoints', createPointsMarked)
 api.put('/updatePointsMarkedById/:id', updatePointMarkedById)
