@@ -580,16 +580,19 @@ async function redeemTicketPepsi(req, res) {
   try {
     const idbuyer = req.params.idbuyer; // ID del documento DataPepsi a actualizar
 
-    console.log(idbuyer);
+    console.log("ID del comprador:", idbuyer);
 
     // Generar un número aleatorio entre 0 y 100
     const randomNumber = Math.random() * 100;
+    console.log("Número aleatorio generado:", randomNumber);
 
     // Determinar la categoría del ticket basado en la probabilidad
     let category = "participacion"; // Por defecto es participación
     let ticket = null;
 
-    if (randomNumber < 60) {
+    if (randomNumber < 5) {
+      console.log('Buscando ticket de "entrada doble"...');
+
       // Buscar un ticket de "entrada doble" disponible
       ticket = await TokenCollection.findOne({
         canjeado: false,
@@ -597,6 +600,10 @@ async function redeemTicketPepsi(req, res) {
       });
 
       if (!ticket) {
+        console.log(
+          'No se encontró ticket de "entrada doble". Buscando ticket de "participacion"...'
+        );
+
         // Si no hay tickets de "entrada doble", buscar un ticket de "participacion"
         ticket = await TokenCollection.findOne({
           canjeado: false,
@@ -604,8 +611,11 @@ async function redeemTicketPepsi(req, res) {
         });
       } else {
         category = "entrada doble"; // Confirmar que encontramos un ticket de "entrada doble"
+        console.log('Ticket de "entrada doble" encontrado:', ticket);
       }
     } else {
+      console.log('Buscando ticket de "participacion"...');
+
       // Buscar un ticket de "participacion" disponible
       ticket = await TokenCollection.findOne({
         canjeado: false,
@@ -614,20 +624,25 @@ async function redeemTicketPepsi(req, res) {
     }
 
     if (!ticket) {
+      console.log("No se encontró ningún ticket disponible para canjear.");
       return res
         .status(404)
         .json({ message: "No hay tickets disponibles para canjear" });
     }
+
+    console.log("Ticket encontrado:", ticket);
 
     // Actualizar el ticket encontrado
     ticket.canjeado = true;
     ticket.buyerid = idbuyer;
     ticket.adquirido = true;
     await ticket.save();
+    console.log("Ticket actualizado y guardado.");
 
     // Buscar el documento DataPepsi correspondiente al idbuyer
     const dataPepsi = await DataPepsiModel.findById(idbuyer);
     if (!dataPepsi) {
+      console.log("No se encontró el comprador con ID:", idbuyer);
       return res.status(404).json({ message: "No se encontró el comprador" });
     }
 
@@ -640,6 +655,7 @@ async function redeemTicketPepsi(req, res) {
 
     // Guardar los cambios en el documento DataPepsi
     await dataPepsi.save();
+    console.log("Datos del comprador actualizados y guardados.");
 
     // Devolver el ticket actualizado como respuesta
     res.status(200).json({
@@ -648,6 +664,7 @@ async function redeemTicketPepsi(req, res) {
       registro: dataPepsi,
     });
   } catch (error) {
+    console.log("Error en la operación:", error.message);
     // Manejo de errores
     res.status(500).json({ error: error.message });
   }
