@@ -18,7 +18,7 @@ const createPointsMarked = async (req, res) => {
         }
 
         // Verificar que la latitud y la longitud están en los rangos correctos
-        const [latitude, longitude] = coordinates;
+        const [longitude, latitude] = coordinates;
         if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
             return res.status(400).json({ message: 'Coordenadas fuera de los límites permitidos' });
         }
