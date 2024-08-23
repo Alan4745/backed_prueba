@@ -582,6 +582,25 @@ async function redeemTicketPepsi(req, res) {
 
     console.log("ID del comprador:", idbuyer);
 
+    // Buscar el documento DataPepsi correspondiente al idbuyer
+    const dataPepsi = await DataPepsiModel.findOne({ _id: idbuyer });
+    if (!dataPepsi) {
+      console.log("No se encontró el comprador con ID:", idbuyer);
+      return res.status(404).json({ message: "No se encontró el comprador" });
+    }
+
+    // Verificar si el comprador ya ha ganado
+    if (dataPepsi.winner === true) {
+      console.log(
+        "El comprador ya ha ganado un premio y no puede canjear más tickets."
+      );
+      return res
+        .status(400)
+        .json({
+          message: "Ya has ganado un premio. No puedes canjear más tickets.",
+        });
+    }
+
     // Generar un número aleatorio entre 0 y 100
     const randomNumber = Math.random() * 100;
     console.log("Número aleatorio generado:", randomNumber);
@@ -638,13 +657,6 @@ async function redeemTicketPepsi(req, res) {
     ticket.adquirido = true;
     await ticket.save();
     console.log("Ticket actualizado y guardado.");
-
-    // Buscar el documento DataPepsi correspondiente al idbuyer
-    const dataPepsi = await DataPepsiModel.findOne({ _id: idbuyer });
-    if (!dataPepsi) {
-      console.log("No se encontró el comprador con ID:", idbuyer);
-      return res.status(404).json({ message: "No se encontró el comprador" });
-    }
 
     // Actualizar el campo winner en el documento DataPepsi
     dataPepsi.winner = category === "entrada doble";
