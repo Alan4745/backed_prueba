@@ -594,11 +594,9 @@ async function redeemTicketPepsi(req, res) {
       console.log(
         "El comprador ya ha ganado un premio y no puede canjear más tickets."
       );
-      return res
-        .status(400)
-        .json({
-          message: "Ya has ganado un premio. No puedes canjear más tickets.",
-        });
+      return res.status(400).json({
+        message: "Ya has ganado un premio. No puedes canjear más tickets.",
+      });
     }
 
     // Generar un número aleatorio entre 0 y 100
@@ -609,7 +607,7 @@ async function redeemTicketPepsi(req, res) {
     let category = "participacion"; // Por defecto es participación
     let ticket = null;
 
-    if (randomNumber < 5) {
+    if (randomNumber < 60) {
       console.log('Buscando ticket de "entrada doble"...');
 
       // Buscar un ticket de "entrada doble" disponible
