@@ -640,7 +640,7 @@ async function redeemTicketPepsi(req, res) {
     console.log("Ticket actualizado y guardado.");
 
     // Buscar el documento DataPepsi correspondiente al idbuyer
-    const dataPepsi = await DataPepsiModel.findById(idbuyer);
+    const dataPepsi = await DataPepsiModel.findOne(idbuyer);
     if (!dataPepsi) {
       console.log("No se encontró el comprador con ID:", idbuyer);
       return res.status(404).json({ message: "No se encontró el comprador" });
