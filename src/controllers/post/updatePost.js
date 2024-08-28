@@ -1,8 +1,7 @@
-const { EventPost, PollPost, NormalPost, Post } = require("../../models/post/posts.model");
+const { Post } = require("../../models/post/posts.model");
 const User = require("../../models/user.model");
 const { UploadImg } = require("../../utils/cloudinary");
 const fs = require("fs-extra");
-const { Notification } = require("../../models/notification");
 
 async function updatePost(req, res) {
   try {
@@ -45,13 +44,13 @@ async function updatePost(req, res) {
     if (type === "Event") {
       updateData = {
         ...updateData,
-        name: req.body.name,
-        desc: req.body.desc,
-        fechaI: req.body.fechaI,
-        fechaF: req.body.fechaF,
-        req: req.body.req,
-        coordinates: req.body.coordinates,
-        ubicacion: req.body.ubicacion,
+        name: req.body?.name,
+        desc: req.body?.desc,
+        fechaI: req.body?.fechaI,
+        fechaF: req.body?.fechaF,
+        req: req.body?.req,
+        coordinates: req.body?.coordinates,
+        ubicacion: req.body?.ubicacion,
         pictures: imagens,
       };
     } else if (type === "Poll") {
