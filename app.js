@@ -17,6 +17,7 @@ const messageChannelRouter = require('./src/routes/messageChannel.routes');
 const tokenRouter = require('./src/routes/token.routes');
 const paymentRouter = require('./src/routes/payment/payment.routes');
 const pointsRouter = require('./src/routes/points/points.routes');
+const ticketsRouter = require('./src/routes/tickets/ticket.routes');
 
 const checkout = require('./src/routes/checkout.routes');
 const passport = require('passport');
@@ -71,7 +72,8 @@ app.use(
 	tokenRouter, // Rutas para tokens
 	checkout, //ruta de cobro
 	paymentRouter,// ruta de pagos (stripe)
-	pointsRouter //rutas de puntos
+	pointsRouter, //rutas de puntos
+	ticketsRouter //rutas de ticket
 );
 
 // Exportamos la instancia de la aplicacion
