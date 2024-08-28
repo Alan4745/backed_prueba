@@ -41,7 +41,7 @@ const createPointsRedeemed = async (req, res) => {
                 type: 'Point',
                 coordinates: [latitude, longitude]
             },
-            idPointsMarked: pointsFounds.idPoints,
+            idPointsMarked: pointsFounds._id,
             receiver,
         });
         await newPointsRedeemed.save();
