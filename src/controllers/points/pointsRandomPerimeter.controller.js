@@ -9,7 +9,7 @@ const createPerimeterAndDistributePoints = async (req, res) => {
     if (!amount || !type || !coordinates || !emitterId) {
         return res.status(400).json({ message: 'Faltan datos requeridos' });
     }
-
+    console.log(coordinates)
     // Validación de coordenadas para Point
     if (type === 'Point') {
         if (!Array.isArray(coordinates) || coordinates.length !== 2 || !coordinates.every(coord => typeof coord === 'number')) {
