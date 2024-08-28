@@ -30,7 +30,7 @@ async function RegistrarData(req, res) {
       });
     }
 
-    const existingData = await DataPepsiModel.findOne({ email });
+    const existingData = await DataPepsiModel.findOne({ email: email });
 
     if (existingData) {
       if (existingData.winner) {
