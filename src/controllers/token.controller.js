@@ -656,8 +656,6 @@ async function redeemTicketPepsi(req, res) {
         .json({ message: "No hay tickets disponibles para canjear" });
     }
 
-    console.log("Ticket encontrado:", ticket);
-
     // Actualizar el ticket encontrado
     ticket.canjeado = true;
     ticket.buyerid = idbuyer;
