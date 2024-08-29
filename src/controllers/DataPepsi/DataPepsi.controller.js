@@ -8,6 +8,7 @@ async function RegistrarData(req, res) {
     const { name, lastname, email, phone, dob, department } = req.body;
 
     if (!name || !lastname || !email || !phone || !dob || !department) {
+      console.log("Todos los campos son requeridos.");
       return res.status(400).json({
         success: false,
         message: "Todos los campos son requeridos.",
