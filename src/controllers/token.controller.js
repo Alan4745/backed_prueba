@@ -171,7 +171,7 @@ async function addTokenToCollectionNew(req, res) {
     const tokens = [];
     let result = {};
 
-    if (tokenAmount > 1000) {
+    if (tokenAmount > 10000) {
       return res.status(500).send({ message: "Se supera el límite permitido" });
     }
 
@@ -646,8 +646,6 @@ async function redeemTicketPepsi(req, res) {
         .status(404)
         .json({ message: "No hay tickets disponibles para canjear" });
     }
-
-    console.log("Ticket encontrado:", ticket);
 
     // Actualizar el ticket encontrado
     ticket.canjeado = true;
