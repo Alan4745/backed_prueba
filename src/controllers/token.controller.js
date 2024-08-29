@@ -171,10 +171,12 @@ async function addTokenToCollectionNew(req, res) {
     const tokens = [];
     let result = {};
 
+    // Limitar la cantidad de tokens para evitar sobrecarga
     if (tokenAmount > 10000) {
       return res.status(500).send({ message: "Se supera el límite permitido" });
     }
 
+    // Buscar la colección del usuario
     const collectionFind = await Collections.findOne({
       author: req.user.sub,
       _id: colletionId,
@@ -183,24 +185,28 @@ async function addTokenToCollectionNew(req, res) {
     if (!collectionFind) {
       return res
         .status(500)
-        .send({ message: "Error, no se encontro la coleccion." });
+        .send({ message: "Error, no se encontró la colección." });
     }
 
-    const findToken = await TokenCollection.find({ idCollection: colletionId });
+    // Obtener el número actual de tokens en la colección
+    const tokenCount = await TokenCollection.countDocuments({
+      idCollection: colletionId,
+    });
 
+    // Procesar la imagen si está presente
     if (req.files?.image) {
-      // Subir la imagen a Cloudinary y obtener el resultado
       result = await UploadImg(req.files.image.tempFilePath);
-      // Guardar la información de la imagen en el modelo de usuario
 
-      // Verificar si el archivo temporal existe antes de intentar eliminarlo
       if (fs.existsSync(req.files.image.tempFilePath)) {
-        await fs.unlink(req.files.image.tempFilePath);
+        fs.unlink(req.files.image.tempFilePath, (err) => {
+          if (err) console.error("Error al eliminar archivo temporal:", err);
+        });
       } else {
         console.warn("El archivo temporal no existe.");
       }
     }
 
+    // Generar los tokens
     for (let i = 0; i < tokenAmount; i++) {
       const modelToken = new TokenCollection();
       const randomBytes = crypto.randomBytes(32).toString("hex");
@@ -217,19 +223,22 @@ async function addTokenToCollectionNew(req, res) {
       modelToken.price = price * 100;
       modelToken.idCollection = colletionId;
       modelToken.category = category;
-      if (findToken && findToken.length > 0) {
-        modelToken.numertoken = findToken.length + i + 1;
-      } else {
-        modelToken.numertoken = i + 1;
-      }
+      modelToken.numertoken = tokenCount + i + 1;
 
-      modelToken.img.imgUrl = result.secure_url;
-      modelToken.img.imgId = result.public_id;
+      // Si hay una imagen, se asocia al token
+      // modelToken.img.imgUrl = result.secure_url;
+      // modelToken.img.imgId = result.public_id;
 
       tokens.push(modelToken);
     }
 
-    await TokenCollection.insertMany(tokens);
+    // Insertar tokens en lotes para evitar sobrecargar la base de datos
+    const batchSize = 1000;
+    for (let i = 0; i < tokens.length; i += batchSize) {
+      const batch = tokens.slice(i, i + batchSize);
+      await TokenCollection.insertMany(batch);
+    }
+
     return res.status(200).send({
       message: `${tokenAmount} tokens creados y guardados exitosamente.`,
     });
@@ -646,6 +655,8 @@ async function redeemTicketPepsi(req, res) {
         .status(404)
         .json({ message: "No hay tickets disponibles para canjear" });
     }
+
+    console.log("Ticket encontrado:", ticket);
 
     // Actualizar el ticket encontrado
     ticket.canjeado = true;
