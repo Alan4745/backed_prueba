@@ -15,7 +15,11 @@ const { createPointsMarked,
         updatePointMarkedById, 
         deletePointMarkedById } = require("../../controllers/points/pointsMarked.controller");
 const { createPerimeterAndDistributePoints } = require("../../controllers/points/pointsRandomPerimeter.controller");
+const { pointsDetectByKmRadius } = require("../../controllers/points/pointsDetectByKmRadius.controller");
 const api = express.Router();
+
+// Rutas para obtener puntos por un radio de 500Km
+api.post('/getPerimeterPointsByCurrentUbication', pointsDetectByKmRadius)
 
 // Rutas para emitir puntos
 api.get('/getPerimeterPoints', getPerimeterPoints)
