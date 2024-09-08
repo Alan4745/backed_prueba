@@ -20,7 +20,11 @@ const {
     deleteTicketsRedeemedById
 } = require("../../controllers/tickets/ticketsReemed.controller");
 const { createPerimeterAndDistributeTickets } = require("../../controllers/tickets/ticketsRadomPerimeter.controller");
+const { ticketsDetectByKmRadius } = require("../../controllers/tickets/ticketsDetectByKmRadius.controller");
 const api = express.Router();
+
+// Rutas para obtener tickets por un radio de 500Km
+api.post('/getPerimeterTicketsByCurrentUbication', ticketsDetectByKmRadius)
 
 // Rutas para emitir puntos
 api.get('/getPerimeterTickets', getPerimeterTickets)
