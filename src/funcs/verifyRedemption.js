@@ -1,8 +1,8 @@
-const verifyRedemption = async (pointsFounds, coordinates) => {
+const verifyRedemption = async (pointsFounds, coordinates, radius) => {
     if (pointsFounds.redeemed) {
         return { success: false, message: 'El punto o ticket ya ha sido canjeado' };
     }
-
+    
     const [longitude1, latitude1] = pointsFounds.location.coordinates;
     const [latitude2, longitude2] = coordinates;
 
@@ -23,10 +23,10 @@ const verifyRedemption = async (pointsFounds, coordinates) => {
     const distance = earthRadiusMeters * c;
 
     // Verificar si la distancia es menor o igual a 10 metros
-    if (distance <= 10) {
+    if (distance <= radius) {
         return { success: true };
     } else {
-        return { success: false, message: 'La ubicación no está dentro del radio de 10 metros del marcador' };
+        return { success: false, message: `La ubicación no está dentro del radio de ${radius} metros del marcador` };
     }
 };
 

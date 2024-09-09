@@ -23,7 +23,7 @@ const createTicketsRedeemed = async (req, res) => {
         }
 
         // Verificar si la ubicación está dentro del marcador y si no ha sido canjeado
-        const canRedeem = await verifyRedemption(ticketsFounds, coordinates);
+        const canRedeem = await verifyRedemption(ticketsFounds, coordinates, 10);
         if (!canRedeem.success) {
             return res.status(400).json({ message: canRedeem.message });
         }

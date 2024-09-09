@@ -18,6 +18,7 @@ const tokenRouter = require('./src/routes/token.routes');
 const paymentRouter = require('./src/routes/payment/payment.routes');
 const pointsRouter = require('./src/routes/points/points.routes');
 const ticketsRouter = require('./src/routes/tickets/ticket.routes');
+const notificationRouter = require('./src/routes/notification/notification.routes');
 
 const checkout = require('./src/routes/checkout.routes');
 const passport = require('passport');
@@ -73,7 +74,8 @@ app.use(
 	checkout, //ruta de cobro
 	paymentRouter,// ruta de pagos (stripe)
 	pointsRouter, //rutas de puntos
-	ticketsRouter //rutas de ticket
+	ticketsRouter, //rutas de ticket
+	notificationRouter //rutas de notificaciones
 );
 
 // Exportamos la instancia de la aplicacion
