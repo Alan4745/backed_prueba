@@ -125,7 +125,7 @@ const normalSchema = new Schema({
 	},
 	price: {
 		type: Number,
-		required: true
+		required: false,
 	},
 	coordinates: {
 		type: Schema.Types.Mixed,
