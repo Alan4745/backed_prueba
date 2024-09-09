@@ -10,7 +10,8 @@ async function createPost(req, res) {
   try {
     const { idUser } = req.params;
     const { type } = req.body;
-    
+
+
     let image = {};
     let imagens = [];
 
@@ -48,11 +49,11 @@ async function createPost(req, res) {
         image: image,
         name: req.body.name,
         desc: req.body.desc,
+        price: req.body.price,
         fechaI: req.body.fechaI,
         fechaF: req.body.fechaF,
         req: req.body.req,
         coordinates: JSON.parse(req.body.coordinates),
-        ubicacion: req.body.ubicacion,
         pictures: imagens,
       });
     } else if (type === "Poll") {
@@ -70,6 +71,8 @@ async function createPost(req, res) {
         image: image,
         question: req.body.question,
         desc: req.body.desc,
+        price: req.body.price,
+        coordinates: JSON.parse(req.body.coordinates),
         options: options,
         votes: {
           option1: [""],
@@ -84,6 +87,8 @@ async function createPost(req, res) {
         image: image,
         title: req.body.title,
         desc: req.body.desc,
+        price: req.body.price,
+        coordinates: JSON.parse(req.body.coordinates),
         pictures: imagens,
       });
     } else {
@@ -109,7 +114,8 @@ async function createPost(req, res) {
       };
     });
 
-    await Notification.insertMany(notifications); 
+    await Notification.insertMany(notifications);
+    console.log(PostSave)
 
     return res.status(200).send({ message: PostSave });
   } catch (error) {
