@@ -151,8 +151,6 @@ const postSchema = new Schema(
     likes: {
       type: [{
         userId: { type: String, required: true },
-        type: { type: String, enum: [], required: true },
-        date: { type: String, required: true },
       }],
       default: [],
     },
