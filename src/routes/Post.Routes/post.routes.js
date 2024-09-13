@@ -15,11 +15,13 @@ api.get('/commentsPost/:idPost', [controllerAuth.Auth], postController.getCommen
 api.post("/postPost/:idUser", [controllerAuth.Auth], postController.createPost);
 api.post("/compartirPost/:idPost/:idUser", [controllerAuth.Auth], postController.sharePost);
 api.post("/comments/:idPost/:idUser", [controllerAuth.Auth], postController.addComment);
+api.post("/like/:idPost/:idUser", [controllerAuth.Auth], postController.addLike);
 api.post("/react/:idPost/:idUser", [controllerAuth.Auth], postController.reactPost);
 // rutas put
 api.put("/UpdatePost/:idPost", [controllerAuth.Auth], postController.updatePost);
 // rutas deletes
 api.delete("/DeletePost/:idPost", [controllerAuth.Auth], postController.deletePost);
 api.delete("/comment/:idPost/:idComment", [controllerAuth.Auth], postController.deleteComment);
+api.delete("/like/:idPost/:idUser", [controllerAuth.Auth], postController.removeLike);
 
 module.exports = api;
