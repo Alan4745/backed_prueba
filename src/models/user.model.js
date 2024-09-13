@@ -140,6 +140,16 @@ const userSchema = new Schema(
       type: [String],
       default: [],
     },
+    numberfollowers: {
+      following: {
+        type: Number,
+        default: 0,
+      },
+      followers: {
+        type: Number,
+        default: 0,
+      },
+    },
     verified: {
       type: Boolean,
       default: false,
@@ -147,5 +157,4 @@ const userSchema = new Schema(
   },
   { timestamps: true }
 );
-
 module.exports = mongoose.model("Users", userSchema);
