@@ -54,8 +54,8 @@ async function updatePasswordUser(req, res) {
 
     // Actualizar el usuario y obtener el resultado actualizado
     const userUpdate = await User.findByIdAndUpdate(
-      idUser, 
-      {password: hash}, 
+      idUser,
+      {password: hash},
       {new: true}
     );
 
@@ -231,6 +231,26 @@ async function userFindId(req, res) {
 async function userByFindId(req, res) {
   const { idUser } = req.params;
   console.log(idUser);
+  const user = await User.findById(idUser, { password: 0 }); // Excluir el campo 'password'
+
+  if (!user) {
+    return res.status(404).send({ message: "Usuario no encontrado" });
+  }
+  // Calculamos la cantidad de seguidores y seguidos
+  const totalFollowingIds = user.following.length;
+  const totalFollowersIds = user.followers.length;
+  console.log('total following' + totalFollowingIds)
+  console.log('total followers' + totalFollowersIds)
+
+  // Actualizamos los valores en el objeto numberfollowers
+  user.numberfollowers = {
+    following: totalFollowingIds,
+    followers: totalFollowersIds
+  };
+
+  // Guardamos los cambios en la base de datos
+  await user.save();
+
 
   try {
     let findUser = await User.findOne({ _id: idUser });
@@ -330,6 +350,7 @@ async function UserIFollow(req, res) {
     res.status(500).json({ message: "Error interno del servidor" });
   }
 }
+
 
 const GetUserTrends = async (req, res) => {
   try {

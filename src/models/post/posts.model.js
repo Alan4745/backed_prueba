@@ -3,120 +3,138 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const picSchema = new Schema({
-	public_id: { 
-		type: String, 
-		default: '' 
+	public_id: {
+		type: String,
+		default: ''
 	},
-	secure_url: { 
-		type: String, 
-		default: '' 
+	secure_url: {
+		type: String,
+		default: ''
 	},
 });
 
 const commentSchema = new Schema({
-	userId: { 
-		type: String, 
-		required: true 
+	userId: {
+		type: String,
+		required: true
 	},
-	text: { 
-		type: String, 
-		required: true 
+	text: {
+		type: String,
+		required: true
 	},
-	date: { 
-		type: String, 
-		required: true, 
-		default: '' 
+	date: {
+		type: String,
+		required: true,
+		default: ''
 	},
-	rating: { 
-		type: Number 
+	rating: {
+		type: Number
 	},
 });
 
 const eventSchema = new Schema({
-	name: { 
-		type: String, 
-		required: true 
+	name: {
+		type: String,
+		required: true
 	},
-	desc: { 
-		type: String, 
-		required: true 
+	desc: {
+		type: String,
+		required: true
 	},
-	fechaI: { 
-		type: String, 
-		required: true 
+	price: {
+		type: Number,
+		required: true
 	},
-	fechaF: { 
-		type: String, 
-		required: true 
+	fechaI: {
+		type: String,
+		required: true
 	},
-	req: { 
-		type: [String], 
-		default: [] 
+	fechaF: {
+		type: String,
+		required: true
 	},
-	coordinates: { 
-		type: Schema.Types.Mixed, 
-		required: true 
+	req: {
+		type: [String],
+		default: []
 	},
-	ubicacion: { 
-		type: String 
+	coordinates: {
+		type: Schema.Types.Mixed,
+		required: true
 	},
-	pictures: { 
-		type: [picSchema], 
-		required: false 
+	pictures: {
+		type: [picSchema],
+		required: false
 	},
+
 });
 
 const votesSchema = new Schema({
-	option1: { 
-		type: [String], 
-		default: [] 
+	option1: {
+		type: [String],
+		default: []
 	},
-	option2: { 
-		type: [String], 
-		default: [] 
+	option2: {
+		type: [String],
+		default: []
 	},
-	option3: { 
-		type: [String], 
-		default: [] 
+	option3: {
+		type: [String],
+		default: []
 	},
-	option4: { 
-		type: [String], 
-		default: [] 
+	option4: {
+		type: [String],
+		default: []
 	},
 });
 
 const pollSchema = new Schema({
-	question: { 
-		type: String, 
-		required: true, 
-		default: '' 
+	question: {
+		type: String,
+		required: true,
+		default: ''
 	},
-	desc: { 
-		type: String, 
-		required: true 
+	desc: {
+		type: String,
+		required: true
 	},
-	options: { 
-		type: [String], 
-		required: true 
+	price: {
+		type: Number,
+		required: true
 	},
-	votes: { 
-		type: votesSchema 
+	coordinates: {
+		type: Schema.Types.Mixed,
+		required: true
+	},
+	options: {
+		type: [String],
+		required: true
+	},
+	votes: {
+		type: votesSchema
 	},
 });
 
 const normalSchema = new Schema({
-	title: { 
-		type: String, 
-		required: true 
+	title: {
+		type: String,
+		required: true
 	},
-	desc: { 
-		type: String, 
-		required: true 
+	desc: {
+		type: String,
+		required: true
 	},
-	pictures: { 
-		type: [picSchema], 
-		required: true, 
-		default: [] 
+	price: {
+		type: Number,
+		required: false,
+	},
+	coordinates: {
+		type: Schema.Types.Mixed,
+		required: true
+	},
+	pictures: {
+		type: [picSchema],
+		required: true,
+		default: []
 	},
 });
 
@@ -133,8 +151,6 @@ const postSchema = new Schema(
     likes: {
       type: [{
         userId: { type: String, required: true },
-        type: { type: String, enum: [], required: true },
-        date: { type: String, required: true },
       }],
       default: [],
     },
