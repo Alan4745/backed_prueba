@@ -4,6 +4,7 @@ const { verifyRedemption } = require('../../funcs/verifyRedemption');
 const notiPointsForNearbyLocation = async (req, res) => {
     try {
         const { coordinates } = req.body; // Las coordenadas llegan por el req.body como [latitud, longitud]
+        console.log(coordinates)
         if (!coordinates || coordinates.length !== 2) {
           return res.status(400).json({ success: false, message: 'Coordenadas no válidas' });
         }
