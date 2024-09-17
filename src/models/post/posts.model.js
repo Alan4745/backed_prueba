@@ -141,6 +141,14 @@ const normalSchema = new Schema({
 const postSchema = new Schema(
   {
     author: { type: String, required: true },
+	dataAuthor: {
+		author: { type: String, default: '' },
+		authorName: { type: String, default: '' },
+		image: {
+			public_id: { type: String, default: '' },
+			secure_url: { type: String, default: '' },
+		},
+	},
     image: {
       public_id: { type: String, default: '' },
       secure_url: { type: String, default: '' },
