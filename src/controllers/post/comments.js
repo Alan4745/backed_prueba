@@ -106,6 +106,7 @@ async function deleteComment(req, res) {
   const idComment = req.params.idComment;
   const idUser = req.user.sub;
 
+
   try {
     const post = await Post.findById(idPost);
     if (!post) {
@@ -117,7 +118,7 @@ async function deleteComment(req, res) {
       return res.status(404).send({ message: "Comentario no encontrado." });
     }
 
-    if (comment.user.toString() !== idUser) {
+    if (comment.userId.toString() !== idUser) {
       return res.status(403).send({ message: "No autorizado para eliminar este comentario." });
     }
 
