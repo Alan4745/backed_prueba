@@ -39,9 +39,11 @@ async function getAllPosts(req, res) {
       // Buscar los tickets de la colección
       const ticketsFounds = await TokenCollection.find({ idCollection: collectionFound._id });
       const numberOfTickets = ticketsFounds.length > 0 ? ticketsFounds.length : 0;
+      const numberLikes = post.likes.length > 0 ? post.likes.length : 0;
 
       return {
-        post, // El post ahora incluye dataAuthor
+        post,
+        numberLikes,
         collectionFound,
         numberOfTickets
       };
@@ -55,7 +57,6 @@ async function getAllPosts(req, res) {
 }
 
 async function getFeedPosts(req, res) {
-  console.log("getFeedPosts");
   try {
     const authorsId = req.query.authorsId;
     const authorsIdSplit = authorsId.split(",");
@@ -71,7 +72,6 @@ async function getFeedPosts(req, res) {
 }
 
 async function getPostFollowing(req, res) {
-  console.log("getPostFollowing");
   const { page = 1, limit = 10 } = req.query;
   const user = await User.findById(req.user.sub);
   const followingIds = user.following;
@@ -94,7 +94,6 @@ async function getPostFollowing(req, res) {
 }
 
 async function getPost(req, res) {
-  console.log("getPost");
   const Id_Post = req.params.idPost;
   const idUser = req.user.sub;
   try {
@@ -110,7 +109,6 @@ async function getPost(req, res) {
 }
 
 async function getPostByUser(req, res) {
-  console.log("getPostByUser");
   const idUser = req.params.idUser;
   try {
     const post = await Post.find({ author: idUser });
@@ -125,7 +123,6 @@ async function getPostByUser(req, res) {
 }
 
 async function getPublicPost(req, res) {
-  console.log("getPublicPost");
   const Id_Post = req.params.idPost;
   try {
     const post = await Post.findOne({ _id: Id_Post });
