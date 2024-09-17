@@ -1,4 +1,5 @@
 const { Post } = require("../../models/post/posts.model");
+const User = require("../../models/user.model");
 const Collections = require("../../models/tokens/collections.model");
 const TokenCollection = require("../../models/tokens/tokenCollection.model");
 
@@ -8,19 +9,41 @@ async function getAllPosts(req, res) {
 
     // Crear un array para almacenar los resultados
     const results = await Promise.all(allPosts.map(async (post) => {
+      // Buscar la colección correspondiente
       let collectionFound = await Collections.findOne({ idPost: post._id });
 
+      // Buscar el usuario correspondiente
+      const user = await User.findById(post.author, { password: 0 });
+
+      // Si el usuario no tiene una imagen, manejar el caso aquí
+      const image = user.imageAvatar ? {
+        public_id: user.imageAvatar.public_id,
+        secure_url: user.imageAvatar.secure_url
+      } : { public_id: "", secure_url: "" };
+
+      // Crear el objeto dataAuthor
+      const dataAuthor = {
+        image,
+        author: user.name, // Asumí que deseas que 'author' sea el nombre del usuario
+        authorName: user.name
+      };
+
+      // Modificar el objeto post para incluir dataAuthor
+      post.dataAuthor = dataAuthor;
+
+      // Si no se encuentra la colección
       if (!collectionFound) {
         collectionFound = { message: "Colección no encontrada." };
       }
 
+      // Buscar los tickets de la colección
       const ticketsFounds = await TokenCollection.find({ idCollection: collectionFound._id });
       const numberOfTickets = ticketsFounds.length > 0 ? ticketsFounds.length : 0;
 
       return {
-        post,
+        post, // El post ahora incluye dataAuthor
         collectionFound,
-        numberOfTickets,
+        numberOfTickets
       };
     }));
 
