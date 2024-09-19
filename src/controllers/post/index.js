@@ -1,4 +1,5 @@
 const createPost = require('./createPost');
+const editPost = require('./editPost')
 const { getAllPosts,
         getFeedPosts,
         getPostFollowing,
@@ -16,6 +17,7 @@ const reactPost = require('./react');
 
 module.exports = {
   createPost,
+  editPost,
   getAllPosts,
   getFeedPosts,
   getPostFollowing,
