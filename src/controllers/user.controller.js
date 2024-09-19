@@ -239,8 +239,7 @@ async function userByFindId(req, res) {
   // Calculamos la cantidad de seguidores y seguidos
   const totalFollowingIds = user.following.length;
   const totalFollowersIds = user.followers.length;
-  console.log('total following' + totalFollowingIds)
-  console.log('total followers' + totalFollowersIds)
+
 
   // Actualizamos los valores en el objeto numberfollowers
   user.numberfollowers = {
