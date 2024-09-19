@@ -1,6 +1,7 @@
 const express = require("express");
 const controllerAuth = require("../../middlewares/authentication");
 const postController = require("../../controllers/post");
+const editPost = require("../../controllers/post/editPost");
 
 const api = express.Router();
 //rutas gets
@@ -19,6 +20,8 @@ api.post("/like/:idPost/:idUser", [controllerAuth.Auth], postController.addLike)
 api.post("/react/:idPost/:idUser", [controllerAuth.Auth], postController.reactPost);
 // rutas put
 api.put("/UpdatePost/:idPost", [controllerAuth.Auth], postController.updatePost);
+api.put("/editPost/:idUser/:idPost", editPost);
+
 // rutas deletes
 api.delete("/DeletePost/:idPost", [controllerAuth.Auth], postController.deletePost);
 api.delete("/comment/:idPost/:idComment", [controllerAuth.Auth], postController.deleteComment);
