@@ -54,6 +54,49 @@ async function addComment(req, res) {
   }
 }
 
+async function editComment(req, res) {
+  console.log("editComment");
+  const { idPost, idUser, idComment } = req.params;
+
+  const { text, rating } = req.body;
+  console.log(idPost, idComment, idUser);
+  console.log(text, rating);
+
+  try {
+    // Buscar el post por ID
+    const post = await Post.findById(idPost);
+    if (!post) {
+      return res.status(404).send({ message: "Post no encontrado." });
+    }
+
+    // Buscar el comentario dentro del post
+    const comment = post.comments.id(idComment);
+    if (!comment) {
+      return res.status(404).send({ message: "Comentario no encontrado." });
+    }
+
+    // Verificar si el comentario pertenece al usuario que intenta editarlo
+    if (comment.userId.toString() !== idUser) {
+      return res.status(403).send({ message: "No autorizado para editar este comentario." });
+    }
+
+    // Actualizar los campos del comentario
+    comment.text = text || comment.text; // Si no se proporciona un nuevo texto, conserva el anterior
+    comment.rating = rating !== undefined ? rating : comment.rating; // Si se pasa un rating, actualizar
+
+    // Guardar los cambios en el post
+    await post.save();
+
+    console.log("Comentario editado:", comment);
+
+    return res.status(200).send({ message: "Comentario editado", post });
+  } catch (error) {
+    console.error("Error al editar comentario:", error);
+    return res.status(500).send({ message: "Error al editar comentario" });
+  }
+}
+
+
 // TRAER COMENTARIOS
 async function getCommentsPost(req, res) {
   console.log("getCommentsPost");
@@ -135,5 +178,6 @@ async function deleteComment(req, res) {
 module.exports = {
   addComment,
   getCommentsPost,
+  editComment,
   deleteComment,
 };
