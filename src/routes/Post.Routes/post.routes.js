@@ -21,6 +21,7 @@ api.post("/react/:idPost/:idUser", [controllerAuth.Auth], postController.reactPo
 // rutas put
 api.put("/UpdatePost/:idPost", [controllerAuth.Auth], postController.updatePost);
 api.put("/editPost/:idUser/:idPost", editPost);
+api.put("/editcomment/:idPost/:idUser/:idComment", [controllerAuth.Auth], postController.editComment);
 
 // rutas deletes
 api.delete("/DeletePost/:idPost", [controllerAuth.Auth], postController.deletePost);
