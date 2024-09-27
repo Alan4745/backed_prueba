@@ -26,7 +26,6 @@ const postsDetectByKmRadius = async (req, res) => {
         if (post.coordinates && post.coordinates && post.coordinates.length === 2) {
           // Verificar si el post está dentro del radio usando `verifyRedemption`
           const verificationResult = await verifyRedemptionPost(post, coordinates, radiusInMeters);
-          console.log('verify: ', verificationResult)
           if (verificationResult.success) {
             // Buscar el usuario correspondiente
             const user = await User.findById(post.author, { password: 0 });
