@@ -6,7 +6,7 @@ const { postsDetectByKmRadius } = require("../../controllers/post/postsDetectByK
 
 const api = express.Router();
 // ruta para obtener post segun ubicacion actual del usuario.
-api.post("/postsByLocation", [controllerAuth.Auth], postsDetectByKmRadius);
+api.post("/postsByLocation", postsDetectByKmRadius);
 //rutas gets
 api.get("/allPosts", [controllerAuth.Auth], postController.getAllPosts);
 api.get("/feedPosts", [controllerAuth.Auth], postController.getFeedPosts);
