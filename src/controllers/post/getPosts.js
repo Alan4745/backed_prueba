@@ -5,41 +5,43 @@ const TokenCollection = require("../../models/tokens/tokenCollection.model");
 
 async function getAllPosts(req, res) {
   try {
-    const allPosts = await Post.find(); // Obtener todos los posts
+    const allPosts = await Post.find();
 
-    // Crear un array para almacenar los resultados
     const results = await Promise.all(allPosts.map(async (post) => {
-      // Buscar la colección correspondiente
       let collectionFound = await Collections.findOne({ idPost: post._id });
 
       // Buscar el usuario correspondiente
       const user = await User.findById(post.author, { password: 0 });
 
-      // Si el usuario no tiene una imagen, manejar el caso aquí
-      const image = user.imageAvatar ? {
-        public_id: user.imageAvatar.public_id,
-        secure_url: user.imageAvatar.secure_url
-      } : { public_id: "", secure_url: "" };
-
-      // Crear el objeto dataAuthor
-      const dataAuthor = {
-        image,
-        author: user.name, // Asumí que deseas que 'author' sea el nombre del usuario
-        authorName: user.name
+      // Manejar el caso en que el usuario no se encuentre
+      let dataAuthor = {
+        image: { public_id: "", secure_url: "" },
+        author: "Usuario desconocido",
+        authorName: "Usuario desconocido"
       };
+
+      if (user) {
+        // Si el usuario existe, actualizar dataAuthor
+        dataAuthor = {
+          image: user.imageAvatar ? {
+            public_id: user.imageAvatar.public_id,
+            secure_url: user.imageAvatar.secure_url
+          } : { public_id: "", secure_url: "" },
+          author: user.name,
+          authorName: user.name
+        };
+      }
 
       // Modificar el objeto post para incluir dataAuthor
       post.dataAuthor = dataAuthor;
 
-      // Si no se encuentra la colección
       if (!collectionFound) {
         collectionFound = { message: "Colección no encontrada." };
       }
 
-      // Buscar los tickets de la colección
       const ticketsFounds = await TokenCollection.find({ idCollection: collectionFound._id });
-      const numberOfTickets = ticketsFounds.length > 0 ? ticketsFounds.length : 0;
-      const numberLikes = post.likes.length > 0 ? post.likes.length : 0;
+      const numberOfTickets = ticketsFounds.length;
+      const numberLikes = post.likes.length;
 
       return {
         post,
@@ -49,10 +51,10 @@ async function getAllPosts(req, res) {
       };
     }));
 
-    return res.status(200).send({ message: "Posts encontrados", results });
+    return res.status(200).json({ message: "Posts encontrados", results });
   } catch (err) {
     console.error("Error", err);
-    res.status(500).send({ message: "Error al obtener los posts" });
+    res.status(500).json({ message: "Error al obtener los posts", error: err.message });
   }
 }
 
