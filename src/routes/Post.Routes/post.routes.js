@@ -2,8 +2,11 @@ const express = require("express");
 const controllerAuth = require("../../middlewares/authentication");
 const postController = require("../../controllers/post");
 const editPost = require("../../controllers/post/editPost");
+const { postsDetectByKmRadius } = require("../../controllers/post/postsDetectByKmRadius");
 
 const api = express.Router();
+// ruta para obtener post segun ubicacion actual del usuario.
+api.post("/postsByLocation", [controllerAuth.Auth], postsDetectByKmRadius);
 //rutas gets
 api.get("/allPosts", [controllerAuth.Auth], postController.getAllPosts);
 api.get("/feedPosts", [controllerAuth.Auth], postController.getFeedPosts);
