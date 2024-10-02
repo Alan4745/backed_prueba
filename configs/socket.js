@@ -1,9 +1,10 @@
 let users = [];
 let rooms = [];
+const User = require("../src/models/user.model");
 
 const addUser = (userId, socketId) => {
 	!users.some((user) => user.userId === userId) &&
-    users.push({ userId, socketId });
+		users.push({ userId, socketId });
 };
 
 const removeUser = (socketId) => {
@@ -12,7 +13,7 @@ const removeUser = (socketId) => {
 
 const addUserRoom = (socketId, userName, roomName) => {
 	!rooms.some((room) => room.userName === userName) &&
-    rooms.push({ socketId, userName, roomName });
+		rooms.push({ socketId, userName, roomName });
 };
 
 const removeUserRoom = (socketId) => {
@@ -20,7 +21,10 @@ const removeUserRoom = (socketId) => {
 };
 
 // eslint-disable-next-line no-unused-vars
-const getUser = (userId) => users.find((user) => user.userId === userId);
+const getUser = (userId) => {
+	const user = User.findById(userId)
+	return user;
+};
 
 const getRoom = (socketId) => rooms.find((room) => room.socketId === socketId);
 
@@ -33,14 +37,12 @@ const socketFunctions = (io) => {
 		// -----Inicio----- Al momento de que usuario se conecta al servidor se activa el evento "addUser()"
 		//socket.on es cuando esta esperando un evnto
 		//socket.emit es cuando creamos un evento
-		socket.on('addUser', (userId) => {
-			// iniciamos la funcion de agregar el usuario en al array "USERS"
-			addUser(userId, socket.id);
-			//creamos el evento "getUsers"
-			io.emit('getUsers', users);
-			console.log(users);
-			console.log(socket.id);
-		});
+	   socket.on('addUser', (userId) => {
+        console.log('Adding user:', userId, 'with socket ID:', socket.id);
+        addUser(userId, socket.id);
+        io.emit('getUsers', users);
+        console.log('Updated users list:', users);
+    });
 
 		//----FIN----
 
@@ -48,19 +50,22 @@ const socketFunctions = (io) => {
 		//socket.on es cuando esta esperando un evnto
 		//socket.emit es cuando creamos un evento
 		socket.on('joinRoom', ({ userName, roomName }) => {
-			//iniciamos la funcion "addUserRoom" para podre agregar el nombre del canal al array "ROOMS"
+			// Iniciamos la función "addUserRoom" para agregar el nombre del canal al array "ROOMS"
 			addUserRoom(socket.id, userName, roomName);
-			//obtenemos los canales para verificar el nombre del canal para poder unirse a la chats
-			const room = getRoom(socket.id);
-			console.error(rooms);
 
-			//socket.join nos permite concetarnos a un socket existente solo pasando el 'nombre del canal' o del 'socket id'
-			console.log(room.roomName);
-			socket.join(room.roomName);
-			//socket.broadcast es para trasmiter un evento al canal que esta activo mediante su nombre
-			socket.broadcast
-				.to(room.roomName)
-				.emit('message', `${room.userName} has joined the chat`);
+			// Verificamos si la sala ha sido correctamente agregada
+			const room = getRoom(socket.id);
+			console.error('Current rooms:', rooms);
+
+
+			if (room && room.roomName) {
+				// socket.broadcast es para transmitir un evento al canal que está activo mediante su nombre
+				socket.broadcast
+					.to(room.roomName)
+					.emit('message', `${room.userName} has joined the chat`);
+			} else {
+				console.error(`Room not found for socket id: ${socket.id}`);
+			}
 		});
 
 
@@ -69,12 +74,11 @@ const socketFunctions = (io) => {
 			socket.join(roomName); // El cliente se une a la habitación especificada
 			console.log(`Cliente se ha unido a la habitación ${roomName}`);
 		});
-	
+
 
 		socket.on('ticketCanalEvent', (roomName, message) => {
 			io.to(roomName).emit('checkTicket', message); // Se envía el mensaje a la habitación especificada
 		});
-	
 		//----FIN----
 
 		//----INICIO---- de la evento "PING PONG"
@@ -84,7 +88,7 @@ const socketFunctions = (io) => {
 			const responseMessage = 'pong';
 			socket.emit('pong', responseMessage);
 		});
-	
+
 		//----FIN----
 
 		//----INICIO---- evento de enviar mensajes del canal
@@ -105,15 +109,18 @@ const socketFunctions = (io) => {
 
 		//----INICIO---- evento de enviar mensajes Privados
 		socket.on('sendMessage', ({ senderId, recieverId, text }) => {
-			//buscamos en el array "USERS" el socket a quie le vamos a mandar el mensaje
+			// Log para verificar que el recieverId y senderId sean correctos
+			console.log('Receiver ID:', recieverId);
+			console.log('Sender ID:', senderId);
+
+			// Buscamos en el array "USERS" el socket a quien le vamos a mandar el mensaje
 			const user = getUser(recieverId);
-			console.log(recieverId, senderId);
-			//verificamos que si el usuario esta conectado o no
+
 			if (!user) {
-				// el usuario esta desconetado
-				console.log('el usuario no esta conectada');
+				// El usuario está desconectado
+				console.log('El usuario no está conectado');
 			} else {
-				//enviamos el mensaje al socket del usuario
+				// Enviamos el mensaje al socket del usuario
 				io.to(user.socketId).emit('getMessage', {
 					senderId,
 					text,
