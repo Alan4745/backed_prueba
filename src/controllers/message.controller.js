@@ -1,5 +1,6 @@
 const Message = require("../models/message.model");
 const Conversation = require("../models/Conversation.model");
+const User = require("../models/user.model");
 
 async function ViewMessage(req, res) {
 	const senderId = req.params.receiverId;
@@ -24,20 +25,41 @@ async function ViewMessage(req, res) {
 async function ViewMessageById(req, res) {
 	const conversationId = req.params.conversationId;
 
-	Conversation.findById(
-		{ _id: conversationId},
-		(err, ConversationFindOne) => {
-			if (err) {
-				return res.status(500).send({ error: err });
-			}
-			console.log(ConversationFindOne);
-			Message.find(
-				{ conversationId: conversationId },
-				(err, messageView) =>
-					res.status(200).send({ status: "Success", messageView })
-			);
+	try {
+		// Verificar si la conversación existe
+		const conversation = await Conversation.findById(conversationId);
+		if (!conversation) {
+			return res.status(404).send({ error: "Conversation not found" });
 		}
-	);
+
+		// Obtener mensajes de la conversación y ordenarlos por fecha de creación (ascendente)
+		const messages = await Message.find({ conversationId: conversationId }).sort({ createdAt: -1 });
+
+		// Obtener información de los usuarios
+		const userIds = messages.map(message => message.sender);
+		const users = await User.find({ _id: { $in: userIds } }).select('name imageAvatar.secure_url');
+
+		// Crear un mapa de usuarios para acceso rápido
+		const userMap = {};
+		users.forEach(user => {
+			userMap[user._id] = {
+				name: user.name,
+				imageAvatar: user.imageAvatar.secure_url,
+			};
+		});
+
+		// Agregar el nombre y la imagen de avatar a cada mensaje
+		const messageView = messages.map(message => ({
+			...message.toObject(),
+			senderName: userMap[message.sender]?.name || '',
+			imageAvatar: userMap[message.sender]?.imageAvatar || '',
+		}));
+
+		// Enviar la respuesta con los mensajes ordenados
+		res.status(200).send({ status: "Success", messageView });
+	} catch (err) {
+		return res.status(500).send({ error: err.message });
+	}
 }
 
 function SaveMessage(req, res) {
