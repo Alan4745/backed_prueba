@@ -1,38 +1,52 @@
 const Conversation = require('../models/Conversation.model');
 const Message = require('../models/message.model');
 const User = require('../models/user.model');
+const mongoose = require('mongoose');
 
 function NewConversation(req, res) {
 	const modelConversation = new Conversation();
 	const senderId = req.params.receiverId;
 
+	// Verificamos si ya existe una conversación entre los dos usuarios
 	Conversation.find({ members: { $all: [senderId, req.user.sub] } }, (err, conversationFind) => {
-		// Verificamos si los usuarios obtubieron una conversacion anterior
+		// Verificamos si los usuarios son el mismo (no puedes crear una conversación contigo mismo)
 		if (senderId == req.user.sub) {
-			return res
-				.status(500)
-				.send({ error: { message: 'No puedes crear una conversacion contigo mismo.' } });
+			return res.status(500).send({
+				error: { message: 'No puedes crear una conversación contigo mismo.' }
+			});
 		}
+
+		// Si ya existe una conversación, retornamos 304 con el ID de la conversación
 		if (conversationFind.length > 0) {
-			console.log(conversationFind);
-			return res
-				.status(500)
-				.send({ error: { message: 'ya Tienes una conversiancion el con este usuario' } });
+			const conversationId = conversationFind[0]._id;  // Obtén el ID de la conversación existente
+			return res.status(203).send({
+				message: 'Ya tienes una conversación con este usuario.',
+				conversationId: conversationId.toString() // Asegúrate de enviar el ID como string
+			});
 		}
+
+		// Si no hay una conversación existente, se crea una nueva
 		modelConversation.members = [req.user.sub, senderId];
 		modelConversation.save((err, saveConversation) => {
 			if (err) {
-				return res.status(500)
-					.send({ message: 'err en la peticion' });
+				return res.status(500).send({
+					message: 'Error en la petición'
+				});
 			}
 			if (!saveConversation) {
-				return res.status(500)
-					.send({ message: 'error al guardar la conversacion' });
+				return res.status(500).send({
+					message: 'Error al guardar la conversación'
+				});
 			}
-			return res.status(200).send({ status: 'Success', saveConversation });
+			return res.status(200).send({
+				status: 'Success',
+				conversationId: saveConversation._id.toString(),
+				saveConversation
+			});
 		});
 	});
 }
+
 
 async function NewConversationGroup(req, res) {
 	const memberIds = req.body.members;
@@ -156,13 +170,63 @@ function ConversationView(req, res) {
 		);
 	});
 }
-function ConversationByUser(req, res) {
-	Conversation.find({ members: { $all: [req.user.sub] } }, (err, conversationsUser) => {
-		if (err) return res.status(500).send({ err: 'Error en la peticion de friedsViews' });
-		if (!conversationsUser) res.status(500).send({ err: 'No se encontro ninguna conversacion' });
 
-		return res.status(200).send({ conversationsUser })
-	});
+async function ConversationByUser(req, res) {
+	try {
+		const userId = req.user.sub;
+
+		// Obtener las conversaciones del usuario
+		const conversations = await Conversation.find({ members: userId });
+
+		if (!conversations || conversations.length === 0) {
+			return res.status(404).send({ err: 'No se encontró ninguna conversación' });
+		}
+
+		// Crear una lista para almacenar los datos finales
+		const conversationDetails = await Promise.all(conversations.map(async (conversation) => {
+			// Obtener los otros miembros de la conversación (excluyendo al usuario actual)
+			const otherMemberId = conversation.members.find(member => member.toString() !== userId);
+
+			// Asegurarse de que `otherMemberId` sea un ObjectId válido
+			if (!mongoose.Types.ObjectId.isValid(otherMemberId)) {
+				console.error(`Invalid ObjectId for otherMemberId: ${otherMemberId}`);
+				return null; // Si no es válido, no se devuelve nada para esta conversación
+			}
+
+			// Obtener información del usuario (nombre e imagen) del otro miembro
+			const userInfo = await User.findById(otherMemberId).select('name imageAvatar.secure_url');
+
+			// Obtener el último mensaje de la conversación
+			const lastMessage = await Message.findOne({ conversationId: conversation._id })
+				.sort({ createdAt: -1 })
+				.select('text createdAt');
+
+			return {
+				conversationId: conversation._id.toString(),
+				otherMemberId: otherMemberId.toString(), // Convertir a cadena si es necesario
+				otherMemberName: userInfo ? userInfo.name : 'Usuario desconocido',
+				otherMemberImage: userInfo && userInfo.imageAvatar ? userInfo.imageAvatar.secure_url : '',
+				lastMessage: lastMessage ? lastMessage.text : 'No hay mensajes aún',
+				lastMessageTimestamp: lastMessage ? lastMessage.createdAt : null,
+			};
+		}));
+
+		// Filtrar las conversaciones nulas
+		const filteredConversations = conversationDetails.filter(convo => convo !== null);
+
+		// Devolver los detalles de las conversaciones
+		return res.status(200).send({
+			status: "Success",
+			conversations: filteredConversations
+		});
+
+	} catch (err) {
+		console.error('Error en ConversationByUser:', err);
+		return res.status(500).send({
+			err: 'Error en la petición de conversaciones',
+			details: err.message
+		});
+	}
 }
 
 module.exports = {
