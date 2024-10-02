@@ -19,6 +19,7 @@ const paymentRouter = require('./src/routes/payment/payment.routes');
 const pointsRouter = require('./src/routes/points/points.routes');
 const ticketsRouter = require('./src/routes/tickets/ticket.routes');
 const notificationRouter = require('./src/routes/notification/notification.routes');
+const follow = require('./src/routes/follow/follow.routes');
 
 const checkout = require('./src/routes/checkout.routes');
 const passport = require('passport');
@@ -75,7 +76,8 @@ app.use(
 	paymentRouter,// ruta de pagos (stripe)
 	pointsRouter, //rutas de puntos
 	ticketsRouter, //rutas de ticket
-	notificationRouter //rutas de notificaciones
+	notificationRouter, //rutas de notificaciones
+	follow //rutas de seguidores y seguidos
 );
 
 // Exportamos la instancia de la aplicacion
