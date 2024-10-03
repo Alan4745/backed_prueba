@@ -8,8 +8,9 @@ async function updateUser(req, res) {
   try {
     const { idUser } = req.params;
     const parameters = req.body;
+    console.log('img: ',req.files)
 
-    // Eliminando la entrada de los siguientes parámetros
+    // No permitir modificar ciertos campos
     delete parameters.password;
     delete parameters.rol;
     delete parameters.email;
@@ -21,8 +22,33 @@ async function updateUser(req, res) {
         .send({ mensaje: "No tiene los permisos para editar este usuario." });
     }
 
+    let updates = {};
+
+    // Subir imagenAvatar a Cloudinary si está presente
+    if (req.files?.imageAvatar) {
+      const resultAvatar = await UploadImg(req.files.imageAvatar.tempFilePath);
+      updates.imageAvatar = {
+        public_id: resultAvatar.public_id,
+        secure_url: resultAvatar.secure_url,
+      };
+      await fs.unlink(req.files.imageAvatar.tempFilePath); // Elimina archivo temporal
+    }
+
+    // Subir imageBanner a Cloudinary si está presente
+    if (req.files?.imageBanner) {
+      const resultBanner = await UploadImg(req.files.imageBanner.tempFilePath);
+      updates.imageBanner = {
+        public_id: resultBanner.public_id,
+        secure_url: resultBanner.secure_url,
+      };
+      await fs.unlink(req.files.imageBanner.tempFilePath); // Elimina archivo temporal
+    }
+
+    // Mezclar los parámetros del cuerpo con las imágenes actualizadas
+    updates = { ...parameters, ...updates };
+
     // Actualizar el usuario y obtener el resultado actualizado
-    const userUpdate = await User.findByIdAndUpdate(idUser, parameters, {
+    const userUpdate = await User.findByIdAndUpdate(idUser, updates, {
       new: true,
     });
 
