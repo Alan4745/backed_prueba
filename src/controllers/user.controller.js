@@ -8,7 +8,6 @@ async function updateUser(req, res) {
   try {
     const { idUser } = req.params;
     const parameters = req.body;
-    console.log('img: ',req.files)
 
     // No permitir modificar ciertos campos
     delete parameters.password;
