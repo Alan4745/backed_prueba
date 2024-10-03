@@ -1,6 +1,6 @@
 let users = [];
 let rooms = [];
-const User = require("../src/models/user.model");
+
 
 const addUser = (userId, socketId) => {
 	!users.some((user) => user.userId === userId) &&
@@ -22,8 +22,7 @@ const removeUserRoom = (socketId) => {
 
 // eslint-disable-next-line no-unused-vars
 const getUser = (userId) => {
-	const user = User.findById(userId)
-	return user;
+	return users.find(user => user.userId === userId);
 };
 
 const getRoom = (socketId) => rooms.find((room) => room.socketId === socketId);
@@ -33,6 +32,7 @@ const socketFunctions = (io) => {
 	io.on('connection', (socket) => {
 		console.log('connected to socket.io');
 		console.log(socket.id);
+
 
 		// -----Inicio----- Al momento de que usuario se conecta al servidor se activa el evento "addUser()"
 		//socket.on es cuando esta esperando un evnto
@@ -55,7 +55,6 @@ const socketFunctions = (io) => {
 
 			// Verificamos si la sala ha sido correctamente agregada
 			const room = getRoom(socket.id);
-			console.error('Current rooms:', rooms);
 
 
 			if (room && room.roomName) {
@@ -70,8 +69,6 @@ const socketFunctions = (io) => {
 
 
 		socket.on('ticketCanal', (roomName) => {
-			console.log(roomName);
-			socket.join(roomName); // El cliente se une a la habitación especificada
 			console.log(`Cliente se ha unido a la habitación ${roomName}`);
 		});
 
@@ -108,24 +105,24 @@ const socketFunctions = (io) => {
 		//----FIN----
 
 		//----INICIO---- evento de enviar mensajes Privados
-		socket.on('sendMessage', ({ senderId, recieverId, text }) => {
-			// Log para verificar que el recieverId y senderId sean correctos
-			console.log('Receiver ID:', recieverId);
+		socket.on('sendMessage', ({ senderId, receiverId, text }) => {
 			console.log('Sender ID:', senderId);
+			console.log('Receiver ID:', receiverId);
 
-			// Buscamos en el array "USERS" el socket a quien le vamos a mandar el mensaje
-			const user = getUser(recieverId);
+			// Buscamos al usuario receptor
+			const user = getUser(receiverId);
 
 			if (!user) {
 				// El usuario está desconectado
 				console.log('El usuario no está conectado');
 			} else {
-				// Enviamos el mensaje al socket del usuario
+				// Enviamos el mensaje al socket del usuario receptor
 				io.to(user.socketId).emit('getMessage', {
 					senderId,
 					text,
-					recieverId,
+					receiverId,
 				});
+				console.log('Mensaje enviado a', receiverId);
 			}
 		});
 
