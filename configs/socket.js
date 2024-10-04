@@ -105,7 +105,7 @@ const socketFunctions = (io) => {
 		//----FIN----
 
 		//----INICIO---- evento de enviar mensajes Privados
-		socket.on('sendMessage', ({ senderId, receiverId, text, otherMemberImage, otherMemberName }) => {
+		socket.on('sendMessage', ({ senderId, receiverId, text, imageAvatar, username }) => {
 			console.log('Sender ID:', senderId);
 			console.log('Receiver ID:', receiverId);
 
@@ -121,8 +121,8 @@ const socketFunctions = (io) => {
 					senderId,
 					text,
 					receiverId,
-					otherMemberImage,
-					otherMemberName
+					imageAvatar,
+					username
 				});
 				console.log('Mensaje enviado a', receiverId);
 			}
