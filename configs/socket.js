@@ -37,12 +37,12 @@ const socketFunctions = (io) => {
 		// -----Inicio----- Al momento de que usuario se conecta al servidor se activa el evento "addUser()"
 		//socket.on es cuando esta esperando un evnto
 		//socket.emit es cuando creamos un evento
-	   socket.on('addUser', (userId) => {
-        console.log('Adding user:', userId, 'with socket ID:', socket.id);
-        addUser(userId, socket.id);
-        io.emit('getUsers', users);
-        console.log('Updated users list:', users);
-    });
+		socket.on('addUser', (userId) => {
+			console.log('Adding user:', userId, 'with socket ID:', socket.id);
+			addUser(userId, socket.id);
+			io.emit('getUsers', users);
+			console.log('Updated users list:', users);
+		});
 
 		//----FIN----
 
@@ -105,7 +105,7 @@ const socketFunctions = (io) => {
 		//----FIN----
 
 		//----INICIO---- evento de enviar mensajes Privados
-		socket.on('sendMessage', ({ senderId, receiverId, text }) => {
+		socket.on('sendMessage', ({ senderId, receiverId, text, otherMemberImage, otherMemberName }) => {
 			console.log('Sender ID:', senderId);
 			console.log('Receiver ID:', receiverId);
 
@@ -121,6 +121,8 @@ const socketFunctions = (io) => {
 					senderId,
 					text,
 					receiverId,
+					otherMemberImage,
+					otherMemberName
 				});
 				console.log('Mensaje enviado a', receiverId);
 			}
@@ -153,7 +155,7 @@ const socketFunctions = (io) => {
 			console.log(users);
 			console.log(rooms);
 
-			//aclaracion aun falta mucho validaciones para ahorrar recursos del servidor
+			//aclaracion aun falta mucho validaciones para ahorrar recursos del servi dor
 			//el chat se puede trabajar como un servicio aparte para poder solo el servidor principal de la app libre de cargas inicesarias
 		});
 	});
