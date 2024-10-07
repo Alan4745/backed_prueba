@@ -1,20 +1,20 @@
 const { Post, EventPost, PollPost, NormalPost } = require("../../models/post/posts.model");
 const User = require("../../models/user.model");
-const { UploadImg } = require("../../utils/cloudinary");
+const { UploadImg, UploadVideo } = require("../../utils/cloudinary");
 const fs = require("fs-extra");
 const { Notification, createNotification } = require("../../models/notification");
 
 // HACER POST
 async function createPost(req, res) {
-
   try {
     const { idUser } = req.params;
     const { type } = req.body;
 
-
     let image = {};
     let imagens = [];
+    let video = {};
 
+    // Cargar imagen
     if (req.files?.image) {
       const result = await UploadImg(req.files.image.tempFilePath);
       image.public_id = result.public_id;
@@ -26,6 +26,7 @@ async function createPost(req, res) {
       }
     }
 
+    // Cargar múltiples imágenes
     const imageFields = ['image1', 'image2', 'image3', 'image4'];
     for (const field of imageFields) {
       if (req.files?.[field]) {
@@ -42,11 +43,26 @@ async function createPost(req, res) {
       }
     }
 
+    // Cargar video
+    if (req.files?.video) {
+      console.log('video: ', req.files?.video)
+      const result = await UploadVideo(req.files.video.tempFilePath);
+      console.log('res: ', result)
+      video.public_id = result.public_id;
+      video.secure_url = result.secure_url;
+      if (fs.existsSync(req.files.video.tempFilePath)) {
+        await fs.unlink(req.files.video.tempFilePath);
+      } else {
+        console.warn("El archivo temporal no existe.");
+      }
+    }
+
     let newPost;
     if (type === "Event") {
       newPost = new EventPost({
         author: idUser,
         image: image,
+        video: video, // Agregar video al evento
         name: req.body.name,
         desc: req.body.desc,
         price: req.body.price,
@@ -58,7 +74,6 @@ async function createPost(req, res) {
       });
     } else if (type === "Poll") {
       let options = req.body.options;
-      // Verificar si options es una cadena y convertirla a array
       if (typeof options === 'string') {
         try {
           options = JSON.parse(options);
@@ -85,6 +100,7 @@ async function createPost(req, res) {
       newPost = new NormalPost({
         author: idUser,
         image: image,
+        video: video, // Agregar video si existe
         title: req.body.title,
         desc: req.body.desc,
         price: req.body.price,
@@ -94,6 +110,7 @@ async function createPost(req, res) {
     } else {
       return res.status(400).send({ message: "Invalid post type." });
     }
+
     const PostSave = await newPost.save();
     if (!PostSave) {
       return res.status(500).send({ message: "Error saving the POST." });
@@ -115,7 +132,7 @@ async function createPost(req, res) {
     });
 
     await Notification.insertMany(notifications);
-    console.log(PostSave)
+    console.log(PostSave);
 
     return res.status(200).send({ message: PostSave });
   } catch (error) {
