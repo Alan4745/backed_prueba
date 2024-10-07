@@ -65,6 +65,10 @@ const eventSchema = new Schema({
 		type: [picSchema],
 		required: false
 	},
+	video: {
+		type: [picSchema],
+		required: false
+	}
 
 });
 
@@ -139,7 +143,7 @@ const normalSchema = new Schema({
 });
 
 const postSchema = new Schema(
-  {
+    {
     author: { type: String, required: true },
 	dataAuthor: {
 		author: { type: String, default: '' },
@@ -150,21 +154,25 @@ const postSchema = new Schema(
 		},
 	},
     image: {
-      public_id: { type: String, default: '' },
-      secure_url: { type: String, default: '' },
+		public_id: { type: String, default: '' },
+		secure_url: { type: String, default: '' },
     },
+	video: {
+		public_id: { type: String, default: '' },
+		secure_url: { type: String, default: '' },
+	},
     type: { type: String, required: true },
     content: { type: Schema.Types.Mixed, required: false },
     comments: { type: [commentSchema], default: [] },
     likes: {
-      type: [{
-        userId: { type: String, required: true },
-      }],
-      default: [],
+		type: [{
+			userId: { type: String, required: true },
+		}],
+		default: [],
     },
     originalPost: { type: String, default: null },
-  },
-  { timestamps: true, discriminatorKey: 'type' }
+	},
+	{ timestamps: true, discriminatorKey: 'type' }
 );
 
 const Post = mongoose.model('Post', postSchema);
