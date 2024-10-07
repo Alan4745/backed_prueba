@@ -45,9 +45,7 @@ async function createPost(req, res) {
 
     // Cargar video
     if (req.files?.video) {
-      console.log('video: ', req.files?.video)
       const result = await UploadVideo(req.files.video.tempFilePath);
-      console.log('res: ', result)
       video.public_id = result.public_id;
       video.secure_url = result.secure_url;
       if (fs.existsSync(req.files.video.tempFilePath)) {
