@@ -56,6 +56,10 @@ api.put(
   controllerToken.redeemTicket
 );
 api.put("/redeemTiceketPepsi/:idbuyer", controllerToken.redeemTicketPepsi);
+api.put(
+  "/redeemTicketAdrenaline/:idbuyer",
+  controllerToken.redeemTicketAdrenaline
+);
 
 // metodo actualizado 🆗
 api.put(

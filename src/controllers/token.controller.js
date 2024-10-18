@@ -11,6 +11,8 @@ const { UploadImg } = require("../utils/cloudinary");
 const { default: mongoose } = require("mongoose");
 const PotentialUsers = require("../models/potentialUsers/potentialUsers.model");
 const DataPepsiModel = require("../models/DataPepsi/DataPepsi.model");
+const AdrenalineDataModel = require("../models/adrenalineData/adrenalineData.model");
+
 // function agregarTokenAColecion(req, res) {
 //   const parameters = req.body;
 //   const { tokenAmount } = parameters;
@@ -687,6 +689,113 @@ async function redeemTicketPepsi(req, res) {
   }
 }
 
+async function redeemTicketAdrenaline(req, res) {
+  try {
+    const idbuyer = req.params.idbuyer; // ID del documento AdrenalineData a actualizar
+
+    console.log("ID del comprador:", idbuyer);
+
+    // Buscar el documento AdrenalineData correspondiente al idbuyer
+    const adrenalineData = await AdrenalineDataModel.findOne({ _id: idbuyer });
+    if (!adrenalineData) {
+      console.log("No se encontró el comprador con ID:", idbuyer);
+      return res.status(404).json({ message: "No se encontró el comprador" });
+    }
+
+    // Verificar si el comprador ya ha ganado
+    if (adrenalineData.winner === true) {
+      console.log(
+        "El comprador ya ha ganado un premio y no puede canjear más tickets."
+      );
+      return res.status(400).json({
+        message: "Ya has ganado un premio. No puedes canjear más tickets.",
+      });
+    }
+
+    // Definir las categorías y sus probabilidades
+    const categories = {
+      "entrada doble": 1,
+      "merch adrenaline": 9,
+      "producto de adrenaline rush": 20,
+      participacion: 70,
+    };
+
+    // Generar un número aleatorio entre 0 y 100
+    const randomNumber = Math.random() * 100;
+    console.log("Número aleatorio generado:", randomNumber);
+
+    // Determinar la categoría del ticket basado en la probabilidad
+    let category = "participacion"; // Por defecto es participación
+    let accumulatedProbability = 0;
+
+    for (const [key, value] of Object.entries(categories)) {
+      accumulatedProbability += value;
+      if (randomNumber < accumulatedProbability) {
+        category = key;
+        break;
+      }
+    }
+
+    console.log(`Buscando ticket de "${category}"...`);
+
+    // Buscar un ticket disponible de la categoría determinada y autor específico
+    let ticket = await TokenCollection.findOne({
+      canjeado: false,
+      category: category,
+      author: "6712c51f0fbdd0960c77ade3",
+    });
+
+    // Si no hay tickets de la categoría determinada, buscar un ticket de "participacion"
+    if (!ticket) {
+      console.log(
+        `No se encontró ticket de "${category}". Buscando ticket de "participacion"...`
+      );
+      ticket = await TokenCollection.findOne({
+        canjeado: false,
+        category: "participacion",
+        author: "6712c51f0fbdd0960c77ade3",
+      });
+      category = "participacion"; // Confirmar que encontramos un ticket de "participacion"
+    }
+
+    if (!ticket) {
+      console.log("No se encontró ningún ticket disponible para canjear.");
+      return res
+        .status(404)
+        .json({ message: "No hay tickets disponibles para canjear" });
+    }
+
+    // Actualizar el ticket encontrado
+    ticket.canjeado = true;
+    ticket.buyerid = idbuyer;
+    ticket.adquirido = true;
+    await ticket.save();
+    console.log("Ticket actualizado y guardado.");
+
+    // Actualizar el campo winner en el documento AdrenalineData
+    adrenalineData.winner = category === "entrada doble";
+    adrenalineData.hasRegistered = true;
+
+    // Agregar el ticket al campo ticketsCollected
+    adrenalineData.ticketsCollected.push(ticket);
+
+    // Guardar los cambios en el documento AdrenalineData
+    await adrenalineData.save();
+    console.log("Datos del comprador actualizados y guardados.");
+
+    // Devolver el ticket actualizado como respuesta
+    res.status(200).json({
+      message: "Ticket canjeado exitosamente",
+      ticket,
+      registro: adrenalineData,
+    });
+  } catch (error) {
+    console.log("Error en la operación:", error.message);
+    // Manejo de errores
+    res.status(500).json({ error: error.message });
+  }
+}
+
 async function burnTicket(req, res) {
   try {
     const idDocumento = req.params.idTicket; // ID del documento a actualizar
@@ -904,4 +1013,5 @@ module.exports = {
   createCollectionWithTickets,
   getCollectionsByAuthorId,
   redeemTicketPepsi,
+  redeemTicketAdrenaline,
 };

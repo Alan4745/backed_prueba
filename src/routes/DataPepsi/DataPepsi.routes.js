@@ -1,5 +1,5 @@
 const express = require("express");
-const controllerRegistrarData = require("../../controllers/DataPepsi/DataPepsi.controller");
+const controllerRegistrarData = require("../../controllers/adrenalineData/adrenalineData.controller");
 
 const api = express.Router();
 
