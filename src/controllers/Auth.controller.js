@@ -53,6 +53,8 @@ async function userRegistration(req, res) {
     userModel.name = "";
     userModel.nickName = "";
     userModel.email = parameters.email;
+    userModel.birthday = parameters.birthday;
+    userModel.phone = parameters.phone;
     // Hashear la contraseña antes de almacenarla en la base de datos
     const hash = await bcrypt.hash(parameters.password, saltRounds);
     userModel.password = hash;
@@ -78,7 +80,7 @@ async function userRegistration(req, res) {
 
     // Enviar una respuesta exitosa con la información del usuario guardado
     return res.status(200).send(
-      { 
+      {
         message: 'Usuario registrado exitosamente.' ,
         token: token,
         user: userSave
