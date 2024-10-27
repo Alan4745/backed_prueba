@@ -20,6 +20,10 @@ const noteSchema = new Schema({
         type: String,
         enum: ['public', 'anonymous'],
         required: true
+    },
+    coordinates: {
+        type: [Number], // Array de números para coordenadas
+        required: true
     }
 });
 
