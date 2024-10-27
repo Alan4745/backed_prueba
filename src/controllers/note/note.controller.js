@@ -4,7 +4,7 @@ const userModel = require('../../models/user.model');
 // Crear una nueva nota
 const createNewNote = async (req, res) => {
     try {
-        const { senderId, reciverId, noteContent, statusNote } = req.body;
+        const { senderId, reciverId, noteContent, statusNote, coordinates } = req.body;
 
         const userSender = await userModel.findById(senderId);
         const userReciver = await userModel.findById(reciverId);
@@ -15,7 +15,7 @@ const createNewNote = async (req, res) => {
             return res.status(404).json({ message: 'No se encontró al usuario receptor' });
         }
 
-        const newNote = await Note.create({ senderId, reciverId, noteContent, statusNote });
+        const newNote = await Note.create({ senderId, reciverId, noteContent, statusNote, coordinates });
         res.status(201).json({ message: 'Nota creada con éxito', newNote });
     } catch (error) {
         console.error('Error al crear una nota:', error);
