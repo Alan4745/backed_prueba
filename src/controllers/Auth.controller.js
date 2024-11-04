@@ -55,6 +55,8 @@ async function userRegistration(req, res) {
     userModel.email = parameters.email;
     userModel.birthday = parameters.birthday;
     userModel.phone = parameters.phone;
+    userModel.verified = false;
+
     // Hashear la contraseña antes de almacenarla en la base de datos
     const hash = await bcrypt.hash(parameters.password, saltRounds);
     userModel.password = hash;
