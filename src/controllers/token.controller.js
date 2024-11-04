@@ -779,7 +779,15 @@ async function redeemTicketAdrenaline(req, res) {
       "producto de adrenaline rush",
     ].includes(category);
     adrenalineData.hasRegistered = true;
-    adrenalineData.prize = category;
+    if (
+      [
+        "entrada doble",
+        "merch adrenaline",
+        "producto de adrenaline rush",
+      ].includes(category)
+    ) {
+      adrenalineData.prize = category;
+    }
 
     adrenalineData.ticketsCollected.push(ticket);
 
