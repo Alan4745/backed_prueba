@@ -714,10 +714,10 @@ async function redeemTicketAdrenaline(req, res) {
 
     // Definir las categorías y sus probabilidades
     const categories = {
-      "entrada doble": 70,
-      "merch adrenaline": 8,
+      "entrada doble": 1,
+      "merch adrenaline": 70,
       "producto de adrenaline rush": 15,
-      participacion: 1,
+      participacion: 8,
     };
 
     // Generar un número aleatorio entre 0 y 100
