@@ -4,9 +4,18 @@ const validator = require("validator"); // Asegúrate de instalar la librería v
 // Función para registrar datos
 async function RegistrarData(req, res) {
   try {
-    const { name, lastname, email, phone, dob, department } = req.body;
+    const { name, lastname, email, phone, department, dpi, dateOfBirth } =
+      req.body;
 
-    if (!name || !lastname || !email || !phone || !dob || !department) {
+    if (
+      !name ||
+      !lastname ||
+      !email ||
+      !phone ||
+      !department ||
+      !dpi ||
+      !dateOfBirth
+    ) {
       console.log("Todos los campos son requeridos.");
       return res.status(400).json({
         success: false,
@@ -27,6 +36,30 @@ async function RegistrarData(req, res) {
       return res.status(400).json({
         success: false,
         message: "El número de teléfono debe tener exactamente 8 dígitos.",
+      });
+    }
+
+    if (!/^\d{13}$/.test(dpi)) {
+      console.log("El DPI debe tener exactamente 13 dígitos.");
+      return res.status(400).json({
+        success: false,
+        message: "El DPI debe tener exactamente 13 dígitos.",
+      });
+    }
+
+    const calculateAge = (dob) => {
+      const diff = Date.now() - new Date(dob).getTime();
+      const ageDate = new Date(diff);
+      return Math.abs(ageDate.getUTCFullYear() - 1970);
+    };
+
+    const age = calculateAge(dateOfBirth);
+
+    if (age < 18) {
+      console.log("Debe ser mayor de edad para registrarse.");
+      return res.status(400).json({
+        success: false,
+        message: "Debe ser mayor de edad para registrarse.",
       });
     }
 
@@ -54,8 +87,10 @@ async function RegistrarData(req, res) {
         lastname,
         email,
         phone,
-        dob,
         department,
+        dpi,
+        age,
+        dateOfBirth,
       });
 
       await newData.save();

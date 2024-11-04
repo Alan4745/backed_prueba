@@ -773,10 +773,14 @@ async function redeemTicketAdrenaline(req, res) {
     console.log("Ticket actualizado y guardado.");
 
     // Actualizar el campo winner en el documento AdrenalineData
-    adrenalineData.winner = category === "entrada doble";
+    adrenalineData.winner = [
+      "entrada doble",
+      "merch adrenaline",
+      "producto de adrenaline rush",
+    ].includes(category);
     adrenalineData.hasRegistered = true;
+    adrenalineData.prize = category;
 
-    // Agregar el ticket al campo ticketsCollected
     adrenalineData.ticketsCollected.push(ticket);
 
     // Guardar los cambios en el documento AdrenalineData

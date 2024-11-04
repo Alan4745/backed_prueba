@@ -21,10 +21,7 @@ const dataAdrenalineSchema = new Schema(
       type: String,
       required: true,
     },
-    dob: {
-      type: Date,
-      required: true,
-    },
+
     department: {
       type: String,
       required: true,
@@ -43,6 +40,26 @@ const dataAdrenalineSchema = new Schema(
     ticketsCollected: {
       type: [Schema.Types.Mixed], // Array que puede contener cualquier tipo de datos
       default: [], // Valor por defecto es un array vacío
+    },
+    // Nuevo campo para DPI
+    dpi: {
+      type: String,
+      required: true,
+    },
+    // Nuevo campo para edad
+    age: {
+      type: Number,
+      required: true,
+    },
+    // Campo para fecha de nacimiento en inglés
+    dateOfBirth: {
+      type: Date,
+      required: true,
+    },
+    // Nuevo campo para premio en inglés
+    prize: {
+      type: String,
+      default: "",
     },
   },
   {
