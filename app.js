@@ -20,6 +20,7 @@ const pointsRouter = require('./src/routes/points/points.routes');
 const ticketsRouter = require('./src/routes/tickets/ticket.routes');
 const notificationRouter = require('./src/routes/notification/notification.routes');
 const follow = require('./src/routes/follow/follow.routes');
+const note = require('./src/routes/note/note.routes');
 
 const checkout = require('./src/routes/checkout.routes');
 const passport = require('passport');
@@ -77,7 +78,8 @@ app.use(
 	pointsRouter, //rutas de puntos
 	ticketsRouter, //rutas de ticket
 	notificationRouter, //rutas de notificaciones
-	follow //rutas de seguidores y seguidos
+	follow, //rutas de seguidores y seguidos
+	note, //rutas de notas
 );
 
 // Exportamos la instancia de la aplicacion

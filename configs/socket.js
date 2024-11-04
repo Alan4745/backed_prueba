@@ -128,7 +128,21 @@ const socketFunctions = (io) => {
 			}
 		});
 
-
+		// Evento para escuchar y transmitir notas
+		socket.on('note', ({ senderId, receiverId, noteContent, statusNote }) => {
+			const user = getUser(receiverId);
+			if (user) {
+				io.to(user.socketId).emit('getNote', {
+					senderId,
+					receiverId,
+					noteContent,
+					statusNote
+				});
+				console.log(`Nota enviada de ${senderId} a ${receiverId}: ${noteContent}`);
+			} else {
+				console.log('El usuario no está conectado para recibir la nota');
+			}
+		});
 
 		//----FIN----
 
