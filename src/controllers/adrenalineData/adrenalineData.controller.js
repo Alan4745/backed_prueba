@@ -78,7 +78,6 @@ async function RegistrarData(req, res) {
         lastname,
         email,
         phone,
-        department,
         dpi,
         age,
         dateOfBirth,
