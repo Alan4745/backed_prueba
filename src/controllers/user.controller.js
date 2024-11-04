@@ -23,6 +23,10 @@ async function updateUser(req, res) {
 
     let updates = {};
 
+
+    if (parameters.hasOwnProperty('verified')) {
+      parameters.verified = parameters.verified === true || parameters.verified === 'true';
+    }
     // Subir imagenAvatar a Cloudinary si está presente
     if (req.files?.imageAvatar) {
       const resultAvatar = await UploadImg(req.files.imageAvatar.tempFilePath);
