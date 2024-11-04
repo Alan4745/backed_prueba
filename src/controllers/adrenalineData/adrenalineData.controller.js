@@ -4,18 +4,9 @@ const validator = require("validator"); // Asegúrate de instalar la librería v
 // Función para registrar datos
 async function RegistrarData(req, res) {
   try {
-    const { name, lastname, email, phone, department, dpi, dateOfBirth } =
-      req.body;
+    const { name, lastname, email, phone, dpi, dateOfBirth } = req.body;
 
-    if (
-      !name ||
-      !lastname ||
-      !email ||
-      !phone ||
-      !department ||
-      !dpi ||
-      !dateOfBirth
-    ) {
+    if (!name || !lastname || !email || !phone || !dpi || !dateOfBirth) {
       console.log("Todos los campos son requeridos.");
       return res.status(400).json({
         success: false,

@@ -22,10 +22,6 @@ const dataAdrenalineSchema = new Schema(
       required: true,
     },
 
-    department: {
-      type: String,
-      required: true,
-    },
     // Campo que indica si el usuario ya se ha registrado
     hasRegistered: {
       type: Boolean,
