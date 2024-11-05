@@ -1,10 +1,44 @@
 let users = [];
 let rooms = [];
 
-
 const addUser = (userId, socketId) => {
-	!users.some((user) => user.userId === userId) &&
-		users.push({ userId, socketId });
+    // Busca si el usuario ya existe en el array 'users'
+    const existingUser = users.find(user => user.userId === userId);
+    
+    if (existingUser) {
+        // Si el usuario ya existe, actualizamos solo su socketId
+        existingUser.socketId = socketId;
+    } else {
+        // Si el usuario no existe, lo añadimos al array
+        users.push({ userId, socketId, location: null });
+    }
+};
+
+// const addUser = (userId, socketId) => {
+//     // Verificamos si el usuario ya existe en el array 'users' basado en 'userId'
+// 	const existingUser = users.find(user => user.userId === userId);
+// 	if (existingUser) {
+// 		// Si el usuario existe, actualizamos su socketId
+// 		existingUser.socketId = socketId;
+// 	}
+//     const existingUserIndex = users.findIndex(user => user.userId === userId);
+//     // const existingIdUserIndex = users.findIndex(user => user.idUser === idUser);
+
+//     if (existingUserIndex !== -1) {
+//         // Si el usuario ya existe, reemplazamos el antiguo con el nuevo
+//         users[existingUserIndex] = { userId, socketId, location: null };
+//     } else {
+//         // Si no existe, lo añadimos al array
+//         users.push({ userId, socketId, location: null });
+//     }
+// };
+
+const updateUserLocation = (user, location) => {
+    users = users.map((item) =>
+        item.userId === user.userId 
+            ? { ...item, location }
+            : user
+    );
 };
 
 const removeUser = (socketId) => {
@@ -33,17 +67,47 @@ const socketFunctions = (io) => {
 		console.log('connected to socket.io');
 		console.log(socket.id);
 
-
 		// -----Inicio----- Al momento de que usuario se conecta al servidor se activa el evento "addUser()"
 		//socket.on es cuando esta esperando un evnto
 		//socket.emit es cuando creamos un evento
+		// socket.on('addUser', (userId) => {
+		// 	console.log('Adding user:', userId, 'with socket ID:', socket.id);
+		// 	addUser(userId, socket.id);
+		// 	io.emit('getUsers', users);
+		// 	console.log('Updated users list:', users);
+		// });
 		socket.on('addUser', (userId) => {
-			console.log('Adding user:', userId, 'with socket ID:', socket.id);
-			addUser(userId, socket.id);
-			io.emit('getUsers', users);
-			console.log('Updated users list:', users);
-		});
+            console.log('Adding user:', userId, 'with socket ID:', socket.id);
+            addUser(userId, socket.id);
 
+            // Emitir solo los campos específicos (_id, name, imageAvatar)
+            const simplifiedUsers = users.map(user => ({
+                id: user.userId,
+				idUser: user._id, 
+                name: user.name, 
+                imageAvatar: user.imageAvatar,
+                location: user.location
+            }));
+
+            io.emit('getUsers', simplifiedUsers);
+            // console.log('Updated users list:', simplifiedUsers);
+        });
+
+        socket.on("updateLocation", ({ user, location }) => {
+            updateUserLocation(user, location);
+
+            // Emitir solo los campos específicos (_id, name, imageAvatar)
+            const simplifiedUsers = users.map(user => ({
+                _id: user.userId,
+				idUser: user._id,
+                name: user.name,
+                imageAvatar: user.imageAvatar,
+                location: user.location
+            }));
+
+            io.emit("getUsers", simplifiedUsers); // Enviar la lista actualizada a todos
+            // console.log('Updated users list after location update:', simplifiedUsers);
+        });
 		//----FIN----
 
 		// ---Inicio---- al momento de que se conecta a un canal se activa la funcion "addUserRoom()"
@@ -55,7 +119,6 @@ const socketFunctions = (io) => {
 
 			// Verificamos si la sala ha sido correctamente agregada
 			const room = getRoom(socket.id);
-
 
 			if (room && room.roomName) {
 				// socket.broadcast es para transmitir un evento al canal que está activo mediante su nombre
