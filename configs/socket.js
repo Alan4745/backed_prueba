@@ -35,7 +35,7 @@ const addUser = (userId, socketId) => {
 
 const updateUserLocation = (user, location) => {
     users = users.map((item) =>
-        item.userId === user.userId 
+        item.userId === user._id 
             ? { ...item, location }
             : item
     );
@@ -117,7 +117,7 @@ const socketFunctions = (io) => {
 				idUser: user.idUser,
 				name: user.name,
 				imageAvatar: user.imageAvatar,
-				location
+				location: user.location
 			}));
 		
 			io.emit("getUsers", simplifiedUsers); // Emitir a todos los clientes
