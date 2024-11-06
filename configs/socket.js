@@ -4,7 +4,7 @@ let rooms = [];
 const addUser = (userId, socketId) => {
     // Busca si el usuario ya existe en el array 'users'
     const existingUser = users.find(user => user.userId === userId);
-
+    
     if (existingUser) {
         // Si el usuario ya existe, actualizamos solo su socketId
         existingUser.socketId = socketId;
@@ -35,7 +35,7 @@ const addUser = (userId, socketId) => {
 
 const updateUserLocation = (user, location) => {
     users = users.map((item) =>
-        item.userId === user._id
+        item.userId === user._id 
             ? { ...item, location }
             : item
     );
@@ -77,40 +77,40 @@ const socketFunctions = (io) => {
 		// 	console.log('Updated users list:', users);
 		// });
 		// Cuando un usuario se conecta y emite el evento 'addUser'
-		// socket.on('addUser', (userId, user) => {
-		// 	// Verifica si el usuario ya está en la lista para evitar
-		// 	if (users.length === 0 ) {
-		// 		users.push({
-		// 			idUser: userId,
-		// 			socketId: socket.id,
-		// 			name: user.name,
-		// 			imageAvatar: user.imageAvatar,
-		// 			location: null
-		// 		})
-		// 		console.log(users)
-		// 	}
-		// 	if (!users.some(user => user.idUser === userId)) {
-		// 		// Si el usuario no existe, lo agregamos
-		// 		users.push({
-		// 			idUser: userId,
-		// 			socketId: socket.id,
-		// 			name: user.name,
-		// 			imageAvatar: user.imageAvatar,
-		// 			location: null
-		// 		});
-		// 		console.log(users)
-		// 	} else {
-		// 		// El usuario ya existe, puedes hacer algo aquí, como enviar un mensaje
-		// 		console.log(`User with ID ${userId} already exists.`);
-		// 		// Si deseas emitir algún mensaje a los clientes, puedes hacerlo aquí
-		// 		// io.emit('userExists', { userId }); // ejemplo de emisión
-		// 	}
-		// });
+		socket.on('addUser', (userId, user) => {
+			// Verifica si el usuario ya está en la lista para evitar 
+			if (users.length === 0 ) {
+				users.push({ 
+					idUser: userId, 
+					socketId: socket.id,
+					name: user.name,
+					imageAvatar: user.imageAvatar,
+					location: null
+				})
+				console.log(users)
+			}
+			if (!users.some(user => user.idUser === userId)) {
+				// Si el usuario no existe, lo agregamos
+				users.push({ 
+					idUser: userId, 
+					socketId: socket.id,
+					name: user.name,
+					imageAvatar: user.imageAvatar,
+					location: null
+				});
+				console.log(users)
+			} else {
+				// El usuario ya existe, puedes hacer algo aquí, como enviar un mensaje
+				console.log(`User with ID ${userId} already exists.`);
+				// Si deseas emitir algún mensaje a los clientes, puedes hacerlo aquí
+				// io.emit('userExists', { userId }); // ejemplo de emisión
+			}
+		});
 
         socket.on("updateLocation", (userId, location) => {
 			// updateUserLocation(user, location);
 			// users = users.map((item) =>
-			// 	item.userId === user._id
+			// 	item.userId === user._id 
 			// 		? { ...item, location }
 			// 		: item
 			// );
@@ -118,7 +118,7 @@ const socketFunctions = (io) => {
 			if (userIndex >= 0) {
 				users[userIndex].location =  location;
 				console.log(users)
-			}
+			}		
 			// Emitir solo los campos específicos
 			const simplifiedUsers = users.map(user => ({
 				idUser: user.idUser,
@@ -126,10 +126,10 @@ const socketFunctions = (io) => {
 				imageAvatar: user.imageAvatar,
 				location: user.location
 			}));
-
+		
 			io.emit("getUsers", simplifiedUsers); // Emitir a todos los clientes
 		});
-
+		
 		//----FIN----
 
 		// ---Inicio---- al momento de que se conecta a un canal se activa la funcion "addUserRoom()"
