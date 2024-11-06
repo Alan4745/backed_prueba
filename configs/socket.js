@@ -87,7 +87,7 @@ const socketFunctions = (io) => {
 					socketId: socket.id,
 					name: user.name,
 					imageAvatar: user.imageAvatar,
-					location: user.location
+					location: null
 				})
 				console.log(users)
 			}
@@ -98,7 +98,7 @@ const socketFunctions = (io) => {
 					socketId: socket.id,
 					name: user.name,
 					imageAvatar: user.imageAvatar,
-					location: user.location
+					location: null
 				});
 				console.log(users)
 			} else {
@@ -117,7 +117,7 @@ const socketFunctions = (io) => {
 				idUser: user.idUser,
 				name: user.name,
 				imageAvatar: user.imageAvatar,
-				location: user.location
+				location
 			}));
 		
 			io.emit("getUsers", simplifiedUsers); // Emitir a todos los clientes
