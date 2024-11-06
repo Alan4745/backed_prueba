@@ -78,8 +78,6 @@ const socketFunctions = (io) => {
 		// });
 		// Cuando un usuario se conecta y emite el evento 'addUser'
 		socket.on('addUser', (userId, user) => {
-			console.log('userId: ',userId)
-			console.log('user: ',user._id)
 			// Verifica si el usuario ya está en la lista para evitar 
 			if (users.length === 0 ) {
 				users.push({ 
@@ -109,9 +107,18 @@ const socketFunctions = (io) => {
 			}
 		});
 
-        socket.on("updateLocation", ({ user, location }) => {
-			updateUserLocation(user, location);
-		
+        socket.on("updateLocation", (userId, location) => {
+			// updateUserLocation(user, location);
+			// users = users.map((item) =>
+			// 	item.userId === user._id 
+			// 		? { ...item, location }
+			// 		: item
+			// );
+			const  userIndex = users.findIndex((user) => user.idUser == userId);
+			if (userIndex >= 0) {
+				users[userIndex].location =  location;
+				console.log(users)
+			}		
 			// Emitir solo los campos específicos
 			const simplifiedUsers = users.map(user => ({
 				idUser: user.idUser,
