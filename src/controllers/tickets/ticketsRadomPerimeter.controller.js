@@ -4,9 +4,9 @@ const turf = require('@turf/turf'); // Para cálculos de geolocalización
 const { getRandomNumberInRange } = require('../../funcs/getRandomNumberInRange');
 
 const createPerimeterAndDistributeTickets = async (req, res) => {
-    const { amount, type, coordinates, emitterId } = req.body;
+    const { amount, type, coordinates, emitterId, membership, collectionName, price } = req.body;
 
-    if (!amount || !type || !coordinates || !emitterId) {
+    if (!amount || !type || !coordinates || !emitterId || !membership || !collectionName || !price) {
         return res.status(400).json({ message: 'Faltan datos requeridos' });
     }
 
@@ -22,6 +22,10 @@ const createPerimeterAndDistributeTickets = async (req, res) => {
         const newPerimeter = new Tickets({
             amountCurrent: amount,
             amountInitial: amount,
+            collectionName: collectionName,
+            membership: membership,
+            price: price,
+            amount: amount,
             location: {
                 type,
                 coordinates

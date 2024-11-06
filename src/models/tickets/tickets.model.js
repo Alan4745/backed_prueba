@@ -10,6 +10,22 @@ const ticketsSchema = new Schema({
         type: Number,
         required: true
     },
+    collectionName: {
+        type: String,
+        required: true
+    },
+    membership: {
+        type: String,
+        required: true
+    },
+    amount: {
+        type: Number,
+        required: true
+    },
+    price: {
+        type: Number,
+        required: true
+    },
     location: {
         type: {
             type: String, // 'Point' or 'Polygon'
@@ -20,7 +36,7 @@ const ticketsSchema = new Schema({
             type: Schema.Types.Mixed,
             required: true
         }
-    }, 
+    },
     emitter: {
         type: Schema.Types.ObjectId, // referencia al usuario emisor
         ref: 'Users',
