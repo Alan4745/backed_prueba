@@ -37,7 +37,7 @@ const updateUserLocation = (user, location) => {
     users = users.map((item) =>
         item.userId === user.userId 
             ? { ...item, location }
-            : user
+            : item
     );
 };
 
@@ -76,38 +76,53 @@ const socketFunctions = (io) => {
 		// 	io.emit('getUsers', users);
 		// 	console.log('Updated users list:', users);
 		// });
-		socket.on('addUser', (userId) => {
-            console.log('Adding user:', userId, 'with socket ID:', socket.id);
-            addUser(userId, socket.id);
-
-            // Emitir solo los campos específicos (_id, name, imageAvatar)
-            const simplifiedUsers = users.map(user => ({
-                id: user.userId,
-				idUser: user._id, 
-                name: user.name, 
-                imageAvatar: user.imageAvatar,
-                location: user.location
-            }));
-
-            io.emit('getUsers', simplifiedUsers);
-            // console.log('Updated users list:', simplifiedUsers);
-        });
+		// Cuando un usuario se conecta y emite el evento 'addUser'
+		socket.on('addUser', (userId, user) => {
+			console.log('userId: ',userId)
+			console.log('user: ',user._id)
+			// Verifica si el usuario ya está en la lista para evitar 
+			if (users.length === 0 ) {
+				users.push({ 
+					idUser: userId, 
+					socketId: socket.id,
+					name: user.name,
+					imageAvatar: user.imageAvatar,
+					location: user.location
+				})
+				console.log(users)
+			}
+			if (!users.some(user => user.idUser === userId)) {
+				// Si el usuario no existe, lo agregamos
+				users.push({ 
+					idUser: userId, 
+					socketId: socket.id,
+					name: user.name,
+					imageAvatar: user.imageAvatar,
+					location: user.location
+				});
+				console.log(users)
+			} else {
+				// El usuario ya existe, puedes hacer algo aquí, como enviar un mensaje
+				console.log(`User with ID ${userId} already exists.`);
+				// Si deseas emitir algún mensaje a los clientes, puedes hacerlo aquí
+				// io.emit('userExists', { userId }); // ejemplo de emisión
+			}
+		});
 
         socket.on("updateLocation", ({ user, location }) => {
-            updateUserLocation(user, location);
-
-            // Emitir solo los campos específicos (_id, name, imageAvatar)
-            const simplifiedUsers = users.map(user => ({
-                _id: user.userId,
-				idUser: user._id,
-                name: user.name,
-                imageAvatar: user.imageAvatar,
-                location: user.location
-            }));
-
-            io.emit("getUsers", simplifiedUsers); // Enviar la lista actualizada a todos
-            // console.log('Updated users list after location update:', simplifiedUsers);
-        });
+			updateUserLocation(user, location);
+		
+			// Emitir solo los campos específicos
+			const simplifiedUsers = users.map(user => ({
+				idUser: user.idUser,
+				name: user.name,
+				imageAvatar: user.imageAvatar,
+				location: user.location
+			}));
+		
+			io.emit("getUsers", simplifiedUsers); // Emitir a todos los clientes
+		});
+		
 		//----FIN----
 
 		// ---Inicio---- al momento de que se conecta a un canal se activa la funcion "addUserRoom()"
