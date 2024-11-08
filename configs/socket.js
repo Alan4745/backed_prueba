@@ -31,7 +31,7 @@ const socketFunctions = (io) => {
 	// iniciamos la conexion del servidor al cliente en tiempo real
 	io.on('connection', (socket) => {
 		console.log('connected to socket.io');
-		console.log(socket.id);
+		console.log('', socket.id);
 
 
 		// -----Inicio----- Al momento de que usuario se conecta al servidor se activa el evento "addUser()"
