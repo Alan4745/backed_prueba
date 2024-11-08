@@ -2,9 +2,15 @@ let users = [];
 let rooms = [];
 
 
-const addUser = (userId, socketId) => {
+const addUser = (userId, socketId, user) => {
 	!users.some((user) => user.userId === userId) &&
-		users.push({ userId, socketId });
+		users.push({ 
+			userId, 
+			socketId,
+			name: user.name,
+			imageAvatar: user.imageAvatar,
+			location: null
+		});
 };
 
 const removeUser = (socketId) => {
@@ -37,11 +43,11 @@ const socketFunctions = (io) => {
 		// -----Inicio----- Al momento de que usuario se conecta al servidor se activa el evento "addUser()"
 		//socket.on es cuando esta esperando un evnto
 		//socket.emit es cuando creamos un evento
-		socket.on('addUser', (userId) => {
+		socket.on('addUser', (userId, user) => {
 			console.log('Adding user:', userId, 'with socket ID:', socket.id);
-			addUser(userId, socket.id);
+			addUser(userId, socket.id, user);
 			io.emit('getUsers', users);
-			console.log('Updated users list:', users);
+			// console.log('Updated users list:', users);
 		});
 
 		//----FIN----
@@ -52,14 +58,14 @@ const socketFunctions = (io) => {
 			// 		? { ...item, location }
 			// 		: item
 			// );
-			const  userIndex = users.findIndex((user) => user.idUser == userId);
+			const  userIndex = users.findIndex((user) => user.userId == userId);
 			if (userIndex >= 0) {
 				users[userIndex].location =  location;
 				console.log(users)
 			}		
 			// Emitir solo los campos específicos
 			const simplifiedUsers = users.map(user => ({
-				idUser: user.idUser,
+				idUser: user.userId,
 				name: user.name,
 				imageAvatar: user.imageAvatar,
 				location: user.location
