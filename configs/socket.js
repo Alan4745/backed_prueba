@@ -65,17 +65,17 @@ const socketFunctions = (io) => {
 	// iniciamos la conexion del servidor al cliente en tiempo real
 	io.on('connection', (socket) => {
 		console.log('connected to socket.io');
-		console.log(socket.id);
+		console.log('', socket.id);
 
 		// -----Inicio----- Al momento de que usuario se conecta al servidor se activa el evento "addUser()"
 		//socket.on es cuando esta esperando un evnto
 		//socket.emit es cuando creamos un evento
-		// socket.on('addUser', (userId) => {
-		// 	console.log('Adding user:', userId, 'with socket ID:', socket.id);
-		// 	addUser(userId, socket.id);
-		// 	io.emit('getUsers', users);
-		// 	console.log('Updated users list:', users);
-		// });
+		socket.on('addUser', (userId) => {
+			console.log('Adding user:', userId, 'with socket ID:', socket.id);
+			addUser(userId, socket.id);
+			io.emit('getUsers', users);
+			console.log('Updated users list:', users);
+		});
 		// Cuando un usuario se conecta y emite el evento 'addUser'
 		// socket.on('addUser', (userId, user) => {
 		// 	// Verifica si el usuario ya está en la lista para evitar 
