@@ -117,7 +117,7 @@ const socketFunctions = (io) => {
 				})),
 			];
 
-			console.log('simple: ', simplifiedNearbyUsers)
+			// console.log('simple: ', simplifiedNearbyUsers)
             io.emit("getUsers", simplifiedNearbyUsers);
         });
 
