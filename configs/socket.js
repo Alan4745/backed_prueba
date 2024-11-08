@@ -1,3 +1,5 @@
+const { calculateDistance } = require("./funcs/calculateDistance");
+
 let users = [];
 let rooms = [];
 
@@ -52,29 +54,74 @@ const socketFunctions = (io) => {
 
 		//----FIN----
         socket.on("updateLocation", (userId, location) => {
-			// updateUserLocation(user, location);
-			// users = users.map((item) =>
-			// 	item.userId === user._id 
-			// 		? { ...item, location }
-			// 		: item
-			// );
-			const  userIndex = users.findIndex((user) => user.userId == userId);
-			if (userIndex >= 0) {
-				users[userIndex].location =  location;
-				console.log(users)
-			}		
-			// Emitir solo los campos específicos
-			const simplifiedUsers = users.map(user => ({
-				idUser: user.userId,
-				name: user.name,
-				imageAvatar: user.imageAvatar,
-				location: user.location
-			}));
-		
-			io.emit("getUsers", simplifiedUsers); // Emitir a todos los clientes
-		});
+            const userIndex = users.findIndex((user) => user.userId === userId);
+			// console.log('users: ', users.length);
+			// console.log('userIndex: ', userIndex);
+            if (userIndex >= 0) {
+                users[userIndex].location = location;
+                
+                // Calculamos la distancia entre userIndex y otros usuarios
+                const referenceCoords = [location.latitude, location.longitude];
+                const nearbyUsers = users.filter((user) => {
+                    if (user.location && user.userId !== userId) {
+                        const userCoords = [user.location.latitude, user.location.longitude];
+                        const distance = calculateDistance(referenceCoords, userCoords);
+                        return distance <= 50000; // 50 km en metros
+                    }
+                    return false;
+                });
+				// console.log('nearby-users: ', nearbyUsers)
+                const simplifiedNearbyUsers = nearbyUsers.map(user => ({
+					idUser: user.userId,
+                    name: user.name,
+                    imageAvatar: user.imageAvatar,
+                    location: user.location
+                }));
 
-		// ---Inicio---- al momento de que se conecta a un canal se activa la funcion "addUserRoom()"
+                // Emitimos solo los usuarios cercanos
+				// console.log('simple-if', simplifiedNearbyUsers.length)
+                io.emit("getNearbyUsers", simplifiedNearbyUsers); // Emitir a todos los clientes
+            }
+
+            // Emitimos todos los usuarios como antes
+            const referenceCoords = [location.latitude, location.longitude];
+                const nearbyUsers = users.filter((user) => {
+                    if (user.location && user.userId !== userId) {
+                        const userCoords = [user.location.latitude, user.location.longitude];
+                        const distance = calculateDistance(referenceCoords, userCoords);
+                        return distance <= 50000; // 50 km en metros
+                    }
+                    return false;
+                });
+			// console.log('nearby-users: ', nearbyUsers)
+            // Incluimos al usuario que actualizó su ubicación en la lista de usuarios cercanos
+			const simplifiedNearbyUsers = [
+				!users[userIndex]
+				? nearbyUsers.map((user) => ({
+					idUser: user.userId,
+					name: user.name,
+					imageAvatar: user.imageAvatar,
+					location: user.location,
+				}))
+				: {
+					idUser: users[userIndex].userId,
+					name: users[userIndex].name,
+					imageAvatar: users[userIndex].imageAvatar,
+					location: users[userIndex].location,
+				},
+				...nearbyUsers.map((user) => ({
+					idUser: user.userId,
+					name: user.name,
+					imageAvatar: user.imageAvatar,
+					location: user.location,
+				})),
+			];
+
+			console.log('simple: ', simplifiedNearbyUsers)
+            io.emit("getUsers", simplifiedNearbyUsers);
+        });
+
+		// ---Inicio---- al momento de que se conecta a un canal s1e activa la funcion "addUserRoom()"
 		//socket.on es cuando esta esperando un evnto
 		//socket.emit es cuando creamos un evento
 		socket.on('joinRoom', ({ userName, roomName }) => {
