@@ -1,6 +1,48 @@
 const { calculateDistance } = require("./funcs/calculateDistance");
 
-let users = [];
+let users = [
+	
+	{
+		userId: "6621682d71dc32da1a4b3ac0", 
+		socketId: "6621682d71dc32da1a4b3ac0",
+		name: "pablo",
+		imageAvatar: {
+			public_id: "123",
+			secure_url: "https://res.cloudinary.com/dbcusl09w/image/upload/v1714771196/replit/caj4ugqxmkeoeekentzt.png"
+		},
+		location: { latitude: 6.275771445599183, longitude: -75.53383296131432 }
+	},
+	{
+		userId: "66febce4aeefefae9648747d", 
+		socketId: "66febce4aeefefae9648747d",
+		name: "spiterman",
+		imageAvatar: {
+			public_id: "replit/wakulzv3arbnfvfarnlo",
+			secure_url: "https://res.cloudinary.com/dbcusl09w/image/upload/v1727970611/replit/wakulzv3arbnfvfarnlo.jpg"
+		},
+		location: { latitude: 10.23733191836068, longitude: -67.9793962358537 }
+	},
+	{
+		userId: "672916398184e16a0455ec1e", 
+		socketId: "672916398184e16a0455ec1e",
+		name: "Gohan",
+		imageAvatar: {
+			public_id: "replit/d61uahrtfgtzfareysbo",
+			secure_url: "https://res.cloudinary.com/dbcusl09w/image/upload/v1730746137/replit/d61uahrtfgtzfareysbo.jpg"
+		},
+		location: { latitude: 10.289637, longitude: -68.021047 }
+	},
+	{
+		userId: "672913008184e16a0455ebe4", 
+		socketId: "672913008184e16a0455ebe4",
+		name: "Vegeta",
+		imageAvatar: {
+			public_id: "replit/n1he8aa7xlumt7gktwpq",
+			secure_url: "https://res.cloudinary.com/dbcusl09w/image/upload/v1730745155/replit/n1he8aa7xlumt7gktwpq.jpg"
+		},
+		location: { latitude: 10.292150, longitude: -68.029242 }
+	},
+];
 let rooms = [];
 
 
@@ -117,9 +159,43 @@ const socketFunctions = (io) => {
 				})),
 			];
 
-			// console.log('simple: ', simplifiedNearbyUsers)
+			// console.log('simple: ', simplifiedNearbyUsers.length)
             io.emit("getUsers", simplifiedNearbyUsers);
         });
+		//--Inicio---
+		socket.on("usersNearbyLocation", (userId, location) => {
+			const userIndex = users.findIndex((user) => user.userId === userId);
+		
+			if (userIndex >= 0) {
+				users[userIndex].location = location;
+				const referenceCoords = [location.latitude, location.longitude];
+		
+				// Calcular usuarios cercanos dentro de 1.5 km
+				const nearbyUsers = users.filter((user) => {
+					if (user.location && user.userId !== userId) {
+						const userCoords = [user.location.latitude, user.location.longitude];
+						const distance = calculateDistance(referenceCoords, userCoords);
+						return distance <= 1500; // 1.5 km en metros
+					}
+					return false;
+				});
+		
+				// Notificar al usuario actual
+				const numberOfNearbyUsers = nearbyUsers.length;
+				if(numberOfNearbyUsers >=1) {
+					io.to(users[userIndex].socketId).emit(
+						"nearbyUsersMessage",
+						`Tienes ${numberOfNearbyUsers} usuarios cerca de ti, en un radio de 1.5 km`
+					);
+				} else {
+					io.to(users[userIndex].socketId).emit(
+						"nearbyUsersMessage",
+						`No Tienes ningun usuario cercano a tu ubicacion.`
+					);
+				}
+			}
+		})
+		//--Fin---
 
 		// ---Inicio---- al momento de que se conecta a un canal s1e activa la funcion "addUserRoom()"
 		//socket.on es cuando esta esperando un evnto
@@ -146,7 +222,6 @@ const socketFunctions = (io) => {
 		socket.on('ticketCanal', (roomName) => {
 			console.log(`Cliente se ha unido a la habitación ${roomName}`);
 		});
-
 
 		socket.on('ticketCanalEvent', (roomName, message) => {
 			io.to(roomName).emit('checkTicket', message); // Se envía el mensaje a la habitación especificada
