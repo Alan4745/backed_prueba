@@ -70,42 +70,42 @@ const socketFunctions = (io) => {
 		// -----Inicio----- Al momento de que usuario se conecta al servidor se activa el evento "addUser()"
 		//socket.on es cuando esta esperando un evnto
 		//socket.emit es cuando creamos un evento
-		socket.on('addUser', (userId) => {
-			console.log('Adding user:', userId, 'with socket ID:', socket.id);
-			addUser(userId, socket.id);
-			io.emit('getUsers', users);
-			console.log('Updated users list:', users);
-		});
-		// Cuando un usuario se conecta y emite el evento 'addUser'
-		// socket.on('addUser', (userId, user) => {
-		// 	// Verifica si el usuario ya está en la lista para evitar 
-		// 	if (users.length === 0 ) {
-		// 		users.push({ 
-		// 			idUser: userId, 
-		// 			socketId: socket.id,
-		// 			name: user.name,
-		// 			imageAvatar: user.imageAvatar,
-		// 			location: null
-		// 		})
-		// 		console.log(users)
-		// 	}
-		// 	if (!users.some(user => user.idUser === userId)) {
-		// 		// Si el usuario no existe, lo agregamos
-		// 		users.push({ 
-		// 			idUser: userId, 
-		// 			socketId: socket.id,
-		// 			name: user.name,
-		// 			imageAvatar: user.imageAvatar,
-		// 			location: null
-		// 		});
-		// 		console.log(users)
-		// 	} else {
-		// 		// El usuario ya existe, puedes hacer algo aquí, como enviar un mensaje
-		// 		console.log(`User with ID ${userId} already exists.`);
-		// 		// Si deseas emitir algún mensaje a los clientes, puedes hacerlo aquí
-		// 		// io.emit('userExists', { userId }); // ejemplo de emisión
-		// 	}
+		// socket.on('addUser', (userId) => {
+		// 	console.log('Adding user:', userId, 'with socket ID:', socket.id);
+		// 	addUser(userId, socket.id);
+		// 	io.emit('getUsers', users);
+		// 	console.log('Updated users list:', users);
 		// });
+		// Cuando un usuario se conecta y emite el evento 'addUser'
+		socket.on('addUser', (userId, user) => {
+			// Verifica si el usuario ya está en la lista para evitar 
+			if (users.length === 0 ) {
+				users.push({ 
+					idUser: userId, 
+					socketId: socket.id,
+					name: user.name,
+					imageAvatar: user.imageAvatar,
+					location: null
+				})
+				console.log(users)
+			}
+			if (!users.some(user => user.idUser === userId)) {
+				// Si el usuario no existe, lo agregamos
+				users.push({ 
+					idUser: userId, 
+					socketId: socket.id,
+					name: user.name,
+					imageAvatar: user.imageAvatar,
+					location: null
+				});
+				console.log(users)
+			} else {
+				// El usuario ya existe, puedes hacer algo aquí, como enviar un mensaje
+				console.log(`User with ID ${userId} already exists.`);
+				// Si deseas emitir algún mensaje a los clientes, puedes hacerlo aquí
+				// io.emit('userExists', { userId }); // ejemplo de emisión
+			}
+		});
 
         socket.on("updateLocation", (userId, location) => {
 			// updateUserLocation(user, location);
