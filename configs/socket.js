@@ -31,47 +31,20 @@ const socketFunctions = (io) => {
 	// iniciamos la conexion del servidor al cliente en tiempo real
 	io.on('connection', (socket) => {
 		console.log('connected to socket.io');
+		console.log('', socket.id);
+
+
 		// -----Inicio----- Al momento de que usuario se conecta al servidor se activa el evento "addUser()"
 		//socket.on es cuando esta esperando un evnto
 		//socket.emit es cuando creamos un evento
-		// socket.on('addUser', (userId) => {
-		// 	console.log('Adding user:', userId, 'with socket ID:', socket.id);
-		// 	addUser(userId, socket.id);
-		// 	io.emit('getUsers', users);
-		// 	console.log('Updated users list:', users);
-		// });
-		// Cuando un usuario se conecta y emite el evento 'addUser'
-		socket.on('addUser', (userId, user) => {
-			// Verifica si el usuario ya está en la lista para evitar 
-			if (users.length === 0 ) {
-				users.push({ 
-					idUser: userId, 
-					socketId: socket.id,
-					name: user.name,
-					imageAvatar: user.imageAvatar,
-					location: null
-				})
-				console.log(users)
-				io.emit('getUsers', users);
-			}
-			if (!users.some(user => user.idUser === userId)) {
-				// Si el usuario no existe, lo agregamos
-				users.push({ 
-					idUser: userId, 
-					socketId: socket.id,
-					name: user.name,
-					imageAvatar: user.imageAvatar,
-					location: null
-				});
-				io.emit('getUsers', users);
-			} else {
-				// El usuario ya existe, puedes hacer algo aquí, como enviar un mensaje
-				console.log(`User with ID ${userId} already exists.`);
-				// Si deseas emitir algún mensaje a los clientes, puedes hacerlo aquí
-				// io.emit('userExists', { userId }); // ejemplo de emisión
-			}
+		socket.on('addUser', (userId) => {
+			console.log('Adding user:', userId, 'with socket ID:', socket.id);
+			addUser(userId, socket.id);
+			io.emit('getUsers', users);
+			console.log('Updated users list:', users);
 		});
 
+		//----FIN----
         socket.on("updateLocation", (userId, location) => {
 			// updateUserLocation(user, location);
 			// users = users.map((item) =>
@@ -94,8 +67,6 @@ const socketFunctions = (io) => {
 		
 			io.emit("getUsers", simplifiedUsers); // Emitir a todos los clientes
 		});
-
-		//----FIN----
 
 		// ---Inicio---- al momento de que se conecta a un canal se activa la funcion "addUserRoom()"
 		//socket.on es cuando esta esperando un evnto
@@ -179,21 +150,7 @@ const socketFunctions = (io) => {
 			}
 		});
 
-		// Evento para escuchar y transmitir notas
-		// socket.on('note', ({ senderId, receiverId, noteContent, statusNote }) => {
-		// 	const user = getUser(receiverId);
-		// 	if (user) {
-		// 		io.to(user.socketId).emit('getNote', {
-		// 			senderId,
-		// 			receiverId,
-		// 			noteContent,
-		// 			statusNote
-		// 		});
-		// 		console.log(`Nota enviada de ${senderId} a ${receiverId}: ${noteContent}`);
-		// 	} else {
-		// 		console.log('El usuario no está conectado para recibir la nota');
-		// 	}
-		// });
+
 
 		//----FIN----
 
