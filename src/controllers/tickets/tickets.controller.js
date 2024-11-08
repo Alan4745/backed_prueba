@@ -1,9 +1,9 @@
 const { Tickets } = require('../../models/tickets/tickets.model');
 
 const createPerimeterTickets = async (req, res) => {
-    const { amount, type, coordinates, emitterId } = req.body;
-
-    if (!amount || !type || !coordinates || !emitterId) {
+    const { amount, type, coordinates, emitterId, membership, collectionName, price  } = req.body;
+    console.log(req.body)
+    if (!amount || !type || !coordinates || !emitterId || !membership || !collectionName || !price) {
         return res.status(400).json({ message: 'Faltan datos requeridos' });
     }
 
@@ -18,6 +18,10 @@ const createPerimeterTickets = async (req, res) => {
         const newTicket = new Tickets({
             amountCurrent: amount,
             amountInitial: amount,
+            collectionName: collectionName,
+            membership: membership,
+            price: price,
+            amount: amount,
             location: {
                 type,
                 coordinates: type === 'Polygon' ? coordinates : coordinates
