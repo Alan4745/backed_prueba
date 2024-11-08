@@ -65,8 +65,6 @@ const socketFunctions = (io) => {
 	// iniciamos la conexion del servidor al cliente en tiempo real
 	io.on('connection', (socket) => {
 		console.log('connected to socket.io');
-		console.log('', socket.id);
-
 		// -----Inicio----- Al momento de que usuario se conecta al servidor se activa el evento "addUser()"
 		//socket.on es cuando esta esperando un evnto
 		//socket.emit es cuando creamos un evento
@@ -87,7 +85,7 @@ const socketFunctions = (io) => {
 					imageAvatar: user.imageAvatar,
 					location: null
 				})
-				console.log(users)
+				io.emit('getUsers', users);
 			}
 			if (!users.some(user => user.idUser === userId)) {
 				// Si el usuario no existe, lo agregamos
@@ -98,7 +96,7 @@ const socketFunctions = (io) => {
 					imageAvatar: user.imageAvatar,
 					location: null
 				});
-				console.log(users)
+				io.emit('getUsers', users);
 			} else {
 				// El usuario ya existe, puedes hacer algo aquí, como enviar un mensaje
 				console.log(`User with ID ${userId} already exists.`);
@@ -214,20 +212,20 @@ const socketFunctions = (io) => {
 		});
 
 		// Evento para escuchar y transmitir notas
-		socket.on('note', ({ senderId, receiverId, noteContent, statusNote }) => {
-			const user = getUser(receiverId);
-			if (user) {
-				io.to(user.socketId).emit('getNote', {
-					senderId,
-					receiverId,
-					noteContent,
-					statusNote
-				});
-				console.log(`Nota enviada de ${senderId} a ${receiverId}: ${noteContent}`);
-			} else {
-				console.log('El usuario no está conectado para recibir la nota');
-			}
-		});
+		// socket.on('note', ({ senderId, receiverId, noteContent, statusNote }) => {
+		// 	const user = getUser(receiverId);
+		// 	if (user) {
+		// 		io.to(user.socketId).emit('getNote', {
+		// 			senderId,
+		// 			receiverId,
+		// 			noteContent,
+		// 			statusNote
+		// 		});
+		// 		console.log(`Nota enviada de ${senderId} a ${receiverId}: ${noteContent}`);
+		// 	} else {
+		// 		console.log('El usuario no está conectado para recibir la nota');
+		// 	}
+		// });
 
 		//----FIN----
 
