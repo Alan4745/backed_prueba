@@ -1,44 +1,10 @@
 let users = [];
 let rooms = [];
 
+
 const addUser = (userId, socketId) => {
-    // Busca si el usuario ya existe en el array 'users'
-    const existingUser = users.find(user => user.userId === userId);
-    
-    if (existingUser) {
-        // Si el usuario ya existe, actualizamos solo su socketId
-        existingUser.socketId = socketId;
-    } else {
-        // Si el usuario no existe, lo añadimos al array
-        users.push({ userId, socketId, location: null });
-    }
-};
-
-// const addUser = (userId, socketId) => {
-//     // Verificamos si el usuario ya existe en el array 'users' basado en 'userId'
-// 	const existingUser = users.find(user => user.userId === userId);
-// 	if (existingUser) {
-// 		// Si el usuario existe, actualizamos su socketId
-// 		existingUser.socketId = socketId;
-// 	}
-//     const existingUserIndex = users.findIndex(user => user.userId === userId);
-//     // const existingIdUserIndex = users.findIndex(user => user.idUser === idUser);
-
-//     if (existingUserIndex !== -1) {
-//         // Si el usuario ya existe, reemplazamos el antiguo con el nuevo
-//         users[existingUserIndex] = { userId, socketId, location: null };
-//     } else {
-//         // Si no existe, lo añadimos al array
-//         users.push({ userId, socketId, location: null });
-//     }
-// };
-
-const updateUserLocation = (user, location) => {
-    users = users.map((item) =>
-        item.userId === user._id 
-            ? { ...item, location }
-            : item
-    );
+	!users.some((user) => user.userId === userId) &&
+		users.push({ userId, socketId });
 };
 
 const removeUser = (socketId) => {
@@ -85,6 +51,7 @@ const socketFunctions = (io) => {
 					imageAvatar: user.imageAvatar,
 					location: null
 				})
+				console.log(users)
 				io.emit('getUsers', users);
 			}
 			if (!users.some(user => user.idUser === userId)) {
@@ -127,7 +94,7 @@ const socketFunctions = (io) => {
 		
 			io.emit("getUsers", simplifiedUsers); // Emitir a todos los clientes
 		});
-		
+
 		//----FIN----
 
 		// ---Inicio---- al momento de que se conecta a un canal se activa la funcion "addUserRoom()"
@@ -139,6 +106,7 @@ const socketFunctions = (io) => {
 
 			// Verificamos si la sala ha sido correctamente agregada
 			const room = getRoom(socket.id);
+
 
 			if (room && room.roomName) {
 				// socket.broadcast es para transmitir un evento al canal que está activo mediante su nombre
