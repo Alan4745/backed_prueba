@@ -54,7 +54,9 @@ async function RegistrarData(req, res) {
       });
     }
 
-    const existingData = await AdrenalineDataModel.findOne({ email: email });
+    const existingData = await AdrenalineDataModel.findOne({
+      $or: [{ email: email }, { dpi: dpi }],
+    });
 
     if (existingData) {
       if (existingData.winner) {
