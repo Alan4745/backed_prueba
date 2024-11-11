@@ -1,316 +1,322 @@
 const { calculateDistance } = require("./funcs/calculateDistance");
 
 let users = [
-	
-	{
-		userId: "6621682d71dc32da1a4b3ac0", 
-		socketId: "6621682d71dc32da1a4b3ac0",
-		name: "pablo",
-		imageAvatar: {
-			public_id: "123",
-			secure_url: "https://res.cloudinary.com/dbcusl09w/image/upload/v1714771196/replit/caj4ugqxmkeoeekentzt.png"
-		},
-		location: { latitude: 6.275771445599183, longitude: -75.53383296131432 }
-	},
-	{
-		userId: "66febce4aeefefae9648747d", 
-		socketId: "66febce4aeefefae9648747d",
-		name: "spiterman",
-		imageAvatar: {
-			public_id: "replit/wakulzv3arbnfvfarnlo",
-			secure_url: "https://res.cloudinary.com/dbcusl09w/image/upload/v1727970611/replit/wakulzv3arbnfvfarnlo.jpg"
-		},
-		location: { latitude: 10.23733191836068, longitude: -67.9793962358537 }
-	},
-	{
-		userId: "672916398184e16a0455ec1e", 
-		socketId: "672916398184e16a0455ec1e",
-		name: "Gohan",
-		imageAvatar: {
-			public_id: "replit/d61uahrtfgtzfareysbo",
-			secure_url: "https://res.cloudinary.com/dbcusl09w/image/upload/v1730746137/replit/d61uahrtfgtzfareysbo.jpg"
-		},
-		location: { latitude: 10.289637, longitude: -68.021047 }
-	},
-	{
-		userId: "672913008184e16a0455ebe4", 
-		socketId: "672913008184e16a0455ebe4",
-		name: "Vegeta",
-		imageAvatar: {
-			public_id: "replit/n1he8aa7xlumt7gktwpq",
-			secure_url: "https://res.cloudinary.com/dbcusl09w/image/upload/v1730745155/replit/n1he8aa7xlumt7gktwpq.jpg"
-		},
-		location: { latitude: 10.292150, longitude: -68.029242 }
-	},
+  {
+    userId: "6621682d71dc32da1a4b3ac0",
+    socketId: "6621682d71dc32da1a4b3ac0",
+    name: "pablo",
+    imageAvatar: {
+      public_id: "123",
+      secure_url:
+        "https://res.cloudinary.com/dbcusl09w/image/upload/v1714771196/replit/caj4ugqxmkeoeekentzt.png",
+    },
+    location: { latitude: 6.275771445599183, longitude: -75.53383296131432 },
+  },
+  {
+    userId: "66febce4aeefefae9648747d",
+    socketId: "66febce4aeefefae9648747d",
+    name: "spiterman",
+    imageAvatar: {
+      public_id: "replit/wakulzv3arbnfvfarnlo",
+      secure_url:
+        "https://res.cloudinary.com/dbcusl09w/image/upload/v1727970611/replit/wakulzv3arbnfvfarnlo.jpg",
+    },
+    location: { latitude: 14.600519, longitude: -90.51707 },
+  },
+  {
+    userId: "672916398184e16a0455ec1e",
+    socketId: "672916398184e16a0455ec1e",
+    name: "Gohan",
+    imageAvatar: {
+      public_id: "replit/d61uahrtfgtzfareysbo",
+      secure_url:
+        "https://res.cloudinary.com/dbcusl09w/image/upload/v1730746137/replit/d61uahrtfgtzfareysbo.jpg",
+    },
+    location: { latitude: 10.289637, longitude: -68.021047 },
+  },
+  {
+    userId: "672913008184e16a0455ebe4",
+    socketId: "672913008184e16a0455ebe4",
+    name: "Vegeta",
+    imageAvatar: {
+      public_id: "replit/n1he8aa7xlumt7gktwpq",
+      secure_url:
+        "https://res.cloudinary.com/dbcusl09w/image/upload/v1730745155/replit/n1he8aa7xlumt7gktwpq.jpg",
+    },
+    location: { latitude: 10.29215, longitude: -68.029242 },
+  },
 ];
 let rooms = [];
 
-
 const addUser = (userId, socketId, user) => {
-	!users.some((user) => user.userId === userId) &&
-		users.push({ 
-			userId, 
-			socketId,
-			name: user.name,
-			imageAvatar: user.imageAvatar,
-			location: null
-		});
+  !users.some((user) => user.userId === userId) &&
+    users.push({
+      userId,
+      socketId,
+      name: user.name,
+      imageAvatar: user.imageAvatar,
+      location: null,
+    });
 };
 
 const removeUser = (socketId) => {
-	users = users.filter((user) => user.socketId !== socketId);
+  users = users.filter((user) => user.socketId !== socketId);
 };
 
 const addUserRoom = (socketId, userName, roomName) => {
-	!rooms.some((room) => room.userName === userName) &&
-		rooms.push({ socketId, userName, roomName });
+  !rooms.some((room) => room.userName === userName) &&
+    rooms.push({ socketId, userName, roomName });
 };
 
 const removeUserRoom = (socketId) => {
-	rooms = rooms.filter((room) => room.socketId !== socketId);
+  rooms = rooms.filter((room) => room.socketId !== socketId);
 };
 
 // eslint-disable-next-line no-unused-vars
 const getUser = (userId) => {
-	return users.find(user => user.userId === userId);
+  return users.find((user) => user.userId === userId);
 };
 
 const getRoom = (socketId) => rooms.find((room) => room.socketId === socketId);
 
 const socketFunctions = (io) => {
-	// iniciamos la conexion del servidor al cliente en tiempo real
-	io.on('connection', (socket) => {
-		console.log('connected to socket.io');
-		console.log('', socket.id);
+  // iniciamos la conexion del servidor al cliente en tiempo real
+  io.on("connection", (socket) => {
+    console.log("connected to socket.io");
+    console.log("", socket.id);
 
+    // -----Inicio----- Al momento de que usuario se conecta al servidor se activa el evento "addUser()"
+    //socket.on es cuando esta esperando un evnto
+    //socket.emit es cuando creamos un evento
+    socket.on("addUser", (userId, user) => {
+      console.log("Adding user:", userId, "with socket ID:", socket.id);
+      addUser(userId, socket.id, user);
+      io.emit("getUsers", users);
+      // console.log('Updated users list:', users);
+    });
 
-		// -----Inicio----- Al momento de que usuario se conecta al servidor se activa el evento "addUser()"
-		//socket.on es cuando esta esperando un evnto
-		//socket.emit es cuando creamos un evento
-		socket.on('addUser', (userId, user) => {
-			console.log('Adding user:', userId, 'with socket ID:', socket.id);
-			addUser(userId, socket.id, user);
-			io.emit('getUsers', users);
-			// console.log('Updated users list:', users);
-		});
+    //----FIN----
+    socket.on("updateLocation", (userId, location) => {
+      const userIndex = users.findIndex((user) => user.userId === userId);
+      // console.log('users: ', users.length);
+      // console.log('userIndex: ', userIndex);
+      if (userIndex >= 0) {
+        users[userIndex].location = location;
 
-		//----FIN----
-        socket.on("updateLocation", (userId, location) => {
-            const userIndex = users.findIndex((user) => user.userId === userId);
-			// console.log('users: ', users.length);
-			// console.log('userIndex: ', userIndex);
-            if (userIndex >= 0) {
-                users[userIndex].location = location;
-                
-                // Calculamos la distancia entre userIndex y otros usuarios
-                const referenceCoords = [location.latitude, location.longitude];
-                const nearbyUsers = users.filter((user) => {
-                    if (user.location && user.userId !== userId) {
-                        const userCoords = [user.location.latitude, user.location.longitude];
-                        const distance = calculateDistance(referenceCoords, userCoords);
-                        return distance <= 50000; // 50 km en metros
-                    }
-                    return false;
-                });
-				// console.log('nearby-users: ', nearbyUsers)
-                const simplifiedNearbyUsers = nearbyUsers.map(user => ({
-					idUser: user.userId,
-                    name: user.name,
-                    imageAvatar: user.imageAvatar,
-                    location: user.location
-                }));
-
-                // Emitimos solo los usuarios cercanos
-				// console.log('simple-if', simplifiedNearbyUsers.length)
-                io.emit("getNearbyUsers", simplifiedNearbyUsers); // Emitir a todos los clientes
-            }
-
-            // Emitimos todos los usuarios como antes
-            const referenceCoords = [location.latitude, location.longitude];
-                const nearbyUsers = users.filter((user) => {
-                    if (user.location && user.userId !== userId) {
-                        const userCoords = [user.location.latitude, user.location.longitude];
-                        const distance = calculateDistance(referenceCoords, userCoords);
-                        return distance <= 50000; // 50 km en metros
-                    }
-                    return false;
-                });
-			// console.log('nearby-users: ', nearbyUsers)
-            // Incluimos al usuario que actualizó su ubicación en la lista de usuarios cercanos
-			const simplifiedNearbyUsers = [
-				!users[userIndex]
-				? nearbyUsers.map((user) => ({
-					idUser: user.userId,
-					name: user.name,
-					imageAvatar: user.imageAvatar,
-					location: user.location,
-				}))
-				: {
-					idUser: users[userIndex].userId,
-					name: users[userIndex].name,
-					imageAvatar: users[userIndex].imageAvatar,
-					location: users[userIndex].location,
-				},
-				...nearbyUsers.map((user) => ({
-					idUser: user.userId,
-					name: user.name,
-					imageAvatar: user.imageAvatar,
-					location: user.location,
-				})),
-			];
-
-			// console.log('simple: ', simplifiedNearbyUsers.length)
-            io.emit("getUsers", simplifiedNearbyUsers);
+        // Calculamos la distancia entre userIndex y otros usuarios
+        const referenceCoords = [location.latitude, location.longitude];
+        const nearbyUsers = users.filter((user) => {
+          if (user.location && user.userId !== userId) {
+            const userCoords = [
+              user.location.latitude,
+              user.location.longitude,
+            ];
+            const distance = calculateDistance(referenceCoords, userCoords);
+            return distance <= 50000; // 50 km en metros
+          }
+          return false;
         });
-		//--Inicio---
-		socket.on("usersNearbyLocation", (userId, location) => {
-			const userIndex = users.findIndex((user) => user.userId === userId);
-		
-			if (userIndex >= 0) {
-				users[userIndex].location = location;
-				const referenceCoords = [location.latitude, location.longitude];
-		
-				// Calcular usuarios cercanos dentro de 1.5 km
-				const nearbyUsers = users.filter((user) => {
-					if (user.location && user.userId !== userId) {
-						const userCoords = [user.location.latitude, user.location.longitude];
-						const distance = calculateDistance(referenceCoords, userCoords);
-						return distance <= 1500; // 1.5 km en metros
-					}
-					return false;
-				});
-		
-				// Notificar al usuario actual
-				const numberOfNearbyUsers = nearbyUsers.length;
-				if(numberOfNearbyUsers >=1) {
-					io.to(users[userIndex].socketId).emit(
-						"nearbyUsersMessage",
-						`Tienes ${numberOfNearbyUsers} usuarios cerca de ti, en un radio de 1.5 km`
-					);
-				} else {
-					io.to(users[userIndex].socketId).emit(
-						"nearbyUsersMessage",
-						`No Tienes ningun usuario cercano a tu ubicacion.`
-					);
-				}
-			}
-		})
-		//--Fin---
+        // console.log('nearby-users: ', nearbyUsers)
+        const simplifiedNearbyUsers = nearbyUsers.map((user) => ({
+          idUser: user.userId,
+          name: user.name,
+          imageAvatar: user.imageAvatar,
+          location: user.location,
+        }));
 
-		// ---Inicio---- al momento de que se conecta a un canal s1e activa la funcion "addUserRoom()"
-		//socket.on es cuando esta esperando un evnto
-		//socket.emit es cuando creamos un evento
-		socket.on('joinRoom', ({ userName, roomName }) => {
-			// Iniciamos la función "addUserRoom" para agregar el nombre del canal al array "ROOMS"
-			addUserRoom(socket.id, userName, roomName);
+        // Emitimos solo los usuarios cercanos
+        // console.log('simple-if', simplifiedNearbyUsers.length)
+        io.emit("getNearbyUsers", simplifiedNearbyUsers); // Emitir a todos los clientes
+      }
 
-			// Verificamos si la sala ha sido correctamente agregada
-			const room = getRoom(socket.id);
+      // Emitimos todos los usuarios como antes
+      const referenceCoords = [location.latitude, location.longitude];
+      const nearbyUsers = users.filter((user) => {
+        if (user.location && user.userId !== userId) {
+          const userCoords = [user.location.latitude, user.location.longitude];
+          const distance = calculateDistance(referenceCoords, userCoords);
+          return distance <= 50000; // 50 km en metros
+        }
+        return false;
+      });
+      // console.log('nearby-users: ', nearbyUsers)
+      // Incluimos al usuario que actualizó su ubicación en la lista de usuarios cercanos
+      const simplifiedNearbyUsers = [
+        !users[userIndex]
+          ? nearbyUsers.map((user) => ({
+              idUser: user.userId,
+              name: user.name,
+              imageAvatar: user.imageAvatar,
+              location: user.location,
+            }))
+          : {
+              idUser: users[userIndex].userId,
+              name: users[userIndex].name,
+              imageAvatar: users[userIndex].imageAvatar,
+              location: users[userIndex].location,
+            },
+        ...nearbyUsers.map((user) => ({
+          idUser: user.userId,
+          name: user.name,
+          imageAvatar: user.imageAvatar,
+          location: user.location,
+        })),
+      ];
 
+      // console.log('simple: ', simplifiedNearbyUsers.length)
+      io.emit("getUsers", simplifiedNearbyUsers);
+    });
+    //--Inicio---
+    socket.on("usersNearbyLocation", (userId, location) => {
+      const userIndex = users.findIndex((user) => user.userId === userId);
 
-			if (room && room.roomName) {
-				// socket.broadcast es para transmitir un evento al canal que está activo mediante su nombre
-				socket.broadcast
-					.to(room.roomName)
-					.emit('message', `${room.userName} has joined the chat`);
-			} else {
-				console.error(`Room not found for socket id: ${socket.id}`);
-			}
-		});
+      if (userIndex >= 0) {
+        users[userIndex].location = location;
+        const referenceCoords = [location.latitude, location.longitude];
 
+        // Calcular usuarios cercanos dentro de 1.5 km
+        const nearbyUsers = users.filter((user) => {
+          if (user.location && user.userId !== userId) {
+            const userCoords = [
+              user.location.latitude,
+              user.location.longitude,
+            ];
+            const distance = calculateDistance(referenceCoords, userCoords);
+            return distance <= 1500; // 1.5 km en metros
+          }
+          return false;
+        });
 
-		socket.on('ticketCanal', (roomName) => {
-			console.log(`Cliente se ha unido a la habitación ${roomName}`);
-		});
+        // Notificar al usuario actual
+        const numberOfNearbyUsers = nearbyUsers.length;
+        if (numberOfNearbyUsers >= 1) {
+          io.to(users[userIndex].socketId).emit(
+            "nearbyUsersMessage",
+            `Tienes ${numberOfNearbyUsers} usuarios cerca de ti, en un radio de 1.5 km`
+          );
+        } else {
+          io.to(users[userIndex].socketId).emit(
+            "nearbyUsersMessage",
+            `No Tienes ningun usuario cercano a tu ubicacion.`
+          );
+        }
+      }
+    });
+    //--Fin---
 
-		socket.on('ticketCanalEvent', (roomName, message) => {
-			io.to(roomName).emit('checkTicket', message); // Se envía el mensaje a la habitación especificada
-		});
-		//----FIN----
+    // ---Inicio---- al momento de que se conecta a un canal s1e activa la funcion "addUserRoom()"
+    //socket.on es cuando esta esperando un evnto
+    //socket.emit es cuando creamos un evento
+    socket.on("joinRoom", ({ userName, roomName }) => {
+      // Iniciamos la función "addUserRoom" para agregar el nombre del canal al array "ROOMS"
+      addUserRoom(socket.id, userName, roomName);
 
-		//----INICIO---- de la evento "PING PONG"
-		socket.on('ping', (message) => {
-			console.log('Mensaje recibido:', message);
-			// Devolver el mismo mensaje al cliente con 'ping' y 'pong' concatenados
-			const responseMessage = 'pong';
-			socket.emit('pong', responseMessage);
-		});
+      // Verificamos si la sala ha sido correctamente agregada
+      const room = getRoom(socket.id);
 
-		//----FIN----
+      if (room && room.roomName) {
+        // socket.broadcast es para transmitir un evento al canal que está activo mediante su nombre
+        socket.broadcast
+          .to(room.roomName)
+          .emit("message", `${room.userName} has joined the chat`);
+      } else {
+        console.error(`Room not found for socket id: ${socket.id}`);
+      }
+    });
 
-		//----INICIO---- evento de enviar mensajes del canal
-		socket.on('sendMessageChannel', ({ senderId, text }) => {
-			//verificamos el canales para encotrar el nombre del canal
-			const room = getRoom(socket.id);
+    socket.on("ticketCanal", (roomName) => {
+      console.log(`Cliente se ha unido a la habitación ${roomName}`);
+    });
 
-			//io.to es a donde va dirigido el mensaje
-			// retornams los datos del mensaje
-			io.to(room.roomName).emit('messageChannel', {
-				senderId,
-				text,
-				roomName: room.roomName,
-				name: room.userName,
-			});
-		});
-		//----FIN----
+    socket.on("ticketCanalEvent", (roomName, message) => {
+      io.to(roomName).emit("checkTicket", message); // Se envía el mensaje a la habitación especificada
+    });
+    //----FIN----
 
-		//----INICIO---- evento de enviar mensajes Privados
-		socket.on('sendMessage', ({ senderId, receiverId, text, imageAvatar, username }) => {
-			console.log('Sender ID:', senderId);
-			console.log('Receiver ID:', receiverId);
+    //----INICIO---- de la evento "PING PONG"
+    socket.on("ping", (message) => {
+      console.log("Mensaje recibido:", message);
+      // Devolver el mismo mensaje al cliente con 'ping' y 'pong' concatenados
+      const responseMessage = "pong";
+      socket.emit("pong", responseMessage);
+    });
 
-			// Buscamos al usuario receptor
-			const user = getUser(receiverId);
+    //----FIN----
 
-			if (!user) {
-				// El usuario está desconectado
-				console.log('El usuario no está conectado');
-			} else {
-				// Enviamos el mensaje al socket del usuario receptor
-				io.to(user.socketId).emit('getMessage', {
-					senderId,
-					text,
-					receiverId,
-					imageAvatar,
-					username
-				});
-				console.log('Mensaje enviado a', receiverId);
-			}
-		});
+    //----INICIO---- evento de enviar mensajes del canal
+    socket.on("sendMessageChannel", ({ senderId, text }) => {
+      //verificamos el canales para encotrar el nombre del canal
+      const room = getRoom(socket.id);
 
+      //io.to es a donde va dirigido el mensaje
+      // retornams los datos del mensaje
+      io.to(room.roomName).emit("messageChannel", {
+        senderId,
+        text,
+        roomName: room.roomName,
+        name: room.userName,
+      });
+    });
+    //----FIN----
 
+    //----INICIO---- evento de enviar mensajes Privados
+    socket.on(
+      "sendMessage",
+      ({ senderId, receiverId, text, imageAvatar, username }) => {
+        console.log("Sender ID:", senderId);
+        console.log("Receiver ID:", receiverId);
 
-		//----FIN----
+        // Buscamos al usuario receptor
+        const user = getUser(receiverId);
 
-		//---- INICIO ---- evento de desconectar el socket
-		socket.on('disconnect', () => {
-			// buscamos el socket del canal para poderlos desconectar del servidor
-			const room = getRoom(socket.id);
-			// si es un usuario usara esta funcion para desconetar al uusario del servidor
-			removeUser(socket.id);
-			// verificamos si el canal esta activo aun
-			if (room) {
-				//emitimos el evento al canal para decir que un usuario salio del chat del canal
-				io.to(room.roomName).emit(
-					'message',
-					`${room.userName} has left the chat`
-				);
-			}
+        if (!user) {
+          // El usuario está desconectado
+          console.log("El usuario no está conectado");
+        } else {
+          // Enviamos el mensaje al socket del usuario receptor
+          io.to(user.socketId).emit("getMessage", {
+            senderId,
+            text,
+            receiverId,
+            imageAvatar,
+            username,
+          });
+          console.log("Mensaje enviado a", receiverId);
+        }
+      }
+    );
 
-			console.log(`a user Discinnected!${socket.id}`);
-			//aqui removemos el socket del canal si que esta activo
-			removeUserRoom(socket.id);
-			//verificamos si hay aun usuario
-			io.emit('getUsers', users);
-			console.log(users);
-			console.log(rooms);
+    //----FIN----
 
-			//aclaracion aun falta mucho validaciones para ahorrar recursos del servi dor
-			//el chat se puede trabajar como un servicio aparte para poder solo el servidor principal de la app libre de cargas inicesarias
-		});
-	});
+    //---- INICIO ---- evento de desconectar el socket
+    socket.on("disconnect", () => {
+      // buscamos el socket del canal para poderlos desconectar del servidor
+      const room = getRoom(socket.id);
+      // si es un usuario usara esta funcion para desconetar al uusario del servidor
+      removeUser(socket.id);
+      // verificamos si el canal esta activo aun
+      if (room) {
+        //emitimos el evento al canal para decir que un usuario salio del chat del canal
+        io.to(room.roomName).emit(
+          "message",
+          `${room.userName} has left the chat`
+        );
+      }
 
-	//-----------------"Fin" de La funciones del Chat en vivo-----------------------------//
+      console.log(`a user Discinnected!${socket.id}`);
+      //aqui removemos el socket del canal si que esta activo
+      removeUserRoom(socket.id);
+      //verificamos si hay aun usuario
+      io.emit("getUsers", users);
+      console.log(users);
+      console.log(rooms);
+
+      //aclaracion aun falta mucho validaciones para ahorrar recursos del servi dor
+      //el chat se puede trabajar como un servicio aparte para poder solo el servidor principal de la app libre de cargas inicesarias
+    });
+  });
+
+  //-----------------"Fin" de La funciones del Chat en vivo-----------------------------//
 };
 
 module.exports = socketFunctions;
