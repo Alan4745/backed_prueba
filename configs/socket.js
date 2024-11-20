@@ -1,28 +1,28 @@
 const { calculateDistance } = require("./funcs/calculateDistance");
 
 let users = [
-  {
-    userId: "6621682d71dc32da1a4b3ac0",
-    socketId: "6621682d71dc32da1a4b3ac0",
-    name: "pablo",
-    imageAvatar: {
-      public_id: "123",
-      secure_url:
-        "https://res.cloudinary.com/dbcusl09w/image/upload/v1714771196/replit/caj4ugqxmkeoeekentzt.png",
-    },
-    location: { latitude: 6.275771445599183, longitude: -75.53383296131432 },
-  },
-  {
-    userId: "66febce4aeefefae9648747d",
-    socketId: "66febce4aeefefae9648747d",
-    name: "spiterman",
-    imageAvatar: {
-      public_id: "replit/wakulzv3arbnfvfarnlo",
-      secure_url:
-        "https://res.cloudinary.com/dbcusl09w/image/upload/v1727970611/replit/wakulzv3arbnfvfarnlo.jpg",
-    },
-    location: { latitude: 14.600519, longitude: -90.51707 },
-  },
+  // {
+  //   userId: "6621682d71dc32da1a4b3ac0",
+  //   socketId: "6621682d71dc32da1a4b3ac0",
+  //   name: "pablo",
+  //   imageAvatar: {
+  //     public_id: "123",
+  //     secure_url:
+  //       "https://res.cloudinary.com/dbcusl09w/image/upload/v1714771196/replit/caj4ugqxmkeoeekentzt.png",
+  //   },
+  //   location: { latitude: 6.275771445599183, longitude: -75.53383296131432 },
+  // },
+  // {
+  //   userId: "66febce4aeefefae9648747d",
+  //   socketId: "66febce4aeefefae9648747d",
+  //   name: "spiterman",
+  //   imageAvatar: {
+  //     public_id: "replit/wakulzv3arbnfvfarnlo",
+  //     secure_url:
+  //       "https://res.cloudinary.com/dbcusl09w/image/upload/v1727970611/replit/wakulzv3arbnfvfarnlo.jpg",
+  //   },
+  //   location: { latitude: 14.600519, longitude: -90.51707 },
+  // },
   {
     userId: "672916398184e16a0455ec1e",
     socketId: "672916398184e16a0455ec1e",
