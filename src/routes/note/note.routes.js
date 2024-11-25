@@ -4,6 +4,7 @@ const {
   createNewNote,
   toggleLikeNote,
   addCommentToNote,
+  toggleSaveNote,
   getAllNotes,
   getSentNotesByUser,
   getReceivedNotesByUser,
@@ -25,7 +26,7 @@ api.get(
 );
 api.post("/createNewNote", [md_autenticacion.Auth], createNewNote);
 api.post("/toggleLikeNote", [md_autenticacion.Auth], toggleLikeNote);
-api.post("/toggleLikeNote", [md_autenticacion.Auth], toggleLikeNote);
 api.post("/addCommentToNote", [md_autenticacion.Auth], addCommentToNote);
+api.post("/toggleSave", toggleSaveNote);
 
 module.exports = api;
