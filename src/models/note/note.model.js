@@ -1,6 +1,25 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
+const commentSchema = new Schema({
+  userId: {
+    type: String,
+    required: true,
+  },
+  text: {
+    type: String,
+    required: true,
+  },
+  date: {
+    type: String,
+    required: true,
+    default: "",
+  },
+  rating: {
+    type: Number,
+  },
+});
+
 const noteSchema = new Schema({
   senderId: {
     type: Schema.Types.ObjectId, // referencia al usuario remitente
@@ -25,6 +44,7 @@ const noteSchema = new Schema({
     ],
     default: [],
   },
+  comments: { type: [commentSchema], default: [] },
   noteContent: {
     type: String,
     required: true,
