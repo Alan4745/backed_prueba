@@ -58,6 +58,10 @@ const noteSchema = new Schema({
     type: [Number], // Array de números para coordenadas
     required: true,
   },
+  saveStatus: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const Note = mongoose.model("Note", noteSchema);
