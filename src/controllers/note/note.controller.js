@@ -118,6 +118,39 @@ const addCommentToNote = async (req, res) => {
   }
 };
 
+const toggleSaveNote = async (req, res) => {
+  try {
+    const { userId, noteId } = req.body; // ID del usuario que intenta guardar/desguardar la nota
+
+    // Verificar si la nota existe
+    const note = await Note.findById(noteId);
+    if (!note) {
+      return res.status(404).json({ message: "Nota no encontrada" });
+    }
+
+    // Verificar si el usuario es el receptor de la nota
+    if (note.reciverId.toString() !== userId) {
+      return res
+        .status(403)
+        .json({ message: "No tienes permiso para guardar esta nota" });
+    }
+
+    // Alternar el estado de "save"
+    note.saveStatus = !note.saveStatus;
+    await note.save();
+
+    res.status(200).json({
+      message: `Nota ${note.save ? "guardada" : "desguardada"} con éxito`,
+      note,
+    });
+  } catch (error) {
+    console.error("Error al alternar el estado de guardado:", error);
+    res
+      .status(500)
+      .json({ message: "Error al alternar el estado de guardado", error });
+  }
+};
+
 // Obtener todas las notas con información del remitente y receptor
 const getAllNotes = async (req, res) => {
   try {
@@ -179,6 +212,7 @@ const getReceivedNotesByUser = async (req, res) => {
 module.exports = {
   createNewNote,
   toggleLikeNote,
+  toggleSaveNote,
   addCommentToNote,
   getAllNotes,
   getSentNotesByUser,
