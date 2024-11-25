@@ -3,6 +3,7 @@ const md_autenticacion = require("../../middlewares/authentication.js");
 const {
   createNewNote,
   toggleLikeNote,
+  addCommentToNote,
   getAllNotes,
   getSentNotesByUser,
   getReceivedNotesByUser,
@@ -24,5 +25,7 @@ api.get(
 );
 api.post("/createNewNote", [md_autenticacion.Auth], createNewNote);
 api.post("/toggleLikeNote", [md_autenticacion.Auth], toggleLikeNote);
+api.post("/toggleLikeNote", [md_autenticacion.Auth], toggleLikeNote);
+api.post("/addCommentToNote", [md_autenticacion.Auth], addCommentToNote);
 
 module.exports = api;
