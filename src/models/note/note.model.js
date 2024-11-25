@@ -17,6 +17,14 @@ const noteSchema = new Schema({
     enum: ["normal", "ar"],
     required: true,
   },
+  likes: {
+    type: [
+      {
+        userId: { type: String, required: true },
+      },
+    ],
+    default: [],
+  },
   noteContent: {
     type: String,
     required: true,
