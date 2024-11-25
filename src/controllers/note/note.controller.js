@@ -89,6 +89,35 @@ const toggleLikeNote = async (req, res) => {
   }
 };
 
+const addCommentToNote = async (req, res) => {
+  try {
+    const { userId, noteId, text, rating } = req.body; // Datos del comentario
+
+    // Verificar si la nota existe
+    const note = await Note.findById(noteId);
+    if (!note) {
+      return res.status(404).json({ message: "Nota no encontrada" });
+    }
+
+    // Crear un nuevo comentario
+    const newComment = {
+      userId,
+      text,
+      date: new Date().toISOString(), // Fecha actual
+      rating, // Valoración opcional
+    };
+
+    // Agregar el comentario a la nota
+    note.comments.push(newComment);
+    await note.save();
+
+    res.status(201).json({ message: "Comentario agregado con éxito", note });
+  } catch (error) {
+    console.error("Error al agregar un comentario a la nota:", error);
+    res.status(500).json({ message: "Error al agregar el comentario", error });
+  }
+};
+
 // Obtener todas las notas con información del remitente y receptor
 const getAllNotes = async (req, res) => {
   try {
@@ -150,6 +179,7 @@ const getReceivedNotesByUser = async (req, res) => {
 module.exports = {
   createNewNote,
   toggleLikeNote,
+  addCommentToNote,
   getAllNotes,
   getSentNotesByUser,
   getReceivedNotesByUser,
