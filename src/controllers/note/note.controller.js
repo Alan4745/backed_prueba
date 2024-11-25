@@ -57,6 +57,38 @@ const applyAnonymity = (notes) => {
   });
 };
 
+const toggleLikeNote = async (req, res) => {
+  try {
+    const { userId, noteId } = req.body; // ID del usuario
+
+    // Verificar si la nota existe
+    const note = await Note.findById(noteId);
+    if (!note) {
+      return res.status(404).json({ message: "Nota no encontrada" });
+    }
+
+    // Verificar si el usuario ya dio "like"
+    const likeIndex = note.likes.findIndex((like) => like.userId === userId);
+
+    if (likeIndex !== -1) {
+      // Si ya dio "like", eliminar el "like"
+      note.likes.splice(likeIndex, 1);
+      await note.save();
+      return res
+        .status(200)
+        .json({ message: "Like eliminado con éxito", note });
+    }
+
+    // Si no dio "like", agregar el "like"
+    note.likes.push({ userId });
+    await note.save();
+    res.status(200).json({ message: "Like agregado con éxito", note });
+  } catch (error) {
+    console.error("Error al alternar 'like' en una nota:", error);
+    res.status(500).json({ message: "Error al alternar 'like'", error });
+  }
+};
+
 // Obtener todas las notas con información del remitente y receptor
 const getAllNotes = async (req, res) => {
   try {
@@ -101,11 +133,9 @@ const getReceivedNotesByUser = async (req, res) => {
       .populate("reciverId", "name imageAvatar");
 
     if (!notes.length) {
-      return res
-        .status(404)
-        .json({
-          message: "No se encontraron notas recibidas por este usuario",
-        });
+      return res.status(404).json({
+        message: "No se encontraron notas recibidas por este usuario",
+      });
     }
 
     res.status(200).json({ notes: applyAnonymity(notes) });
@@ -119,6 +149,7 @@ const getReceivedNotesByUser = async (req, res) => {
 
 module.exports = {
   createNewNote,
+  toggleLikeNote,
   getAllNotes,
   getSentNotesByUser,
   getReceivedNotesByUser,
