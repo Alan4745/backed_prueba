@@ -102,6 +102,42 @@ async function RegistrarData(req, res) {
   }
 }
 
+// Función para contar elementos en el array ticketsCollected y calcular el promedio
+async function obtenerPromedioTickets(req, res) {
+  try {
+    const allData = await AdrenalineDataModel.find({});
+    const totalRegistros = allData.length;
+
+    if (totalRegistros === 0) {
+      return res.status(200).json({
+        success: true,
+        Usuarios: 0,
+        "Participación promedio x usuario": 0,
+      });
+    }
+
+    const totalTickets = allData.reduce(
+      (acc, data) => acc + data.ticketsCollected.length,
+      0
+    );
+    const promedioTickets = Math.floor(totalTickets / totalRegistros);
+
+    res.status(200).json({
+      success: true,
+      Usuarios: totalRegistros,
+      "Participación promedio x usuario": promedioTickets,
+    });
+  } catch (error) {
+    console.error("Error al obtener el promedio de tickets:", error);
+    res.status(500).json({
+      success: false,
+      message:
+        "Error interno del servidor. Por favor, inténtelo de nuevo más tarde.",
+    });
+  }
+}
+
 module.exports = {
   RegistrarData,
+  obtenerPromedioTickets,
 };
