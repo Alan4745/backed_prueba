@@ -1,10 +1,10 @@
 const { placeFav } = require("../../models/placeFav/placefav.model");
 const userModel = require("../../models/user.model");
 
-// funcion para crear los lugares favoritos
+// Función para crear lugares favoritos
 const createNewPlaceFav = async (req, res) => {
   try {
-    const { senderId, reciverIds, title, coordinates } = req.body;
+    const { senderId, reciverIds, title, type, coordinates } = req.body;
 
     // Validar longitud del título
     if (title.length > 50) {
@@ -28,11 +28,16 @@ const createNewPlaceFav = async (req, res) => {
         .json({ message: "Uno o más receptores no existen" });
     }
 
+    // Validar y asignar tipo
+    const validTypes = ["like", "anchor", "share"];
+    const finalType = validTypes.includes(type) ? type : "like";
+
     // Crear un nuevo lugar favorito
     const newPlaceFav = await placeFav.create({
       senderId,
       reciverIds,
       title,
+      type: finalType,
       coordinates,
     });
 
