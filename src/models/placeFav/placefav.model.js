@@ -17,6 +17,12 @@ const placeFavSchema = new Schema({
     required: true,
     maxlength: 50,
   },
+  type: {
+    type: String,
+    enum: ["like", "anchor", "share"],
+    required: true,
+    // default: "like",
+  },
   coordinates: {
     type: [Number], // Array de números para coordenadas
     required: true,
