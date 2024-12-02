@@ -2,32 +2,43 @@ const { Note } = require("../../models/note/note.model");
 const userModel = require("../../models/user.model");
 
 // Crear una nueva nota
+
+// Crear una nueva nota
 const createNewNote = async (req, res) => {
   try {
     const { senderId, reciverId, type, noteContent, statusNote, coordinates } =
       req.body;
 
+    // Verificar que el usuario remitente exista
     const userSender = await userModel.findById(senderId);
-    const userReciver = await userModel.findById(reciverId);
     if (!userSender) {
       return res
         .status(404)
         .json({ message: "No se encontró al usuario remitente" });
     }
-    if (!userReciver) {
-      return res
-        .status(404)
-        .json({ message: "No se encontró al usuario receptor" });
+
+    // Si reciverId está presente, validar que el usuario receptor exista
+    let userReciver = null;
+    if (reciverId) {
+      userReciver = await userModel.findById(reciverId);
+      // No devolver error si no se encuentra el usuario receptor
+      if (!userReciver) {
+        console.warn(
+          `Advertencia: Usuario receptor con ID ${reciverId} no encontrado.`
+        );
+      }
     }
 
+    // Crear la nueva nota
     const newNote = await Note.create({
       senderId,
-      reciverId,
+      reciverId: reciverId || null, // Guardar como null si no está presente
       type,
       noteContent,
       statusNote,
       coordinates,
     });
+
     res.status(201).json({ message: "Nota creada con éxito", newNote });
   } catch (error) {
     console.error("Error al crear una nota:", error);
