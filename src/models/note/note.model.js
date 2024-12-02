@@ -29,7 +29,7 @@ const noteSchema = new Schema({
   reciverId: {
     type: Schema.Types.ObjectId, // referencia al usuario receptor
     ref: "Users",
-    required: true,
+    required: false,
   },
   type: {
     type: String,
