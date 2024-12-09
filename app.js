@@ -21,6 +21,7 @@ const ticketsRouter = require("./src/routes/tickets/ticket.routes");
 const notificationRouter = require("./src/routes/notification/notification.routes");
 const follow = require("./src/routes/follow/follow.routes");
 const note = require("./src/routes/note/note.routes");
+const event = require("./src/routes/Events/events.router");
 const place = require("./src/routes/placefav/placeFav.routes");
 
 const checkout = require("./src/routes/checkout.routes");
@@ -79,7 +80,8 @@ app.use(
   notificationRouter, //rutas de notificaciones
   follow, //rutas de seguidores y seguidos
   note, //rutas de notas
-  place //rutas de notas
+  place, //rutas de notas
+  event //rutas de eventos
 );
 
 // Exportamos la instancia de la aplicacion
