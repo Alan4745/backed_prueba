@@ -19,6 +19,11 @@ const eventsSchema = new Schema({
         type: [Number], // Array de números para coordenadas
         required: true,
     },
+    radio: {
+        type: Number,
+        required: true,
+        default: 0,
+    },
     dateInit: {
         type: String,
         required: true,
