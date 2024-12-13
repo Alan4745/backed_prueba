@@ -10,6 +10,16 @@ const eventsSchema = new Schema({
         type: String,
         require: true,
     },
+    senderId: {
+        type: Schema.Types.ObjectId, // referencia al usuario remitente
+        ref: "Users",
+        required: true,
+    },
+    reciverIds: {
+        type: [Schema.Types.ObjectId], // Arreglo de referencias a usuarios receptores
+        ref: "Users",
+        required: true,
+    },
     type: {
         type: String,
         enum: ["private", "public"],
