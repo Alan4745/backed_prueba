@@ -36,6 +36,14 @@ const noteSchema = new Schema({
     enum: ["normal", "ar"],
     required: true,
   },
+  image: {
+    public_id: { type: String, default: "" },
+    secure_url: { type: String, default: "" },
+  },
+  audio: {
+    public_id: { type: String, default: "" },
+    secure_url: { type: String, default: "" },
+  },
   likes: {
     type: [
       {
@@ -47,7 +55,7 @@ const noteSchema = new Schema({
   comments: { type: [commentSchema], default: [] },
   noteContent: {
     type: String,
-    required: true,
+    required: false,
   },
   statusNote: {
     type: String,
