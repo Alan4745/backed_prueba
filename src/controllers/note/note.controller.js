@@ -1,5 +1,7 @@
 const { Note } = require("../../models/note/note.model");
 const userModel = require("../../models/user.model");
+const { UploadImg, UploadAudio } = require("../../utils/cloudinary");
+const fs = require("fs-extra");
 
 // Crear una nueva nota
 
@@ -28,15 +30,38 @@ const createNewNote = async (req, res) => {
         );
       }
     }
+    // Cargar la imagen principal si existe
+    let image = {};
+    if (req.files?.image) {
+      const result = await UploadImg(req.files.image.tempFilePath);
+      image.public_id = result.public_id;
+      image.secure_url = result.secure_url;
+      if (fs.existsSync(req.files.image.tempFilePath)) {
+        await fs.unlink(req.files.image.tempFilePath);
+      }
+    }
+
+    // Cargar el audio si existe
+    let audio = {};
+    if (req.files?.audio) {
+      const result = await UploadAudio(req.files.audio.tempFilePath);
+      audio.public_id = result.public_id;
+      audio.secure_url = result.secure_url;
+      if (fs.existsSync(req.files.audio.tempFilePath)) {
+        await fs.unlink(req.files.audio.tempFilePath);
+      }
+    }
 
     // Crear la nueva nota
     const newNote = await Note.create({
       senderId,
       reciverId: reciverId || null, // Guardar como null si no está presente
       type,
+      image,
+      audio,
       noteContent,
       statusNote,
-      coordinates,
+      coordinates: JSON.parse(coordinates),
     });
 
     res.status(201).json({ message: "Nota creada con éxito", newNote });
