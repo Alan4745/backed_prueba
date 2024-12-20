@@ -1,5 +1,5 @@
 // Función para calcular la distancia entre dos puntos (coords1 y coords2) en metros
-const haversineDistance = (coords1, coords2) => {
+const frHaversineDistance = (coords1, coords2) => {
   const R = 6371000; // Radio de la Tierra en metros
   const lat1 = (coords1.lat * Math.PI) / 180;
   const lat2 = (coords2.lat * Math.PI) / 180;
@@ -18,4 +18,4 @@ const haversineDistance = (coords1, coords2) => {
   return R * c; // Distancia en metros
 };
 
-module.exports = { haversineDistance };
+module.exports = { frHaversineDistance };
