@@ -261,6 +261,34 @@ const socketFunctions = (io) => {
 
     //----INICIO---- evento de enviar mensajes Privados
     socket.on(
+      "sendNote",
+      ({ senderId, receiverId, text, imageAvatar, username }) => {
+        console.log("Sender ID:", senderId);
+        console.log("Receiver ID:", receiverId);
+
+        // Buscamos al usuario receptor
+        const user = getUser(receiverId);
+
+        if (!user) {
+          // El usuario está desconectado
+          console.log("El usuario no está conectado");
+        } else {
+          // Enviamos el mensaje al socket del usuario receptor
+          io.to(user.socketId).emit("getNote", {
+            senderId,
+            text,
+            receiverId,
+            imageAvatar,
+            username,
+          });
+          console.log("Nota enviado a", receiverId);
+        }
+      }
+    );
+
+    //----FIN----
+    //----INICIO---- evento de enviar mensajes Privados
+    socket.on(
       "sendMessage",
       ({ senderId, receiverId, text, imageAvatar, username }) => {
         console.log("Sender ID:", senderId);
