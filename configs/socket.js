@@ -1,4 +1,12 @@
+const {
+  ticketsDetectByKmRadius,
+} = require("../src/controllers/tickets/ticketsDetectByKmRadius.controller");
+const {
+  eventsDetectByKmRadius,
+} = require("../src/controllers/Events/eventsDetectByKmRadius.controller");
+const User = require("../src/models/user.model");
 const { calculateDistance } = require("./funcs/calculateDistance");
+const { isInsideCircle } = require("./funcs/isInsideCircle");
 
 let users = [
   // {
@@ -221,6 +229,115 @@ const socketFunctions = (io) => {
           .emit("message", `${room.userName} has joined the chat`);
       } else {
         console.error(`Room not found for socket id: ${socket.id}`);
+      }
+    });
+
+    // Funcion para detectar usuarios a tiempo real adentro de un evento
+    // -- Inicio -- //
+    socket.on("detectEventsInRadius", async (data, callback) => {
+      try {
+        const { coordinates, user } = data;
+        // Valida que las coordenadas estén presentes
+        if (!coordinates || coordinates.length !== 2) {
+          return callback({
+            success: false,
+            message: "Coordenadas inválidas. Se esperan [latitud, longitud].",
+          });
+        }
+
+        // Llama al controlador `eventsDetectByKmRadius`
+        const req = { body: { coordinates } }; // Simula el request
+        const res = {
+          status: (statusCode) => ({
+            json: (response) => ({ statusCode, ...response }),
+          }),
+        };
+
+        const result = await eventsDetectByKmRadius(req, res);
+
+        if (result.success) {
+          // Filtra los eventos para verificar si el usuario está dentro de su radio
+          const filteredEvents = result.eventsFound.map((event) => {
+            const isInside = isInsideCircle(
+              coordinates,
+              event.coordinates,
+              event.radio
+            );
+            // Si el usuario está dentro, agrega el userId al evento
+            let usersInside = isInside
+              ? [
+                  {
+                    userId: user._id,
+                    imageAvatar: user.imageAvatar,
+                    name: user.name,
+                  },
+                ]
+              : [];
+
+            // Si ya hay otros usuarios dentro de este evento, agrega a su lista
+            if (event.usersInside && event.usersInside.length > 0) {
+              usersInside = [...event.usersInside, ...usersInside];
+            }
+
+            // Devuelve el evento con el campo `isInside` y el contador de usuarios dentro
+            return {
+              ...event,
+              usersInside, // Lista de los usuarios dentro del evento
+              usersCount: usersInside.length, // Número de usuarios dentro
+            };
+          });
+          //console.log("events-detect: ", filteredEvents);
+          // Responde con los eventos filtrados
+          callback({ success: true, events: filteredEvents });
+        } else {
+          callback({ success: false, message: result.message });
+        }
+      } catch (error) {
+        console.error("Error detecting events:", error);
+        callback({
+          success: false,
+          message: "Ocurrió un error al procesar la solicitud.",
+        });
+      }
+    });
+    // -- Fin -- //
+
+    // Evento para detectar tickets dentro de un radio
+    // -- Inicio -- //
+    socket.on("detectTicketsInRadius", async (data, callback) => {
+      try {
+        const { coordinates } = data;
+
+        // Valida que las coordenadas estén presentes
+        if (!coordinates || coordinates.length !== 2) {
+          return callback({
+            success: false,
+            message: "Coordenadas inválidas. Se esperan [latitud, longitud].",
+          });
+        }
+
+        // Llama al controlador `ticketsDetectByKmRadius`
+        const req = { body: { coordinates } }; // Simula el request
+        const res = {
+          status: (statusCode) => ({
+            json: (response) => ({ statusCode, ...response }),
+          }),
+        };
+
+        const result = await ticketsDetectByKmRadius(req, res);
+        console.log("result-tickets: ", result.success);
+        // Verifica el resultado y responde al cliente
+        if (result.success) {
+          callback({ success: true, tickets: result.ticketsFound });
+        } else {
+          callback({ success: false, message: result.message });
+        }
+      } catch (error) {
+        console.error("Error detecting tickets:", error);
+        callback({
+          success: false,
+          message: "Ocurrió un error al procesar la solicitud.",
+        });
       }
     });
 
