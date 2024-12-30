@@ -266,6 +266,16 @@ const socketFunctions = (io) => {
             // Si el usuario está dentro, agrega el userId al evento
             let usersInside = isInside
               ? [
+                ...event.usersInside,
+                  {
+                    userId: "66febce4aeefefae9648747d",
+                    imageAvatar: {
+                      public_id: "replit/wakulzv3arbnfvfarnlo",
+                      secure_url:
+                        "https://res.cloudinary.com/dbcusl09w/image/upload/v1727970611/replit/wakulzv3arbnfvfarnlo.jpg",
+                    },
+                    name: "spiderman",
+                  },
                   {
                     userId: user._id,
                     imageAvatar: user.imageAvatar,
