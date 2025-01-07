@@ -237,8 +237,14 @@ const socketFunctions = (io) => {
     socket.on("detectEventsInRadius", async (data, callback) => {
       try {
         const { coordinates, user } = data;
+
+        // Log inicial para inspeccionar la entrada de datos
+        console.log("Evento detectado: detectEventsInRadius");
+        console.log("Datos recibidos:", data);
+
         // Valida que las coordenadas estén presentes
         if (!coordinates || coordinates.length !== 2) {
+          console.error("Coordenadas inválidas:", coordinates);
           return callback({
             success: false,
             message: "Coordenadas inválidas. Se esperan [latitud, longitud].",
@@ -255,16 +261,23 @@ const socketFunctions = (io) => {
 
         const result = await eventsDetectByKmRadius(req, res);
 
+        // Log para inspeccionar el resultado del controlador
+        console.log("Resultados de eventsDetectByKmRadius:", result);
+
         if (result.success) {
-          // Filtra los eventos para verificar si el usuario está dentro de su radio
           const filteredEvents = result.eventsFound.map((event) => {
-            // Inicializa usersInside si no existe
+            // Inicializa `usersInside` si no existe
             event.usersInside = event.usersInside || [];
+
+            console.log(`Procesando evento: ${event.name}`);
+            console.log("Usuarios iniciales dentro del evento:", event.usersInside);
 
             const isInside = isInsideCircle(coordinates, event.coordinates, event.radio);
 
+            console.log("El usuario está dentro del radio:", isInside);
+
             if (isInside) {
-              // Agrega el usuario actual a usersInside, evitando duplicados
+              // Agrega el usuario actual a `usersInside`, evitando duplicados
               event.usersInside = [
                 ...new Map(
                   [...event.usersInside, { userId: user._id, imageAvatar: user.imageAvatar, name: user.name }]
@@ -272,11 +285,13 @@ const socketFunctions = (io) => {
                 ).values(),
               ];
 
-              // Actualiza en la base de datos si es necesario
+              console.log("Usuarios actualizados dentro del evento:", event.usersInside);
+
+              // Simula la actualización de la base de datos (si corresponde)
               // await updateEventUsersInside(event._id, event.usersInside);
             }
 
-            // Devuelve el evento con la lista actualizada
+            // Devuelve el evento con los usuarios actualizados
             return {
               ...event,
               usersInside: event.usersInside,
@@ -284,20 +299,23 @@ const socketFunctions = (io) => {
             };
           });
 
-          //console.log("events-detect: ", filteredEvents);
+          console.log("Eventos procesados con usuarios actualizados:", filteredEvents);
+
           // Responde con los eventos filtrados
           callback({ success: true, events: filteredEvents });
         } else {
+          console.error("Error en eventsDetectByKmRadius:", result.message);
           callback({ success: false, message: result.message });
         }
       } catch (error) {
-        console.error("Error detecting events:", error);
+        console.error("Error detectando eventos:", error);
         callback({
           success: false,
           message: "Ocurrió un error al procesar la solicitud.",
         });
       }
     });
+
     // -- Fin -- //
 
     // Evento para detectar tickets dentro de un radio
