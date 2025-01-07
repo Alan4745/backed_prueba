@@ -242,7 +242,6 @@ const socketFunctions = (io) => {
         console.log("Evento detectado: detectEventsInRadius");
         console.log("Datos recibidos:", data);
 
-        // Valida que las coordenadas estén presentes
         if (!coordinates || coordinates.length !== 2) {
           console.error("Coordenadas inválidas:", coordinates);
           return callback({
@@ -251,7 +250,6 @@ const socketFunctions = (io) => {
           });
         }
 
-        // Llama al controlador `eventsDetectByKmRadius`
         const req = { body: { coordinates } }; // Simula el request
         const res = {
           status: (statusCode) => ({
@@ -261,13 +259,11 @@ const socketFunctions = (io) => {
 
         const result = await eventsDetectByKmRadius(req, res);
 
-        // Log para inspeccionar el resultado del controlador
         console.log("Resultados de eventsDetectByKmRadius:", result);
 
         if (result.success) {
           const filteredEvents = result.eventsFound.map((event) => {
-            // Inicializa `usersInside` si no existe
-            event.usersInside = event.usersInside || [];
+            event.usersInside = event.usersInside || []; // Inicializa la lista si no existe
 
             console.log(`Procesando evento: ${event.name}`);
             console.log("Usuarios iniciales dentro del evento:", event.usersInside);
@@ -277,21 +273,22 @@ const socketFunctions = (io) => {
             console.log("El usuario está dentro del radio:", isInside);
 
             if (isInside) {
-              // Agrega el usuario actual a `usersInside`, evitando duplicados
-              event.usersInside = [
-                ...new Map(
-                  [...event.usersInside, { userId: user._id, imageAvatar: user.imageAvatar, name: user.name }]
-                    .map((u) => [u.userId, u]) // Evita duplicados usando userId como clave
-                ).values(),
-              ];
+              const existingUserIndex = event.usersInside.findIndex((u) => u.userId === user._id);
 
-              console.log("Usuarios actualizados dentro del evento:", event.usersInside);
-
-              // Simula la actualización de la base de datos (si corresponde)
-              // await updateEventUsersInside(event._id, event.usersInside);
+              if (existingUserIndex === -1) {
+                // Agrega solo si el usuario no está ya en la lista
+                event.usersInside.push({
+                  userId: user._id,
+                  imageAvatar: user.imageAvatar,
+                  name: user.name,
+                });
+              } else {
+                console.log(`Usuario ya registrado en el evento: ${user._id}`);
+              }
             }
 
-            // Devuelve el evento con los usuarios actualizados
+            console.log("Usuarios actualizados dentro del evento:", event.usersInside);
+
             return {
               ...event,
               usersInside: event.usersInside,
@@ -301,7 +298,6 @@ const socketFunctions = (io) => {
 
           console.log("Eventos procesados con usuarios actualizados:", filteredEvents);
 
-          // Responde con los eventos filtrados
           callback({ success: true, events: filteredEvents });
         } else {
           console.error("Error en eventsDetectByKmRadius:", result.message);
@@ -315,6 +311,7 @@ const socketFunctions = (io) => {
         });
       }
     });
+
 
     // -- Fin -- //
 
