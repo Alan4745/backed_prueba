@@ -29,7 +29,7 @@ let users = [
       secure_url:
         "https://res.cloudinary.com/dbcusl09w/image/upload/v1727970611/replit/wakulzv3arbnfvfarnlo.jpg",
     },
-    location: { latitude: 14.600519, longitude: -90.51707 },
+    location: { latitude: 14.6933879, longitude: -90.4786446 },
   },
   {
     userId: "672916398184e16a0455ec1e",
