@@ -258,34 +258,32 @@ const socketFunctions = (io) => {
         if (result.success) {
           // Filtra los eventos para verificar si el usuario está dentro de su radio
           const filteredEvents = result.eventsFound.map((event) => {
-            const isInside = isInsideCircle(
-              coordinates,
-              event.coordinates,
-              event.radio
-            );
-            // Si el usuario está dentro, agrega el userId al evento
-            let usersInside = isInside
-              ? [
-                  {
-                    userId: user._id,
-                    imageAvatar: user.imageAvatar,
-                    name: user.name,
-                  },
-                ]
-              : [];
+            // Inicializa usersInside si no existe
+            event.usersInside = event.usersInside || [];
 
-            // Si ya hay otros usuarios dentro de este evento, agrega a su lista
-            if (event.usersInside && event.usersInside.length > 0) {
-              usersInside = [...event.usersInside, ...usersInside];
+            const isInside = isInsideCircle(coordinates, event.coordinates, event.radio);
+
+            if (isInside) {
+              // Agrega el usuario actual a usersInside, evitando duplicados
+              event.usersInside = [
+                ...new Map(
+                  [...event.usersInside, { userId: user._id, imageAvatar: user.imageAvatar, name: user.name }]
+                    .map((u) => [u.userId, u]) // Evita duplicados usando userId como clave
+                ).values(),
+              ];
+
+              // Actualiza en la base de datos si es necesario
+              // await updateEventUsersInside(event._id, event.usersInside);
             }
 
-            // Devuelve el evento con el campo `isInside` y el contador de usuarios dentro
+            // Devuelve el evento con la lista actualizada
             return {
               ...event,
-              usersInside, // Lista de los usuarios dentro del evento
-              usersCount: usersInside.length, // Número de usuarios dentro
+              usersInside: event.usersInside,
+              usersCount: event.usersInside.length,
             };
           });
+
           //console.log("events-detect: ", filteredEvents);
           // Responde con los eventos filtrados
           callback({ success: true, events: filteredEvents });
