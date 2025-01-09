@@ -237,15 +237,19 @@ const socketFunctions = (io) => {
     socket.on("detectEventsInRadius", async (data, callback) => {
       try {
         const { coordinates, user } = data;
-        // Valida que las coordenadas estén presentes
+
+        // Log inicial para inspeccionar la entrada de datos
+        console.log("Evento detectado: detectEventsInRadius");
+        console.log("Datos recibidos:", data);
+
         if (!coordinates || coordinates.length !== 2) {
+          console.error("Coordenadas inválidas:", coordinates);
           return callback({
             success: false,
             message: "Coordenadas inválidas. Se esperan [latitud, longitud].",
           });
         }
 
-        // Llama al controlador `eventsDetectByKmRadius`
         const req = { body: { coordinates } }; // Simula el request
         const res = {
           status: (statusCode) => ({
@@ -255,61 +259,60 @@ const socketFunctions = (io) => {
 
         const result = await eventsDetectByKmRadius(req, res);
 
-        if (result.success) {
-          // Filtra los eventos para verificar si el usuario está dentro de su radio
-          const filteredEvents = result.eventsFound.map((event) => {
-            const isInside = isInsideCircle(
-              coordinates,
-              event.coordinates,
-              event.radio
-            );
-            // Si el usuario está dentro, agrega el userId al evento
-            let usersInside = isInside
-              ? [
-                ...event.usersInside,
-                  {
-                    userId: "66febce4aeefefae9648747d",
-                    imageAvatar: {
-                      public_id: "replit/wakulzv3arbnfvfarnlo",
-                      secure_url:
-                        "https://res.cloudinary.com/dbcusl09w/image/upload/v1727970611/replit/wakulzv3arbnfvfarnlo.jpg",
-                    },
-                    name: "spiderman",
-                  },
-                  {
-                    userId: user._id,
-                    imageAvatar: user.imageAvatar,
-                    name: user.name,
-                  },
-                ]
-              : [];
+        console.log("Resultados de eventsDetectByKmRadius:", result);
 
-            // Si ya hay otros usuarios dentro de este evento, agrega a su lista
-            if (event.usersInside && event.usersInside.length > 0) {
-              usersInside = [...event.usersInside, ...usersInside];
+        if (result.success) {
+          const filteredEvents = result.eventsFound.map((event) => {
+            event.usersInside = event.usersInside || []; // Inicializa la lista si no existe
+
+            console.log(`Procesando evento: ${event.name}`);
+            console.log("Usuarios iniciales dentro del evento:", event.usersInside);
+
+            const isInside = isInsideCircle(coordinates, event.coordinates, event.radio);
+
+            console.log("El usuario está dentro del radio:", isInside);
+
+            if (isInside) {
+              const existingUserIndex = event.usersInside.findIndex((u) => u.userId === user._id);
+
+              if (existingUserIndex === -1) {
+                // Agrega solo si el usuario no está ya en la lista
+                event.usersInside.push({
+                  userId: user._id,
+                  imageAvatar: user.imageAvatar,
+                  name: user.name,
+                });
+              } else {
+                console.log(`Usuario ya registrado en el evento: ${user._id}`);
+              }
             }
 
-            // Devuelve el evento con el campo `isInside` y el contador de usuarios dentro
+            console.log("Usuarios actualizados dentro del evento:", event.usersInside);
+
             return {
               ...event,
-              usersInside, // Lista de los usuarios dentro del evento
-              usersCount: usersInside.length, // Número de usuarios dentro
+              usersInside: event.usersInside,
+              usersCount: event.usersInside.length,
             };
           });
-          //console.log("events-detect: ", filteredEvents);
-          // Responde con los eventos filtrados
+
+          console.log("Eventos procesados con usuarios actualizados:", filteredEvents);
+
           callback({ success: true, events: filteredEvents });
         } else {
+          console.error("Error en eventsDetectByKmRadius:", result.message);
           callback({ success: false, message: result.message });
         }
       } catch (error) {
-        console.error("Error detecting events:", error);
+        console.error("Error detectando eventos:", error);
         callback({
           success: false,
           message: "Ocurrió un error al procesar la solicitud.",
         });
       }
     });
+
+
     // -- Fin -- //
 
     // Evento para detectar tickets dentro de un radio
