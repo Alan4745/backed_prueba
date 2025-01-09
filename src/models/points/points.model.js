@@ -20,7 +20,15 @@ const pointsSchema = new Schema({
             type: Schema.Types.Mixed,
             required: true
         }
-    }, 
+    },
+    collectionName: {
+        type: String,
+        required: false
+    },
+    membership: {
+        type: String,
+        required: false
+    },
     emitter: {
         type: Schema.Types.ObjectId, // referencia al usuario emisor
         ref: 'Users',
