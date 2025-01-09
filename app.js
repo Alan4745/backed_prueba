@@ -17,12 +17,14 @@ const messageChannelRouter = require("./src/routes/messageChannel.routes");
 const tokenRouter = require("./src/routes/token.routes");
 const paymentRouter = require("./src/routes/payment/payment.routes");
 const pointsRouter = require("./src/routes/points/points.routes");
+const redeemedRoutes = require("./src/routes/Redeemed/redeemed.routes");
 const ticketsRouter = require("./src/routes/tickets/ticket.routes");
 const notificationRouter = require("./src/routes/notification/notification.routes");
 const follow = require("./src/routes/follow/follow.routes");
 const note = require("./src/routes/note/note.routes");
 const event = require("./src/routes/Events/events.router");
 const place = require("./src/routes/placefav/placeFav.routes");
+
 
 const checkout = require("./src/routes/checkout.routes");
 const passport = require("passport");
@@ -80,6 +82,7 @@ app.use(
   notificationRouter, //rutas de notificaciones
   follow, //rutas de seguidores y seguidos
   note, //rutas de notas
+  redeemedRoutes, //rutas de canjeados
   place, //rutas de notas
   event //rutas de eventos
 );
