@@ -1,22 +1,26 @@
 const express = require("express");
-const { createPerimeterPoints, 
-        getPerimeterPoints, 
-        getPerimeterPointById, 
-        updatePerimeterPointById, 
+const { createPerimeterPoints,
+        getPerimeterPoints,
+        getPerimeterPointById,
+        updatePerimeterPointById,
         deletePerimeterPointById,
     } = require("../../controllers/points/points.controller");
-const { createPointsRedeemed, 
-        getPointsRedeemed, 
-        getPointsRedeemedById, 
+const { createPointsRedeemed,
+        getPointsRedeemed,
+        getPointsRedeemedById,
+        getPerimeterPointsByUserId,
         deletePointRedeemedById } = require("../../controllers/points/pointsReemed.controller");
-const { createPointsMarked, 
-        getAllPointsMarked, 
-        getPointMarkedById, 
-        updatePointMarkedById, 
+const { createPointsMarked,
+        getAllPointsMarked,
+        getPointMarkedById,
+        updatePointMarkedById,
         deletePointMarkedById } = require("../../controllers/points/pointsMarked.controller");
 const { createPerimeterAndDistributePoints } = require("../../controllers/points/pointsRandomPerimeter.controller");
 const { pointsDetectByKmRadius } = require("../../controllers/points/pointsDetectByKmRadius.controller");
 const api = express.Router();
+
+// Ruta para filtrar puntos por el ID del usuario
+api.get('/getPerimeterPointsByCurrentUbication/:userId', getPerimeterPointsByUserId);
 
 // Rutas para obtener puntos por un radio de 500Km
 api.post('/getPerimeterPointsByCurrentUbication', pointsDetectByKmRadius)
