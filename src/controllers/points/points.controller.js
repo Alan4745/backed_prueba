@@ -2,9 +2,9 @@ const { Points } = require('../../models/points/points.model');
 const userModel = require("../../models/user.model");
 
 const createPerimeterPoints = async (req, res) => {
-    const { amount, type, coordinates, emitterId } = req.body;
+    const { amount, type, coordinates, emitterId, membership, collectionName } = req.body;
 
-    if (!amount || !type || !coordinates || !emitterId) {
+    if (!amount || !type || !coordinates || !emitterId || !membership || !collectionName) {
         return res.status(400).json({ message: 'Faltan datos requeridos' });
     }
 
@@ -19,6 +19,8 @@ const createPerimeterPoints = async (req, res) => {
         const newPoint = new Points({
             amountCurrent: amount,
             amountInitial: amount,
+            collectionName: collectionName,
+            membership: membership,
             location: {
                 type,
                 coordinates: type === 'Polygon' ? coordinates : coordinates
@@ -140,23 +142,15 @@ const getPointsByUserId = async (req, res) => {
     const { userId } = req.params; // El ID del usuario se recibe como parámetro en la ruta
 
     try {
-        // Verificar si el usuario existe en la base de datos
-        const user = await userModel.findById(userId);
-        if (!user) {
-            return res.status(404).json({ message: 'Usuario no encontrado' });
-        }
-
-        // Buscar puntos cuyo campo "emitter" coincida con el ID del usuario
+        console.log("id-emitter: ", userId);
         const points = await Points.find({ emitter: userId });
-        if (!points.length) {
-            return res.status(404).json({ message: 'No se encontraron puntos para este usuario' });
+        if (!points) {
+            return res.status(404).json({ message: 'Ticket no encontrado' });
         }
-
-        // Retornar los puntos encontrados
         res.status(200).json(points);
     } catch (error) {
-        console.error('Error al consultar los puntos por usuario:', error);
-        res.status(500).json({ message: 'Error al consultar los puntos', error });
+        console.error('Error al consultar el punto:', error);
+        res.status(500).json({ message: 'Error al consultar el punto', error });
     }
 };
 
