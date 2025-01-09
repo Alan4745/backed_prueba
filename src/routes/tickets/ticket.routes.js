@@ -5,7 +5,8 @@ const {
     getTicketsByUserId,
     getPerimeterTicketById,
     updatePerimeterTicketById,
-    deletePerimeterTicketById
+    deletePerimeterTicketById,
+    getPerimeterTicketsByUser
 } = require("../../controllers/tickets/tickets.controller");
 const {
     getAllTicketsMarked,
@@ -28,7 +29,7 @@ const api = express.Router();
 // Ruta para filtrar puntos por el ID del usuario
 api.get('/getPerimeterTicketsByCurrentUbication/:userId', getPerimeterTicketsByUserId
 );
-api.get('/getTicketsAndPointsByUser/:userId', getTicketsByUserId
+api.get('/getTicketsAndPoints ByUser/:userId', getTicketsByUserId
 );
 
 // Rutas para obtener tickets por un radio de 500Km
@@ -36,7 +37,8 @@ api.post('/getPerimeterTicketsByCurrentUbication', ticketsDetectByKmRadius)
 
 // Rutas para emitir puntos
 api.get('/getPerimeterTickets', getPerimeterTickets)
-api.get('/getPerimeterTickets/:id', getPerimeterTicketById)
+api.get('/getPerimeterTickets/:id', getPerimeterTicketById) // buscar perimetro por id
+api.get('/getPerimeterTicketsByUser/:userId', getPerimeterTicketsByUser) // buscar perimetro creado por userid
 api.post('/createPerimeterTickets', createPerimeterTickets)
 api.post('/createPerimeterAndDistributeTickets', createPerimeterAndDistributeTickets)
 api.put('/updatePerimeterTicketById/:id', updatePerimeterTicketById)

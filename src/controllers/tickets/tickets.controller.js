@@ -71,13 +71,27 @@ const getTicketsByUserId = async (req, res) => {
 
 const getPerimeterTicketById = async (req, res) => {
     const { id } = req.params;
-
     try {
         const ticket = await Tickets.findById(id);
         if (!ticket) {
             return res.status(404).json({ message: 'Ticket no encontrado' });
         }
         res.status(200).json(point);
+    } catch (error) {
+        console.error('Error al consultar el punto:', error);
+        res.status(500).json({ message: 'Error al consultar el punto', error });
+    }
+};
+
+const getPerimeterTicketsByUser = async (req, res) => {
+    const { userId } = req.params;
+    try {
+        console.log("id-emitter: ", userId);
+        const tickets = await Tickets.find({emitter: userId});
+        if (!tickets) {
+            return res.status(404).json({ message: 'Ticket no encontrado' });
+        }
+        res.status(200).json(tickets);
     } catch (error) {
         console.error('Error al consultar el punto:', error);
         res.status(500).json({ message: 'Error al consultar el punto', error });
@@ -164,6 +178,7 @@ module.exports = {
     createPerimeterTickets,
     getPerimeterTickets,
     getPerimeterTicketById,
+    getPerimeterTicketsByUser,
     updatePerimeterTicketById,
     deletePerimeterTicketById,
     getTicketsByUserId
