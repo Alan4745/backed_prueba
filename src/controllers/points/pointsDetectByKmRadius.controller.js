@@ -33,6 +33,7 @@ const pointsDetectByKmRadius = async (req, res) => {
     );
     // Filtrar los null para obtener solo los puntos válidos
     const filteredPoints = pointsFound.filter((point) => point !== null);
+    const filterFirst = filteredPoints[0] ? [filteredPoints[0]] : [];
 
     // Si no se encontraron puntos dentro del radio
     if (!filteredPoints.length) {
@@ -42,7 +43,7 @@ const pointsDetectByKmRadius = async (req, res) => {
       });
     }
 
-    return res.status(200).json({ success: true, pointsFound: filteredPoints });
+    return res.status(200).json({ success: true, pointsFound: filterFirst });
   } catch (error) {
     console.error(error);
     res.status(500).json({
@@ -51,5 +52,6 @@ const pointsDetectByKmRadius = async (req, res) => {
     });
   }
 };
+
 
 module.exports = { pointsDetectByKmRadius };
