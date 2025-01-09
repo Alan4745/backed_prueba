@@ -1,4 +1,5 @@
 const { Points } = require('../../models/points/points.model');
+const userModel = require("../../models/user.model");
 
 const createPerimeterPoints = async (req, res) => {
     const { amount, type, coordinates, emitterId } = req.body;
@@ -135,10 +136,35 @@ const deletePerimeterPointById = async (req, res) => {
     }
 };
 
+const getPointsByUserId = async (req, res) => {
+    const { userId } = req.params; // El ID del usuario se recibe como parámetro en la ruta
+
+    try {
+        // Verificar si el usuario existe en la base de datos
+        const user = await userModel.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        // Buscar puntos cuyo campo "emitter" coincida con el ID del usuario
+        const points = await Points.find({ emitter: userId });
+        if (!points.length) {
+            return res.status(404).json({ message: 'No se encontraron puntos para este usuario' });
+        }
+
+        // Retornar los puntos encontrados
+        res.status(200).json(points);
+    } catch (error) {
+        console.error('Error al consultar los puntos por usuario:', error);
+        res.status(500).json({ message: 'Error al consultar los puntos', error });
+    }
+};
+
 module.exports = {
     createPerimeterPoints,
     getPerimeterPoints,
     getPerimeterPointById,
     updatePerimeterPointById,
     deletePerimeterPointById,
+    getPointsByUserId
 };
