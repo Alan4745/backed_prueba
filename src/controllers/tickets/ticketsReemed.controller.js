@@ -42,6 +42,7 @@ const createTicketsRedeemed = async (req, res) => {
                 coordinates: [latitude, longitude]
             },
             idTicketsMarked: ticketsFounds._id,
+            collectionName: ticketsFounds.collectionName,
             receiver,
         });
         await newTicketsRedeemed.save();

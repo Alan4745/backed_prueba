@@ -68,6 +68,7 @@ const createPerimeterAndDistributeTickets = async (req, res) => {
                         coordinates: ticket
                     },
                     idTickets: newPerimeter._id,
+                    collectionName: newPerimeter.collectionName,
                     redeemed: false
                 });
 
@@ -82,6 +83,7 @@ const createPerimeterAndDistributeTickets = async (req, res) => {
                     coordinates
                 },
                 idTickets: newPerimeter._id,
+                collectionName: newPerimeter.collectionName,
                 redeemed: false
             });
 
