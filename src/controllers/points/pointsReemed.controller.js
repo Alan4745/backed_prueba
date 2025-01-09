@@ -1,6 +1,7 @@
 const { PointsMarked } = require('../../models/points/pointsMarked.model');
 const { PointsRedeemed } = require('../../models/points/pointsRedeemed.model');
 const { verifyRedemption } = require('../../funcs/verifyRedemption');
+const userModel = require("../../models/user.model");
 
 const createPointsRedeemed = async (req, res) => {
     const { type, coordinates, idPointsMarked, receiver } = req.body;
@@ -27,13 +28,13 @@ const createPointsRedeemed = async (req, res) => {
         if (!canRedeem.success) {
             return res.status(400).json({ message: canRedeem.message });
         }
-        
+
         // // Marcar como canjeado
         pointsFounds.redeemed = true;
         const amountInitial = pointsFounds.amountPointsMarked;
         pointsFounds.amountPointsMarked -= amountInitial;
         await pointsFounds.save();
-        
+
         // Registrar los puntos canjeados
         const newPointsRedeemed = new PointsRedeemed({
             amountRedeemed: amountInitial,
@@ -45,7 +46,7 @@ const createPointsRedeemed = async (req, res) => {
             receiver,
         });
         await newPointsRedeemed.save();
-        
+
 
         res.status(201).json({ message: 'Puntos canjeados con éxito', newPointsRedeemed });
     } catch (error) {
@@ -93,9 +94,34 @@ const deletePointRedeemedById = async (req, res) => {
     }
 };
 
+const getPerimeterPointsByUserId = async (req, res) => {
+    const { userId } = req.params; // El ID del usuario se recibe como parámetro en la ruta
+
+    try {
+        // Verificar si el usuario existe en la base de datos
+        const user = await userModel.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        // Buscar puntos cuyo campo "emitter" coincida con el ID del usuario
+        const points = await PointsRedeemed.find({ emitter: userId });
+        if (!points.length) {
+            return res.status(404).json({ message: 'No se encontraron puntos para este usuario' });
+        }
+
+        // Retornar los puntos encontrados
+        res.status(200).json(points);
+    } catch (error) {
+        console.error('Error al consultar los puntos por usuario:', error);
+        res.status(500).json({ message: 'Error al consultar los puntos', error });
+    }
+};
+
 module.exports = {
     createPointsRedeemed,
     getPointsRedeemed,
     getPointsRedeemedById,
-    deletePointRedeemedById
+    deletePointRedeemedById,
+    getPerimeterPointsByUserId
 };
