@@ -2,7 +2,6 @@ const express = require("express");
 const {
     createPerimeterTickets,
     getPerimeterTickets,
-    getTicketsByUserId,
     getPerimeterTicketById,
     updatePerimeterTicketById,
     deletePerimeterTicketById,
@@ -20,17 +19,12 @@ const {
     getTicketsRedeemedById,
     createTicketsRedeemed,
     deleteTicketsRedeemedById,
-    getPerimeterTicketsByUserId
 } = require("../../controllers/tickets/ticketsReemed.controller");
 const { createPerimeterAndDistributeTickets } = require("../../controllers/tickets/ticketsRadomPerimeter.controller");
 const { ticketsDetectByKmRadius } = require("../../controllers/tickets/ticketsDetectByKmRadius.controller");
 const api = express.Router();
 
 // Ruta para filtrar puntos por el ID del usuario
-api.get('/getPerimeterTicketsByCurrentUbication/:userId', getPerimeterTicketsByUserId
-);
-api.get('/getTicketsAndPoints ByUser/:userId', getTicketsByUserId
-);
 
 // Rutas para obtener tickets por un radio de 500Km
 api.post('/getPerimeterTicketsByCurrentUbication', ticketsDetectByKmRadius)

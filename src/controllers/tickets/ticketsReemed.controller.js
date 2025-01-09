@@ -92,33 +92,11 @@ const deleteTicketsRedeemedById = async (req, res) => {
     }
 };
 
-const getPerimeterTicketsByUserId = async (req, res) => {
-    const { userId } = req.params;
-    try {
-        // Verificar si el usuario existe en la base de datos
-        const user = await userModel.findById(userId);
-        if (!user) {
-            return res.status(404).json({ message: 'Usuario no encontrado' });
-        }
 
-        // Buscar puntos cuyo campo "emitter" coincida con el ID del usuario
-        const ticket = await TicketsRedeemed.find({ emitter: userId });
-        if (!ticket.length) {
-            return res.status(404).json({ message: 'No se encontraron puntos para este usuario' });
-        }
-
-        // Retornar los puntos encontrados
-        res.status(200).json(ticket);
-    } catch (error) {
-        console.error('Error al consultar los puntos por usuario:', error);
-        res.status(500).json({ message: 'Error al consultar los puntos', error });
-    }
-};
 
 module.exports = {
     createTicketsRedeemed,
     getTicketsRedeemed,
     getTicketsRedeemedById,
     deleteTicketsRedeemedById,
-    getPerimeterTicketsByUserId
 };
