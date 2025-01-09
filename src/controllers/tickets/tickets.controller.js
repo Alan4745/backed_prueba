@@ -1,5 +1,5 @@
 const { Tickets } = require('../../models/tickets/tickets.model');
-
+const userModel = require("../../models/user.model");
 const createPerimeterTickets = async (req, res) => {
     const { amount, type, coordinates, emitterId, membership, collectionName, price  } = req.body;
     console.log(req.body)
@@ -41,6 +41,22 @@ const createPerimeterTickets = async (req, res) => {
 const getPerimeterTickets = async (req, res) => {
     try {
         const perimeterTickets = await Tickets.find();
+        res.status(200).json(perimeterTickets);
+    } catch (error) {
+        console.error('Error al consultar los puntos:', error);
+        res.status(500).json({ message: 'Error al consultar los puntos', error });
+    }
+};
+
+const getTicketsByUserId = async (req, res) => {
+    const { userId } = req.params;
+    try {
+        const user = await userModel.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        const perimeterTickets = await Tickets.find({ receiver: userId });
         res.status(200).json(perimeterTickets);
     } catch (error) {
         console.error('Error al consultar los puntos:', error);
@@ -145,4 +161,5 @@ module.exports = {
     getPerimeterTicketById,
     updatePerimeterTicketById,
     deletePerimeterTicketById,
+    getTicketsByUserId
 };
