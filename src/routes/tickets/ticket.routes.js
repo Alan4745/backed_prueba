@@ -2,6 +2,7 @@ const express = require("express");
 const {
     createPerimeterTickets,
     getPerimeterTickets,
+    getTicketsByUserId,
     getPerimeterTicketById,
     updatePerimeterTicketById,
     deletePerimeterTicketById
@@ -27,7 +28,8 @@ const api = express.Router();
 // Ruta para filtrar puntos por el ID del usuario
 api.get('/getPerimeterTicketsByCurrentUbication/:userId', getPerimeterTicketsByUserId
 );
-
+api.get('/getPerimeterTicketsByUser/:userId', getTicketsByUserId
+);
 
 // Rutas para obtener tickets por un radio de 500Km
 api.post('/getPerimeterTicketsByCurrentUbication', ticketsDetectByKmRadius)
