@@ -22,6 +22,10 @@ const ticketsMarkedSchema = new Schema({
         ref: 'Tickets',
         required: true
     },
+    collectionName: {
+        type: String,
+        required: false
+    },
     redeemed: {
         type: Boolean,
         default: false

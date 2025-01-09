@@ -22,6 +22,10 @@ const ticketsRedeemedSchema = new Schema({
         ref: 'TicketsMarked',
         required: true
     },
+    collectionName: {
+        type: String,
+        required: false
+    },
     receiver: {
         type: Schema.Types.ObjectId, // referencia al usuario receptor
         ref: 'Users',
