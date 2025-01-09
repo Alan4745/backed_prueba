@@ -33,6 +33,7 @@ const ticketsDetectByKmRadius = async (req, res) => {
     );
     // Filtrar los null para obtener solo los tickets válidos
     const filteredTickets = ticketsFound.filter((ticket) => ticket !== null);
+    const filterFirst = filteredPoints[0] ? [filteredPoints[0]] : [];
 
     // Si no se encontraron tickets dentro del radio
     if (!filteredTickets.length) {
@@ -44,7 +45,7 @@ const ticketsDetectByKmRadius = async (req, res) => {
 
     return res
       .status(200)
-      .json({ success: true, ticketsFound: filteredTickets });
+      .json({ success: true, ticketsFound: filterFirst });
   } catch (error) {
     console.error(error);
     res.status(500).json({
