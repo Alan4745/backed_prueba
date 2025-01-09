@@ -4,6 +4,7 @@ const { createPerimeterPoints,
         getPerimeterPointById,
         updatePerimeterPointById,
         deletePerimeterPointById,
+        getPointsByUserId
     } = require("../../controllers/points/points.controller");
 const { createPointsRedeemed,
         getPointsRedeemed,
@@ -21,6 +22,7 @@ const api = express.Router();
 
 // Ruta para filtrar puntos por el ID del usuario
 api.get('/getPerimeterPointsByCurrentUbication/:userId', getPerimeterPointsByUserId);
+api.get('/getPointsByUser/:userId', getPointsByUserId);
 
 // Rutas para obtener puntos por un radio de 500Km
 api.post('/getPerimeterPointsByCurrentUbication', pointsDetectByKmRadius)
