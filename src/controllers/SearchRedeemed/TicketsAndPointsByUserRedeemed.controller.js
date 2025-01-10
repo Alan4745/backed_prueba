@@ -1,5 +1,6 @@
 const { PointsRedeemed } = require('../../models/points/pointsRedeemed.model');
 const { TicketsRedeemed } = require('../../models/tickets/ticketsRedeemed.model');
+const { Tickets } = require('../../models/tickets/tickets.model');
 const userModel = require("../../models/user.model");
 const TicketsAndPointsByUserRedeemed = async (req, res) => {
     const { userId } = req.params;
@@ -9,8 +10,12 @@ const TicketsAndPointsByUserRedeemed = async (req, res) => {
             return res.status(404).json({ message: 'Usuario no encontrado' });
         }
 
-        const ticketsFounds = await TicketsRedeemed.find({ receiver: userId });
-        const pointsFounds = await PointsRedeemed.find({ receiver: userId });
+        const ticketsFounds = await TicketsRedeemed.find({ receiver: userId })
+            .populate("receiver", "name imageAvatar");
+
+        const pointsFounds = await PointsRedeemed.find({ receiver: userId })
+            .populate("receiver", "name imageAvatar");
+
         const ticketsCant = ticketsFounds.length;
         const pointsCant = pointsFounds.length;
         res.status(200).json({ ticketsCant, ticketsFounds, pointsCant, pointsFounds });
