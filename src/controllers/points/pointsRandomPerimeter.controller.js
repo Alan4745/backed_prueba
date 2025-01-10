@@ -64,6 +64,7 @@ const createPerimeterAndDistributePoints = async (req, res) => {
                         coordinates: point
                     },
                     idPoints: newPerimeter._id,
+                    collectionName: newPerimeter.collectionName,
                     redeemed: false
                 });
 
@@ -78,6 +79,7 @@ const createPerimeterAndDistributePoints = async (req, res) => {
                     coordinates
                 },
                 idPoints: newPerimeter._id,
+                collectionName: newPerimeter.collectionName,
                 redeemed: false
             });
 
