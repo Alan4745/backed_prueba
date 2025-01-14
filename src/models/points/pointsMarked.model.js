@@ -17,6 +17,10 @@ const pointsMarkedSchema = new Schema({
             required: true
         }
     },
+    collectionName: {
+        type: String,
+        required: false
+    },
     idPoints: {
         type: Schema.Types.ObjectId, // referencia a los puntos a marcar en el mapa
         ref: 'Points',

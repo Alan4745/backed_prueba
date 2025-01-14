@@ -17,6 +17,10 @@ const pointsRedeemedSchema = new Schema({
             required: true
         }
     },
+    collectionName: {
+        type: String,
+        required: false
+    },
     idPointsMarked: {
         type: Schema.Types.ObjectId, // referencia a los puntos a canjear
         ref: 'PointsMarked',
