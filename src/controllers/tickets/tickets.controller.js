@@ -1,7 +1,7 @@
-const { PointsRedeemed } = require('../../models/points/pointsRedeemed.model');
+const { UploadImg } = require("../../utils/cloudinary");
 const { Tickets } = require('../../models/tickets/tickets.model');
-const { TicketsRedeemed } = require('../../models/tickets/ticketsRedeemed.model');
-const userModel = require("../../models/user.model");
+const fs = require("fs-extra");
+
 const createPerimeterTickets = async (req, res) => {
     const { amount, type, coordinates, emitterId, membership, collectionName, price  } = req.body;
     console.log(req.body)
@@ -137,8 +137,56 @@ const updatePerimeterTicketById = async (req, res) => {
         }
         res.status(200).json({ message: 'El perimetro actualizado con éxito', updatedTicket });
     } catch (error) {
-        console.error('Error al actualizar el punto:', error);
-        res.status(500).json({ message: 'Error al actualizar el punto', error });
+        console.error('Error al actualizar tickets:', error);
+        res.status(500).json({ message: 'Error al actualizar tickets', error });
+    }
+};
+
+const uploadImgTickets = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { emitterId } = req.body;
+
+        const updateFields = {};
+        const ticketFound = await Tickets.findById(id);
+
+        if (!ticketFound) {
+            return res.status(404).json({ message: 'Ticket no encontrado' });
+        }
+
+        if (!emitterId) {
+            return res.status(400).json({ message: 'Envia el id del emisor de los tickets' });
+        }
+
+        // Cargar la imagen principal si existe
+        let imageUpload = { public_id: "", secure_url: "" }; // Inicializa con valores por defecto
+        if (req.files?.image) {
+            const result = await UploadImg(req.files.image.tempFilePath);
+            imageUpload.public_id = result.public_id;
+            imageUpload.secure_url = result.secure_url;
+
+            // Elimina el archivo temporal
+            if (fs.existsSync(req.files.image.tempFilePath)) {
+                await fs.unlink(req.files.image.tempFilePath);
+            }
+        }
+        updateFields.image = imageUpload;
+
+        // Actualizar el ticket
+        const updatedTicket = await Tickets.findByIdAndUpdate(
+            id,
+            { $set: updateFields },
+            { new: true }
+        );
+
+        if (!updatedTicket) {
+            return res.status(404).json({ message: 'Ticket no encontrado' });
+        }
+
+        res.status(200).json({ message: 'Imagen cargada con éxito!', updatedTicket });
+    } catch (error) {
+        console.error('Error al actualizar tickets:', error);
+        res.status(500).json({ message: 'Error al actualizar tickets', error });
     }
 };
 
@@ -163,4 +211,5 @@ module.exports = {
     getPerimeterTicketsByUser,
     updatePerimeterTicketById,
     deletePerimeterTicketById,
+    uploadImgTickets
 };
