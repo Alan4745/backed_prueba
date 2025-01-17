@@ -43,6 +43,7 @@ const createTicketsRedeemed = async (req, res) => {
             },
             idTicketsMarked: ticketsFounds._id,
             collectionName: ticketsFounds.collectionName,
+            image: ticketsFounds.image,
             receiver,
         });
         await newTicketsRedeemed.save();
