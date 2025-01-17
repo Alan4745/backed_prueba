@@ -51,7 +51,7 @@ let users = [
       secure_url:
         "https://res.cloudinary.com/dbcusl09w/image/upload/v1730745155/replit/n1he8aa7xlumt7gktwpq.jpg",
     },
-    location: { latitude: 10.29215, longitude: -68.029242 },
+    location: { latitude: 10.179198396722976, longitude: -68.00274012473962 },
   },
 ];
 let rooms = [];
