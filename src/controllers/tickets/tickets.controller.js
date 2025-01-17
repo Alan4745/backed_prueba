@@ -1,6 +1,7 @@
 const { UploadImg } = require("../../utils/cloudinary");
 const { Tickets } = require('../../models/tickets/tickets.model');
 const fs = require("fs-extra");
+const { TicketsMarked } = require("../../models/tickets/ticketsMarked.model");
 
 const createPerimeterTickets = async (req, res) => {
     const { amount, type, coordinates, emitterId, membership, collectionName, price  } = req.body;
@@ -144,7 +145,7 @@ const updatePerimeterTicketById = async (req, res) => {
 
 const uploadImgTickets = async (req, res) => {
     try {
-        const { id } = req.params;
+        const { id } = req.params; // ID del ticket
         const { emitterId } = req.body;
 
         const updateFields = {};
@@ -158,21 +159,21 @@ const uploadImgTickets = async (req, res) => {
             return res.status(400).json({ message: 'Envia el id del emisor de los tickets' });
         }
 
-        // Cargar la imagen principal si existe
-        let imageUpload = { public_id: "", secure_url: "" }; // Inicializa con valores por defecto
+        // Inicializar imagen con valores por defecto
+        let imageUpload = { public_id: "", secure_url: "" };
         if (req.files?.image) {
             const result = await UploadImg(req.files.image.tempFilePath);
             imageUpload.public_id = result.public_id;
             imageUpload.secure_url = result.secure_url;
 
-            // Elimina el archivo temporal
+            // Eliminar el archivo temporal
             if (fs.existsSync(req.files.image.tempFilePath)) {
                 await fs.unlink(req.files.image.tempFilePath);
             }
         }
         updateFields.image = imageUpload;
 
-        // Actualizar el ticket
+        // Actualizar el ticket principal
         const updatedTicket = await Tickets.findByIdAndUpdate(
             id,
             { $set: updateFields },
@@ -180,10 +181,21 @@ const uploadImgTickets = async (req, res) => {
         );
 
         if (!updatedTicket) {
-            return res.status(404).json({ message: 'Ticket no encontrado' });
+            return res.status(404).json({ message: 'Ticket no encontrado después de la actualización' });
         }
 
-        res.status(200).json({ message: 'Imagen cargada con éxito!', updatedTicket });
+        // Actualizar los tickets markers asociados
+        const updatedTicketsMarkers = await TicketsMarked.updateMany(
+            { idTickets: updatedTicket._id }, // Buscar por idTickets
+            { $set: updateFields }, // Actualizar la imagen
+            { new: true } // Retornar los documentos actualizados
+        );
+
+        res.status(200).json({
+            message: 'Imagen cargada con éxito!',
+            updatedTicket,
+            updatedTicketsMarkers
+        });
     } catch (error) {
         console.error('Error al actualizar tickets:', error);
         res.status(500).json({ message: 'Error al actualizar tickets', error });
