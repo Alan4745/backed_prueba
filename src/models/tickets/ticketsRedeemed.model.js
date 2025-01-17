@@ -26,6 +26,10 @@ const ticketsRedeemedSchema = new Schema({
         type: String,
         required: false
     },
+    image: {
+        public_id: { type: String, default: "" },
+        secure_url: { type: String, default: "" },
+    },
     receiver: {
         type: Schema.Types.ObjectId, // referencia al usuario receptor
         ref: 'Users',

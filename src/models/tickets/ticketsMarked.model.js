@@ -26,6 +26,10 @@ const ticketsMarkedSchema = new Schema({
         type: String,
         required: false
     },
+    image: {
+        public_id: { type: String, default: "" },
+        secure_url: { type: String, default: "" },
+    },
     redeemed: {
         type: Boolean,
         default: false
