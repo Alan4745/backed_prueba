@@ -40,7 +40,7 @@ let users = [
       secure_url:
         "https://res.cloudinary.com/dbcusl09w/image/upload/v1730746137/replit/d61uahrtfgtzfareysbo.jpg",
     },
-    location: { latitude: 10.289637, longitude: -68.021047 },
+    location: { latitude: 10.228539582534516, longitude: -67.8887825235813 },
   },
   {
     userId: "672913008184e16a0455ebe4",
@@ -296,7 +296,7 @@ const socketFunctions = (io) => {
             };
           });
 
-          console.log("Eventos procesados con usuarios actualizados:", filteredEvents);
+          //console.log("Eventos procesados con usuarios actualizados:", filteredEvents);
 
           callback({ success: true, events: filteredEvents });
         } else {
