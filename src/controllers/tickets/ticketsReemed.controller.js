@@ -31,12 +31,15 @@ const createTicketsRedeemed = async (req, res) => {
         // // Marcar como canjeado
         ticketsFounds.redeemed = true;
         const amountInitial = ticketsFounds.amountTicketsMarked;
+        const priceInitial = ticketsFounds.price;
         ticketsFounds.amountTicketsMarked -= amountInitial;
+        ticketsFounds.price -= priceInitial;
         await ticketsFounds.save();
 
         // Registrar los puntos canjeados
         const newTicketsRedeemed = new TicketsRedeemed({
             amountRedeemed: amountInitial,
+            priceRedeemed: priceInitial,
             location: {
                 type: 'Point',
                 coordinates: [latitude, longitude]
