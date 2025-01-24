@@ -1,4 +1,5 @@
 const { Note } = require("../../models/note/note.model");
+const { placeFav } = require("../../models/placeFav/placefav.model");
 const userModel = require("../../models/user.model");
 const { UploadImg, UploadAudio } = require("../../utils/cloudinary");
 const fs = require("fs-extra");
@@ -242,12 +243,57 @@ const getReceivedNotesByUser = async (req, res) => {
   }
 };
 
+const getAllNotesAndPlacesPublic = async (req, res) => {
+  try {
+    // Consultar las notas públicas
+    const notesPublics = await Note.find({ statusNote: "public" });
+
+    // Consultar los lugares favoritos
+    const placesPublics = await placeFav.find();
+
+    // Obtener datos de los usuarios relacionados (senderId y reciverId)
+    const notesWithUsers = await Promise.all(
+      notesPublics.map(async (note) => {
+        const sender = await userModel.findById(note.senderId).select("_id name imageAvatar");
+        const receiver = note.reciverId 
+          ? await userModel.findById(note.reciverId).select("_id name imageAvatar")
+          : null;
+
+        return {
+          ...note.toObject(),
+          sender: sender || null,
+          receiver: receiver || null,
+        };
+      })
+    );
+
+    const numberNotesPublics = notesPublics.length;
+    const numberPlacessPublics = placesPublics.length;
+
+    // Responder con las notas y lugares públicos incluyendo información de los usuarios
+    res.status(200).json({
+      message: "Notas y lugares públicos obtenidos con éxito",
+      numberNotesPublics,
+      numberPlacessPublics,
+      notes: notesWithUsers,
+      places: placesPublics,
+    });
+  } catch (error) {
+    console.error("Error al obtener notas y lugares públicos:", error);
+    res.status(500).json({
+      message: "Error al obtener las notas y lugares públicos.",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   createNewNote,
   toggleLikeNote,
   toggleSaveNote,
   addCommentToNote,
   getAllNotes,
+  getAllNotesAndPlacesPublic,
   getSentNotesByUser,
   getReceivedNotesByUser,
 };
