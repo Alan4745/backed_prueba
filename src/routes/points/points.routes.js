@@ -1,21 +1,22 @@
 const express = require("express");
 const { createPerimeterPoints,
-        getPerimeterPoints,
-        getPerimeterPointById,
-        updatePerimeterPointById,
-        deletePerimeterPointById,
-        getPointsByUserId
-    } = require("../../controllers/points/points.controller");
+    getPerimeterPoints,
+    getPerimeterPointById,
+    updatePerimeterPointById,
+    deletePerimeterPointById,
+    getPointsByUserId
+} = require("../../controllers/points/points.controller");
 const { createPointsRedeemed,
-        getPointsRedeemed,
-        getPointsRedeemedById,
-        getPerimeterPointsByUserId,
-        deletePointRedeemedById } = require("../../controllers/points/pointsReemed.controller");
+    getPointsRedeemed,
+    getPointsRedeemedById,
+    getPerimeterPointsByUserId,
+    deletePointRedeemedById } = require("../../controllers/points/pointsReemed.controller");
 const { createPointsMarked,
-        getAllPointsMarked,
-        getPointMarkedById,
-        updatePointMarkedById,
-        deletePointMarkedById } = require("../../controllers/points/pointsMarked.controller");
+    getAllPointsMarked,
+    getPointMarkedById,
+    updatePointMarkedById,
+    filterPointsMarkedUser,
+    deletePointMarkedById } = require("../../controllers/points/pointsMarked.controller");
 const { createPerimeterAndDistributePoints } = require("../../controllers/points/pointsRandomPerimeter.controller");
 const { pointsDetectByKmRadius } = require("../../controllers/points/pointsDetectByKmRadius.controller");
 const api = express.Router();
@@ -40,6 +41,7 @@ api.get('/getAllPointsMarked', getAllPointsMarked)
 api.get('/getMarkedPoints/:id', getPointMarkedById)
 api.post('/createMarkedPoints', createPointsMarked)
 api.put('/updatePointsMarkedById/:id', updatePointMarkedById)
+api.get('/pointsMarkedUser/:userId', filterPointsMarkedUser)
 api.delete('/deletePointsMarkedById/:id', deletePointMarkedById)
 
 // Rutas para canjear puntos
