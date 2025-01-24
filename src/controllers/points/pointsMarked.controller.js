@@ -183,11 +183,38 @@ const deletePointMarkedById = async (req, res) => {
         res.status(500).json({ message: 'Error al eliminar el punto marcado', error });
     }
 };
+const filterPointsMarkedUser = async (req, res) => {
+    const { userId } = req.params;
+
+    try {
+        // Obtener los puntos creados por el usuario
+        const userPoints = await Points.find({ emitter: userId });
+
+        // Extraer los IDs de los puntos del usuario
+        const userPointIds = userPoints.map(point => point._id);
+
+        // Filtrar los puntos marcados que no están en los IDs de los puntos del usuario
+        const unmarkedPoints = await PointsMarked.find({
+            "idPoints.$oid": { $nin: userPointIds },
+            redeemed: false // Solo puntos no canjeados
+        });
+
+        res.status(200).json({
+            message: "Puntos marcados no canjeados obtenidos con éxito",
+            data: unmarkedPoints
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error interno del servidor" });
+    }
+};
+
 
 module.exports = {
     createPointsMarked,
     getAllPointsMarked,
     getPointMarkedById,
     updatePointMarkedById,
-    deletePointMarkedById
+    deletePointMarkedById,
+    filterPointsMarkedUser
 };
