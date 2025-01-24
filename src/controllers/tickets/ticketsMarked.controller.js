@@ -187,25 +187,42 @@ const filterTicketsMarkedUser = async (req, res) => {
     const { userId } = req.params;
 
     try {
-        // Obtener los puntos creados por el usuario
+        // Obtener los tickets creados por el usuario
         const userTickets = await Tickets.find({ emitter: userId });
 
-        // Extraer los IDs de los puntos del usuario
-        const userPointIds = userTickets.map(point => point._id);
+        // Extraer los IDs de los tickets del usuario como strings
+        const userTicketIds = userTickets.map(ticket => ticket._id.toString());
 
-        // Filtrar los puntos marcados que no están en los IDs de los puntos del usuario
-        const unmarkedTickets = await TicketsMarked.find({
-            "idTickets.$oid": { $nin: userPointIds },
-            redeemed: false // Solo puntos no canjeados
-        });
+        if (userTicketIds.length === 0) {
+            return res.status(200).json({ message: "No has creado tickets." });
+        }
 
-        res.status(200).json({
+        // Iterar sobre cada ID y buscar en el modelo TicketsMarked
+        const results = await Promise.all(
+            userTicketIds.map(async (ticketId) => {
+                return await TicketsMarked.find({
+                    idTickets: ticketId,
+                    redeemed: false // Solo tickets no canjeados
+                });
+            })
+        );
+
+        // Aplanar el array de resultados
+        const unmarkedTickets = results.flat();
+
+        // Eliminar duplicados usando un Map para `idTickets`
+        const uniqueTickets = Array.from(
+            new Map(unmarkedTickets.map(ticket => [ticket.idTickets.toString(), ticket])).values()
+        );
+
+        return res.status(200).json({
             message: "Tickets marcados no canjeados obtenidos con éxito",
-            data: unmarkedTickets
+            data: userTickets,
+            dataMarket: uniqueTickets,
         });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Error interno del servidor" });
+        return res.status(500).json({ message: "Error interno del servidor" });
     }
 };
 
