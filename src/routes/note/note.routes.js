@@ -8,12 +8,14 @@ const {
   getAllNotes,
   getSentNotesByUser,
   getReceivedNotesByUser,
+  getAllNotesAndPlacesPublic,
 } = require("../../controllers/note/note.controller.js");
 
 const api = express.Router();
 
 // Rutas de notas
 api.get("/getAllNotes", [md_autenticacion.Auth], getAllNotes);
+api.get("/getAllNotesAndPlacesPlubic", getAllNotesAndPlacesPublic);
 api.get(
   "/getSentNotesByUser/:userId",
   [md_autenticacion.Auth],
