@@ -183,6 +183,7 @@ const deletePointMarkedById = async (req, res) => {
         res.status(500).json({ message: 'Error al eliminar el punto marcado', error });
     }
 };
+
 const filterPointsMarkedUser = async (req, res) => {
     const { userId } = req.params;
 
@@ -190,25 +191,35 @@ const filterPointsMarkedUser = async (req, res) => {
         // Obtener los puntos creados por el usuario
         const userPoints = await Points.find({ emitter: userId });
 
-        // Extraer los IDs de los puntos del usuario
-        const userPointIds = userPoints.map(point => point._id);
+        // Extraer los IDs de los puntos del usuario como strings
+        const userPointIds = userPoints.map(point => point._id.toString());
 
-        // Filtrar los puntos marcados que no están en los IDs de los puntos del usuario
-        const unmarkedPoints = await PointsMarked.find({
-            "idPoints.$oid": { $nin: userPointIds },
-            redeemed: false // Solo puntos no canjeados
-        });
+        if (userPointIds.length === 0) {
+            return res.status(200).json({ message: "No has creado puntos." });
+        }
 
-        res.status(200).json({
+        // Iterar sobre cada ID y buscar en el modelo PointsMarked
+        const results = await Promise.all(
+            userPointIds.map(async (pointId) => {
+                return await PointsMarked.find({
+                    idPoints: pointId,
+                    redeemed: false // Solo puntos no canjeados
+                });
+            })
+        );
+
+        // Aplanar el array de resultados (ya que cada búsqueda devuelve un array)
+        const unmarkedPoints = results.flat();
+
+        return res.status(200).json({
             message: "Puntos marcados no canjeados obtenidos con éxito",
-            data: unmarkedPoints
+            data: userPoints
         });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Error interno del servidor" });
+        return res.status(500).json({ message: "Error interno del servidor" });
     }
 };
-
 
 module.exports = {
     createPointsMarked,
