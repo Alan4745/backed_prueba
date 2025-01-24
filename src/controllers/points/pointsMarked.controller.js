@@ -53,7 +53,7 @@ const createPointsMarked = async (req, res) => {
                 return res.status(400).json({ message: canRedeem.message });
             }
         }
-        
+
         if(pointsFounds.location.type === 'Polygon'){
             const isWithin = await verifyLocationPerimeter(pointsFounds, [longitude, latitude]); // Enviar en el orden correcto
             if (!isWithin) {
@@ -208,12 +208,17 @@ const filterPointsMarkedUser = async (req, res) => {
             })
         );
 
-        // Aplanar el array de resultados (ya que cada búsqueda devuelve un array)
+        // Aplanar el array de resultados
         const unmarkedPoints = results.flat();
 
+        // Eliminar duplicados usando un Map para `idPoints`
+        const uniquePoints = Array.from(
+            new Map(unmarkedPoints.map(point => [point.idPoints.toString(), point])).values()
+        );
         return res.status(200).json({
             message: "Puntos marcados no canjeados obtenidos con éxito",
-            data: userPoints
+            data: userPoints,
+            dataMarket: uniquePoints,
         });
     } catch (error) {
         console.error(error);
