@@ -9,7 +9,6 @@ const createPerimeterAndDistributePoints = async (req, res) => {
     if (!amount || !type || !coordinates || !emitterId) {
         return res.status(400).json({ message: 'Faltan datos requeridos' });
     }
-    console.log(coordinates)
     // Validación de coordenadas para Point
     if (type === 'Point') {
         if (!Array.isArray(coordinates) || coordinates.length !== 2 || !coordinates.every(coord => typeof coord === 'number')) {
@@ -32,6 +31,8 @@ const createPerimeterAndDistributePoints = async (req, res) => {
         });
 
         await newPerimeter.save();
+
+        let firstMarker = null; // Variable para almacenar el primer marcador creado
 
         // Distribuir los puntos aleatoriamente dentro del perímetro
         if (type === 'Polygon') {
@@ -71,6 +72,11 @@ const createPerimeterAndDistributePoints = async (req, res) => {
                 });
 
                 await pointMarked.save();
+
+                // Almacenar el primer marcador creado
+                if (!firstMarker) {
+                    firstMarker = pointMarked;
+                }
             }
         } else if (type === 'Point') {
             // Crear un único punto marcado si el tipo es Point
@@ -86,9 +92,16 @@ const createPerimeterAndDistributePoints = async (req, res) => {
             });
 
             await pointMarked.save();
+
+            // Almacenar el primer marcador creado
+            firstMarker = pointMarked;
         }
 
-        res.status(201).json({ message: 'Perímetro creado y puntos distribuidos con éxito', perimeter: newPerimeter });
+        res.status(201).json({
+            message: 'Perímetro creado y puntos distribuidos con éxito',
+            perimeter: newPerimeter,
+            firstMarker: firstMarker // Incluir el primer marcador en la respuesta
+        });
     } catch (error) {
         console.error('Error al crear el perímetro y distribuir puntos:', error);
         res.status(500).json({ message: 'Error al crear el perímetro y distribuir puntos', error });

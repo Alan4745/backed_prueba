@@ -35,6 +35,8 @@ const createPerimeterAndDistributeTickets = async (req, res) => {
 
         await newPerimeter.save();
 
+        let firstMarker = null; // Variable para almacenar el primer marcador creado
+
         // Distribuir los puntos aleatoriamente dentro del perímetro
         if (type === 'Polygon') {
             const polygon = turf.polygon(coordinates); // Crear el polígono usando @turf
@@ -63,6 +65,7 @@ const createPerimeterAndDistributeTickets = async (req, res) => {
                 // Crear el ticket marcado
                 const ticketMarked = new TicketsMarked({
                     amountTicketsMarked,
+                    price,
                     location: {
                         type: 'Point',
                         coordinates: ticket
@@ -73,6 +76,11 @@ const createPerimeterAndDistributeTickets = async (req, res) => {
                 });
 
                 await ticketMarked.save();
+
+                // Almacenar el primer marcador creado
+                if (!firstMarker) {
+                    firstMarker = ticketMarked;
+                }
             }
         } else if (type === 'Point') {
             // Crear un único punto marcado si el tipo es Point
@@ -88,9 +96,16 @@ const createPerimeterAndDistributeTickets = async (req, res) => {
             });
 
             await ticketMarked.save();
+
+            // Almacenar el primer marcador creado
+            firstMarker = ticketMarked;
         }
 
-        res.status(201).json({ message: 'Perímetro creado y puntos distribuidos con éxito', perimeter: newPerimeter });
+        res.status(201).json({
+            message: 'Perímetro creado y tickets distribuidos con éxito',
+            perimeter: newPerimeter,
+            firstMarker: firstMarker // Incluir el primer marcador en la respuesta
+        });
     } catch (error) {
         console.error('Error al crear el perímetro y distribuir puntos:', error);
         res.status(500).json({ message: 'Error al crear el perímetro y distribuir puntos', error });

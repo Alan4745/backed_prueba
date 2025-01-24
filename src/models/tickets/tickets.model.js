@@ -14,6 +14,10 @@ const ticketsSchema = new Schema({
         type: String,
         required: true
     },
+    image: {
+        public_id: { type: String, default: "" },
+        secure_url: { type: String, default: "" },
+    },
     membership: {
         type: String,
         required: true

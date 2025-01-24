@@ -5,7 +5,8 @@ const {
     getPerimeterTicketById,
     updatePerimeterTicketById,
     deletePerimeterTicketById,
-    getPerimeterTicketsByUser
+    getPerimeterTicketsByUser,
+    uploadImgTickets
 } = require("../../controllers/tickets/tickets.controller");
 const {
     getAllTicketsMarked,
@@ -42,6 +43,7 @@ api.get('/getAllTicketsMarked', getAllTicketsMarked)
 api.get('/getMarkedTickets/:id', getTicketMarkedById)
 api.post('/createMarkedTickets', createTicketMarked)
 api.put('/updateTicketsMarkedById/:id', updateTicketMarkedById)
+api.put('/uploadImgPerimeterTicketById/:id', uploadImgTickets)
 api.delete('/deleteTicketsMarkedById/:id', deleteTicketMarkedById)
 // Rutas para canjear puntos
 api.get('/getTicketsRedeemed', getTicketsRedeemed)

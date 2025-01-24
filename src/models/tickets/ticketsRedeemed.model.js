@@ -6,6 +6,10 @@ const ticketsRedeemedSchema = new Schema({
         type: Number,
         required: true
     },
+    priceRedeemed: {
+        type: Number,
+        required: true
+    },
     location: {
         type: {
             type: String, // 'Point'
@@ -25,6 +29,10 @@ const ticketsRedeemedSchema = new Schema({
     collectionName: {
         type: String,
         required: false
+    },
+    image: {
+        public_id: { type: String, default: "" },
+        secure_url: { type: String, default: "" },
     },
     receiver: {
         type: Schema.Types.ObjectId, // referencia al usuario receptor
