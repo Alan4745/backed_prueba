@@ -53,7 +53,7 @@ const createTicketMarked = async (req, res) => {
                 return res.status(400).json({ message: canRedeem.message });
             }
         }
-        
+
         if(ticketsFounds.location.type === 'Polygon'){
             const isWithin = await verifyLocationPerimeter(ticketsFounds, [longitude, latitude]); // Enviar en el orden correcto
             if (!isWithin) {
@@ -97,7 +97,7 @@ const getTicketMarkedById = async (req, res) => {
     const { id } = req.params;
 
     try {
-        const pointMarked = await PointsMarked.findById(id);
+        const pointMarked = await TicketsMarked.findById(id);
         if (!pointMarked) {
             return res.status(404).json({ message: 'Punto marcado no encontrado' });
         }
@@ -136,7 +136,7 @@ const updateTicketMarkedById = async (req, res) => {
                 return res.status(400).json({ message: 'Coordenadas inválidas' });
             }
             const [latitude, longitude] = coordinates;
-            const isWithin = await verifyLocationPerimeter(points, [longitude, latitude]); // Enviar en el orden correcto
+            const isWithin = await verifyLocationPerimeter(Tickets, [longitude, latitude]); // Enviar en el orden correcto
             if (!isWithin) {
                 return res.status(400).json({ message: 'La ubicación del marcador no está dentro del perímetro' });
             }
@@ -183,11 +183,37 @@ const deleteTicketMarkedById = async (req, res) => {
         res.status(500).json({ message: 'Error al eliminar el punto marcado', error });
     }
 };
+const filterTicketsMarkedUser = async (req, res) => {
+    const { userId } = req.params;
+
+    try {
+        // Obtener los puntos creados por el usuario
+        const userTickets = await Tickets.find({ emitter: userId });
+
+        // Extraer los IDs de los puntos del usuario
+        const userPointIds = userTickets.map(point => point._id);
+
+        // Filtrar los puntos marcados que no están en los IDs de los puntos del usuario
+        const unmarkedTickets = await TicketsMarked.find({
+            "idTickets.$oid": { $nin: userPointIds },
+            redeemed: false // Solo puntos no canjeados
+        });
+
+        res.status(200).json({
+            message: "Tickets marcados no canjeados obtenidos con éxito",
+            data: unmarkedTickets
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error interno del servidor" });
+    }
+};
 
 module.exports = {
     createTicketMarked,
     getAllTicketsMarked,
     getTicketMarkedById,
     updateTicketMarkedById,
-    deleteTicketMarkedById
+    deleteTicketMarkedById,
+    filterTicketsMarkedUser
 };
