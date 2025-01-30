@@ -62,6 +62,11 @@ const dataPizzaCamperoSchema = new Schema(
       type: String,
       required: true,
     },
+    // Nuevo campo para términos y condiciones
+    terminosCondiciones: {
+      type: Boolean,
+      required: true,
+    },
   },
   {
     timestamps: true, // Añade campos createdAt y updatedAt automáticamente

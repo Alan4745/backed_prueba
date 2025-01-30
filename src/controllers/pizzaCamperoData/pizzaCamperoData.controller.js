@@ -3,8 +3,16 @@ const validator = require("validator"); // Asegúrate de instalar la librería v
 
 async function RegistrarData(req, res) {
   try {
-    const { name, lastname, email, phone, dpi, dateOfBirth, country } =
-      req.body;
+    const {
+      name,
+      lastname,
+      email,
+      phone,
+      dpi,
+      dateOfBirth,
+      country,
+      terminosCondiciones,
+    } = req.body;
 
     if (
       !name ||
@@ -13,12 +21,16 @@ async function RegistrarData(req, res) {
       !phone ||
       !dpi ||
       !dateOfBirth ||
-      !country
+      !country ||
+      terminosCondiciones !== true
     ) {
-      console.log("Todos los campos son requeridos.");
+      console.log(
+        "Todos los campos son requeridos y los términos y condiciones deben ser aceptados."
+      );
       return res.status(400).json({
         success: false,
-        message: "Todos los campos son requeridos.",
+        message:
+          "Todos los campos son requeridos y los términos y condiciones deben ser aceptados.",
       });
     }
 
@@ -92,6 +104,7 @@ async function RegistrarData(req, res) {
         age,
         dateOfBirth,
         country,
+        terminosCondiciones,
       });
 
       await newData.save();
