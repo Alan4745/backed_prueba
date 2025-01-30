@@ -42,12 +42,19 @@ async function RegistrarData(req, res) {
       });
     }
 
-    if (!/^\d{8}$/.test(phone)) {
-      console.log("El número de teléfono debe tener exactamente 8 dígitos.");
-      return res.status(400).json({
-        success: false,
-        message: "El número de teléfono debe tener exactamente 8 dígitos.",
-      });
+    if (!/^\+\d{1,3}\d{8}$/.test(phone)) {
+      if (/^\d{1,3}\d{8}$/.test(phone)) {
+        phone = `+${phone}`;
+      } else {
+        console.log(
+          "El número de teléfono debe tener un prefijo de país seguido de exactamente 8 dígitos."
+        );
+        return res.status(400).json({
+          success: false,
+          message:
+            "El número de teléfono debe tener un prefijo de país seguido de exactamente 8 dígitos.",
+        });
+      }
     }
 
     if (!/^\d{13}$/.test(dpi)) {
