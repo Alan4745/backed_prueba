@@ -17,7 +17,7 @@ const messageChannelRouter = require("./src/routes/messageChannel.routes");
 const tokenRouter = require("./src/routes/token.routes");
 const StatisticRouter = require("./src/routes/Statistic/Statistic.routes");
 const PotentialUserRouter = require("./src/routes/potentialUsers/potentialUsers.routes");
-const RegistrarDataRouter = require("./src/routes/DataPepsi/DataPepsi.routes");
+const RegistrarDataRouter = require("./src/routes/getdata/PizzaCamperoData.route");
 
 const paymentRouter = require("./src/routes/payment/payment.routes");
 
